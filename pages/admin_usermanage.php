@@ -93,6 +93,17 @@ $cohorts = $conn->query("SELECT * FROM cohortdata ORDER BY cohort_ID DESC")->fet
         <h1 class="page-title">
             <i class="fa-solid fa-users me-2" style="color: #ffc107;"></i>帳號管理
         </h1>
+        <div class="page-header-actions">
+            <button type="button" class="btn btn-warning" id="selectAllBtn">
+                <i class="fa-solid fa-check-double me-2"></i>全選
+            </button>
+            <button type="button" class="btn btn-outline-secondary" id="deselectAllBtn">
+                <i class="fa-solid fa-times me-2"></i>取消全選
+            </button>
+            <button type="button" class="btn btn-primary" id="batchEditBtn" disabled>
+                <i class="fa-solid fa-pen-to-square me-2"></i>批量編輯 (<span id="selectedCount">0</span>)
+            </button>
+        </div>
     </div>
 
     <?php
@@ -216,13 +227,24 @@ $cohorts = $conn->query("SELECT * FROM cohortdata ORDER BY cohort_ID DESC")->fet
     <?php else: ?>
         <div class="user-card-grid">
             <?php foreach ($users as $user): ?>
-                <div class="user-card">
-                    <!-- 學級顯示在最上方 -->
-                    <?php if (!empty($user['cohort_name'])): ?>
-                    <div class="user-cohort-badge">
-                        <i class="fa-solid fa-calendar-alt me-2"></i>
-                        <?= htmlspecialchars($user['cohort_name']) ?>
-                    </div>
+                <?php 
+                // 判斷是否為學生（role_ID = 6）
+                $isStudent = ($user['role_ID'] == 6);
+                ?>
+                <div class="user-card" data-user-id="<?= htmlspecialchars($user['u_ID']) ?>" style="cursor: pointer;">
+                    <!-- 頭上顯示：非學生顯示身份，學生顯示學級 -->
+                    <?php if ($isStudent && !empty($user['cohort_name'])): ?>
+                        <!-- 學生顯示學級 -->
+                        <div class="user-cohort-badge">
+                            <i class="fa-solid fa-calendar-alt me-2"></i>
+                            <?= htmlspecialchars($user['cohort_name']) ?>
+                        </div>
+                    <?php elseif (!$isStudent && !empty($user['role_name'])): ?>
+                        <!-- 非學生顯示身份 -->
+                        <div class="user-role-badge">
+                            <i class="fa-solid fa-user-tag me-2"></i>
+                            <?= htmlspecialchars($user['role_name']) ?>
+                        </div>
                     <?php endif; ?>
                     
                     <div class="user-card-header">
@@ -240,7 +262,8 @@ $cohorts = $conn->query("SELECT * FROM cohortdata ORDER BY cohort_ID DESC")->fet
                         <div class="user-info">
                             <div class="user-name-row">
                                 <h3 class="user-name"><?= htmlspecialchars($user['u_name']) ?></h3>
-                                <?php if (!empty($user['role_name'])): ?>
+                                <?php if ($isStudent && !empty($user['role_name'])): ?>
+                                <!-- 只有學生才在名字後面顯示身份 -->
                                 <span class="badge badge-custom badge-role-inline">
                                     <?= htmlspecialchars($user['role_name']) ?>
                                 </span>
@@ -308,6 +331,15 @@ $cohorts = $conn->query("SELECT * FROM cohortdata ORDER BY cohort_ID DESC")->fet
                     </div>
 
                     <div class="user-actions">
+                        <div class="form-check user-select-checkbox">
+                            <input class="form-check-input user-checkbox" 
+                                   type="checkbox" 
+                                   value="<?= htmlspecialchars($user['u_ID']) ?>"
+                                   id="user_<?= htmlspecialchars($user['u_ID']) ?>">
+                            <label class="form-check-label" for="user_<?= htmlspecialchars($user['u_ID']) ?>">
+                                選擇
+                            </label>
+                        </div>
                         <a href="#pages/admin_edituser.php?u_ID=<?= htmlspecialchars($user['u_ID']) ?>" 
                            class="btn btn-action btn-edit ajax-link">
                             <i class="fa-solid fa-pen-to-square me-2"></i>編輯

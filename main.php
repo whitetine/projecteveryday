@@ -38,7 +38,7 @@
             <?php include "sidebar.php"; ?>
           </nav>
         </div>
-        <main id="content" class="container-fluid py-4"><!-- .load() 塞子頁面 --></main>
+        <main id="content" class="container-fluid py-4" style="margin-top: 56px;"><!-- .load() 塞子頁面 --></main>
 
 
       </div>

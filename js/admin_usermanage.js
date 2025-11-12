@@ -1,6 +1,76 @@
-// 账号管理页面脚本
+// 帳號管理頁面腳本
 function initPageScript() {
-    // 切换用户状态
+    // 更新選中數量
+    function updateSelectedCount() {
+        const checked = $('.user-checkbox:checked').length;
+        $('#selectedCount').text(checked);
+        $('#batchEditBtn').prop('disabled', checked === 0);
+    }
+
+    // 全選
+    $('#selectAllBtn').off('click').on('click', function() {
+        $('.user-checkbox').prop('checked', true);
+        updateSelectedCount();
+    });
+
+    // 取消全選
+    $('#deselectAllBtn').off('click').on('click', function() {
+        $('.user-checkbox').prop('checked', false);
+        updateSelectedCount();
+    });
+
+    // 批量編輯
+    $('#batchEditBtn').off('click').on('click', function() {
+        const selected = $('.user-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+        
+        if (selected.length === 0) {
+            if (window.Swal) {
+                Swal.fire({
+                    title: '提示',
+                    text: '請至少選擇一個使用者',
+                    icon: 'warning',
+                    confirmButtonText: '確定',
+                    confirmButtonColor: '#ffc107'
+                });
+            }
+            return;
+        }
+
+        // 跳轉到批量編輯頁面
+        const userIds = selected.join(',');
+        if (typeof loadSubpage === 'function') {
+            loadSubpage(`pages/admin_batchedituser.php?u_IDs=${userIds}`);
+        } else {
+            location.href = `#pages/admin_batchedituser.php?u_IDs=${userIds}`;
+        }
+    });
+
+    // 監聽複選框變化
+    $(document).off('change', '.user-checkbox').on('change', '.user-checkbox', function() {
+        updateSelectedCount();
+    });
+
+    // 點擊用戶卡片切換選中狀態（排除按鈕和連結）
+    $(document).off('click', '.user-card').on('click', '.user-card', function(e) {
+        // 如果點擊的是按鈕、連結或複選框本身，不處理
+        if ($(e.target).closest('.btn, .ajax-link, .user-checkbox, .form-check-label').length > 0) {
+            return;
+        }
+        
+        const userId = $(this).data('user-id');
+        const checkbox = $(this).find('.user-checkbox');
+        if (checkbox.length) {
+            checkbox.prop('checked', !checkbox.prop('checked'));
+            checkbox.trigger('change');
+        }
+    });
+
+    // 初始化選中數量
+    updateSelectedCount();
+
+    // 切換使用者狀態
     $(document).off("click", ".toggle-btn").on("click", ".toggle-btn", function () {
         const btn = $(this);
         const acc = btn.data('acc');
@@ -30,24 +100,24 @@ function initPageScript() {
         }
     });
 
-    // 筛选表单提交（使用 AJAX 避免页面刷新）
+    // 篩選表單提交（使用 AJAX 避免頁面刷新）
     $('#filterForm').off('submit').on('submit', function(e) {
         e.preventDefault();
         const form = $(this);
         const params = new URLSearchParams(new FormData(this));
-        // 移除 page 参数（如果有）
+        // 移除 page 參數（如果有）
         params.delete('page');
         const queryString = params.toString();
         const newPath = `pages/admin_usermanage.php${queryString ? '?' + queryString : ''}`;
         
-        // 更新 hash 并触发页面重新加载
+        // 更新 hash 並觸發頁面重新載入
         location.hash = '#' + newPath;
         
-        // 如果 loadSubpage 函数存在，使用它；否则使用 location.reload
+        // 如果 loadSubpage 函數存在，使用它；否則使用 location.reload
         if (typeof loadSubpage === 'function') {
             loadSubpage(newPath);
         } else {
-            // 延迟一下确保 hash 更新
+            // 延遲一下確保 hash 更新
             setTimeout(() => {
                 window.location.reload();
             }, 100);

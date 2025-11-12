@@ -26,12 +26,16 @@ body::-webkit-scrollbar {
 }
 
 /* Navbar 固定高度，推開內容 */
-body.sb-nav-fixed { padding-top: 56px; }
+body.sb-nav-fixed { padding-top: 0 !important; }
 
 /* Navbar z-index 確保在內容之上，高於 sidebar */
 .navbar {
   z-index: 1060 !important; /* 高於 sidebar，確保不會被遮蓋 */
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
 }
 
 /* 汉堡菜单按钮样式 */
