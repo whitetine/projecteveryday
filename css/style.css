@@ -1,0 +1,194 @@
+
+
+
+/* ==== 基本與共用 ==== */
+:root {
+  --sidebar-w: 200px;          /* 展開寬度 */
+  --sidebar-collapsed: 80px;   /* 收合寬度 */
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Noto Sans TC", sans-serif;
+}
+
+/* Navbar 固定高度，推開內容 */
+body.sb-nav-fixed { padding-top: 56px; }
+
+/* ==== 版面骨架：左側欄 + 右側主區 ==== */
+#layoutSidenav {
+  display: flex;
+  min-height: calc(100vh - 56px); /* 扣掉上方 navbar */
+}
+
+/* 側邊欄 */
+#layoutSidenav_nav {
+  flex: 0 0 var(--sidebar-w);
+  width: var(--sidebar-w);
+  background-color: #ffffff;
+  /* background-color: #ffffff; */
+  /* background-color: #e9ecef; */
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+/* 主內容（你在 main.php 的 <main id="content">） */
+#content {
+  flex: 1 1 auto;
+  background-color: #ffffff;
+  /* background-color: #f8f9fa; */
+  padding: 1rem;               /* 統一左右留白，讓內容更靠左 */
+  transition: padding 0.2s ease;
+}
+
+/* ==== 收合狀態 ==== */
+body.sb-sidenav-toggled #layoutSidenav_nav {
+  flex-basis: var(--sidebar-collapsed);
+  width: var(--sidebar-collapsed);
+}
+
+/* 收合時隱藏文字，只留下 icon 置中 */
+body.sb-sidenav-toggled .nav-link span,
+body.sb-sidenav-toggled .sidebar-user-info {
+  display: none !important;
+}
+body.sb-sidenav-toggled .nav-link { justify-content: center; }
+
+/* ==== Sidebar Menu 風格 ==== */
+.sb-sidenav-menu { padding: 1rem; }
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  color: black;
+  text-decoration: none;
+  transition: background 0.3s;
+  white-space: nowrap;
+}
+.nav-link:hover { background-color: #dee2e6; border-radius: 8px; }
+/* .nav-link:hover { background-color: #dee2e6; border-radius: 8px; } */
+.nav-link i { font-size: 20px; width: 24px; text-align: center; }
+
+/* 側邊欄使用者資訊 */
+.sidebar-user { display: flex; align-items: center; margin-bottom: 1rem; }
+.sidebar-user img { border-radius: 50%; margin-right: 10px; width: 40px; height: 40px; }
+.sidebar-user-info { display: flex; flex-direction: column; }
+.sidebar-user-info .user-name { font-weight: bold; font-size: 16px; }
+.sidebar-user-info .user-role { font-size: 14px; color: #555; }
+
+/* ==== 子頁面被 .load() 進來時，移除多餘外距，避免表格偏右 ==== */
+#content > .container,
+#content > .container-fluid {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* ==== 表格：滿版與橫向卷軸避免裁切 ==== */
+.table { width: 100%; }
+.table-responsive { overflow-x: auto; }
+ a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+
+.loading, .no-data { padding: .75rem 1rem; }
+
+
+
+
+/* 1) 防止容器把下拉選單裁掉 */
+#layoutSidenav > main,
+#layoutSidenav_content,
+#adminFileApp,
+#adminFileApp .card,
+#adminFileApp .card-body {
+  overflow: visible !important;
+}
+
+/* 2) 避免無意建立 stacking context 影響層級 */
+#adminFileApp {
+  position: static !important;
+  transform: none !important;
+  z-index: auto !important;
+}
+
+/* 3) 把帳號選單的層級墊高，蓋過任何卡片/側邊欄陰影 */
+.navbar .dropdown-menu,
+.user-menu .dropdown-menu {
+  z-index: 2005 !important;  /* 高於 Bootstrap 的 1000、modal backdrop 的 1050 */
+}
+
+
+#layoutSidenav_nav { position: relative; z-index: 145; }
+#layoutSidenav_nav, #sidenavAccordion, .sb-sidenav, .sb-sidenav .sb-sidenav-menu { overflow: visible !important; }
+
+/* 側欄容器不要裁切 dropdown */
+#layoutSidenav_nav,
+#sidenavAccordion,
+.sb-sidenav,
+.sb-sidenav .sb-sidenav-menu { overflow: visible !important; }
+
+/* 主內容維持較低層，避免蓋住選單 */
+#layoutSidenav > main { position: relative; z-index: 0; }
+
+/* 展開：允許溢出、抬層級 */
+body:not(.sb-sidenav-toggled) #layoutSidenav_nav { position: relative; z-index: 145; }
+body:not(.sb-sidenav-toggled) #layoutSidenav_nav,
+body:not(.sb-sidenav-toggled) #sidenavAccordion,
+body:not(.sb-sidenav-toggled) .sb-sidenav,
+body:not(.sb-sidenav-toggled) .sb-sidenav .sb-sidenav-menu { overflow: visible !important; }
+
+/* 收合：關閉溢出、降低層級 */
+body.sb-sidenav-toggled #layoutSidenav_nav { z-index: 0; }
+body.sb-sidenav-toggled #layoutSidenav_nav,
+body.sb-sidenav-toggled #sidenavAccordion,
+body.sb-sidenav-toggled .sb-sidenav,
+body.sb-sidenav-toggled .sb-sidenav .sb-sidenav-menu { overflow: hidden !important; }
+
+/* 主內容降層，確保不壓住側欄 */
+#content { position: relative; z-index: 0; }
+
+
+/* Naughty 按鈕的活動區，不會撞到忘記密碼 */
+.login-actions { margin-top: .75rem; text-align:center; }
+.naughty-wrap { position: relative; width: 260px; height: 120px; margin: 0 auto .5rem; }
+.naughty-btn  { position: absolute; left: 0; top: 0;
+  transition: transform .18s cubic-bezier(.2,.8,.2,1); will-change: transform; }
+.naughty-btn .btn { min-width: 120px; border-radius: 999px; }
+
+/* 滑鼠被「擦」的替代樣式 */
+.rubbing {
+  padding: .5rem 1.25rem; background: #fff; border-radius: 999rem;
+  border: 1px dashed #777; text-align: center; font-size: 1.1rem;
+}
+
+
+/* 白底背景如果太淡，可加強一點（可調整或刪除） */
+#techbg-host canvas { filter: saturate(1.25) contrast(1.2) brightness(1.03); }
+
+
+
+.table td,.table th{vertical-align:middle}
+.content-preview{max-width:520px; max-height:100px; overflow:auto; white-space:pre-wrap; word-break:break-word;}
+.badge-today{font-weight:600}
+.filter-row .form-select,.filter-row .form-control{min-width:180px}
+.title-preview{
+  max-height:72px; overflow-y:auto; overflow-x:hidden;
+  white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere;
+}
+.pager-bar{
+  background:#f4a46022; border-top:2px solid #f4a460; padding:6px 10px; text-align:center;
+}
+.pager-bar a, .pager-bar span{
+  display:inline-block; padding:2px 6px; margin:0 2px; text-decoration:none; color:#444;
+  border-radius:3px; font-size:14px;
+}
+.pager-bar a:hover{ background:#ffe2c2; }
+.pager-bar .active{ background:#f4a460; color:#fff; font-weight:700; }
+.pager-bar .disabled{ color:#aaa; pointer-events:none; }
