@@ -38,6 +38,21 @@ body.sb-nav-fixed { padding-top: 0 !important; }
   width: 100%;
 }
 
+/* 通知 badge 必須在 navbar 之上 */
+#notificationCount {
+  z-index: 1070 !important;
+  position: relative;
+}
+
+/* Modal 必須在 navbar 之上 */
+.modal {
+  z-index: 1075 !important;
+}
+
+.modal-backdrop {
+  z-index: 1074 !important;
+}
+
 /* 汉堡菜单按钮样式 */
 #sidebarToggle {
   background: transparent !important;
@@ -342,10 +357,86 @@ body.sb-sidenav-toggled .sb-sidenav .sb-sidenav-menu { overflow: hidden !importa
 .pager-bar .disabled{ color:#aaa; pointer-events:none; }
 
 /* ===== 后台管理界面样式 (role_ID 1, 2) ===== */
-.admin-navbar {
+/* 統一所有頁面的 admin-navbar 樣式 */
+.navbar.admin-navbar,
+.navbar.navbar-dark.admin-navbar {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  border-bottom: 2px solid rgba(255, 193, 7, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+  border-bottom: 2px solid rgba(255, 193, 7, 0.3) !important;
+  color: #ffffff !important;
+}
+
+/* 確保 admin-navbar 的文字顏色為白色 */
+.admin-navbar {
+  color: #ffffff !important;
+}
+
+.admin-navbar .navbar-brand,
+.admin-navbar .navbar-brand *,
+.admin-navbar .form-control,
+.admin-navbar .form-control::placeholder,
+.admin-navbar .btn-link {
+  color: #ffffff !important;
+}
+
+/* 排除特定元素，避免影響功能 */
+.admin-navbar .dropdown-menu {
+  color: #212529 !important;
+  background: white !important;
+}
+
+.admin-navbar .dropdown-menu .dropdown-item {
+  color: #212529 !important;
+}
+
+.admin-navbar .dropdown-menu .dropdown-item:hover {
+  background-color: #f8f9fa !important;
+  color: #212529 !important;
+}
+
+.admin-navbar .dropdown-menu .dropdown-item.text-danger {
+  color: #dc3545 !important;
+}
+
+.admin-navbar .dropdown-menu .dropdown-item.text-danger:hover {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+.admin-navbar .modal,
+.admin-navbar .modal * {
+  color: inherit !important;
+}
+
+/* 確保按鈕在 admin-navbar 中正確顯示 */
+.admin-navbar .btn-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+  border: none !important;
+  color: #000 !important;
+  font-weight: 600 !important;
+}
+
+.admin-navbar .btn-warning:hover {
+  background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 193, 7, 0.4);
+}
+
+/* 搜尋框在 admin-navbar 中的樣式 */
+.admin-navbar .form-control {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.admin-navbar .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.admin-navbar .form-control:focus {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #ffc107 !important;
+  color: #ffffff !important;
 }
 
 .admin-navbar .navbar-brand {
@@ -360,6 +451,28 @@ body.sb-sidenav-toggled .sb-sidenav .sb-sidenav-menu { overflow: hidden !importa
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
+}
+
+/* 通知圖標容器確保可點擊且不被遮擋 */
+.admin-navbar .position-relative {
+  z-index: 1070 !important;
+  position: relative !important;
+}
+
+/* 通知 badge 樣式 */
+#notificationCount {
+  z-index: 1071 !important;
+  position: absolute !important;
+  font-size: 0.75rem !important;
+  padding: 0.25em 0.5em !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+  box-shadow: 0 2px 8px rgba(245, 87, 108, 0.4) !important;
 }
 
 /* 后台管理侧边栏样式 */
@@ -486,5 +599,380 @@ body.admin-mode #content {
   .admin-navbar .badge {
     font-size: 0.7rem;
     padding: 0.25em 0.5em;
+  }
+}
+
+/* ===== 統一所有頁面的 Content 區域樣式 ===== */
+/* 只應用到 #content 區域，不影響 nav 和 sidebar */
+
+/* 頁面標題樣式 */
+#content .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.5rem 0;
+  border-bottom: 3px solid #ffc107;
+  margin-bottom: 2rem;
+}
+
+#content .page-header h1,
+#content .page-header h2,
+#content .page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0;
+}
+
+#content .page-header-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* 卡片樣式 - 只影響 content 區域 */
+#content .card {
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+#content .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+#content .card-header {
+  font-weight: 600;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 2px solid #e9ecef;
+  font-size: 1.1rem;
+}
+
+#content .card-header.bg-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white;
+  border-bottom: none;
+}
+
+#content .card-header.bg-light {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+  border-bottom: 2px solid #dee2e6;
+  color: #495057;
+}
+
+#content .card-body {
+  padding: 1.5rem;
+  background: white;
+}
+
+/* 表單樣式 */
+#content .form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+#content .form-label i {
+  color: #667eea;
+  margin-right: 0.5rem;
+}
+
+#content .form-control,
+#content .form-select {
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+#content .form-control:focus,
+#content .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  transform: translateY(-1px);
+}
+
+#content .form-control:hover,
+#content .form-select:hover {
+  border-color: #b0b0b0;
+}
+
+/* 表格樣式 */
+#content .table {
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+#content .table thead th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+  border: none;
+  vertical-align: middle;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+#content .table thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+#content .table thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+#content .table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #e9ecef;
+}
+
+#content .table tbody tr:hover {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#content .table tbody tr.table-warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+  border-left: 4px solid #ffc107;
+}
+
+#content .table tbody tr.table-warning:hover {
+  background: linear-gradient(135deg, #ffe69c 0%, #ffd700 100%);
+}
+
+#content .table tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+  border: none;
+}
+
+/* Badge 樣式 */
+#content .badge {
+  padding: 0.5em 0.75em;
+  font-weight: 600;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+#content .badge.bg-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+#content .badge.bg-danger {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+}
+
+#content .badge.bg-info {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+}
+
+#content .badge.bg-success {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
+}
+
+#content .badge.bg-warning {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important;
+  color: #000 !important;
+}
+
+#content .badge.bg-secondary {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%) !important;
+  color: #000 !important;
+}
+
+/* 按鈕樣式 */
+#content .btn {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid transparent;
+}
+
+#content .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+#content .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+#content .btn-primary:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  color: white;
+}
+
+#content .btn-outline-secondary {
+  border: 2px solid #6c757d;
+  color: #6c757d;
+}
+
+#content .btn-outline-secondary:hover {
+  background: #6c757d;
+  color: white;
+  border-color: #6c757d;
+}
+
+#content .btn-outline-primary {
+  border: 2px solid #667eea;
+  color: #667eea;
+}
+
+#content .btn-outline-primary:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+#content .btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  border-radius: 12px;
+}
+
+#content .btn-group .btn {
+  border-radius: 0;
+}
+
+#content .btn-group .btn:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+#content .btn-group .btn:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* 載入和無資料狀態 */
+#content .loading,
+#content .no-data {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #6c757d;
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 12px;
+  margin: 1rem 0;
+}
+
+#content .loading i {
+  font-size: 2rem;
+  color: #667eea;
+  animation: spin 1s linear infinite;
+}
+
+#content .no-data i {
+  font-size: 3rem;
+  color: #c3cfe2;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+/* 提示訊息 */
+#content .alert-info {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border: none;
+  border-left: 4px solid #2196f3;
+  border-radius: 8px;
+  color: #0d47a1;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
+  margin-bottom: 1.5rem;
+}
+
+#content .alert-info i {
+  color: #1976d2;
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Switch 開關美化 */
+#content .form-check-input {
+  width: 2.5rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+
+#content .form-check-input:checked {
+  background-color: #ffc107;
+  border-color: #ffc107;
+}
+
+#content .form-check-input:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+}
+
+#content .form-check-label {
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 動畫效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  #content .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #content .page-header h1,
+  #content .page-header h2,
+  #content .page-title {
+    font-size: 1.8rem;
+  }
+
+  #content .page-header-actions {
+    width: 100%;
+  }
+
+  #content .page-header-actions .btn {
+    flex: 1;
+  }
+
+  #content .table-responsive {
+    font-size: 0.875rem;
+  }
+
+  #content .table th,
+  #content .table td {
+    padding: 0.5rem;
+  }
+
+  #content .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
   }
 }

@@ -57,13 +57,34 @@ const app = Vue.createApp({
         };
         reader.readAsDataURL(file);
       }
+    },
+    async fetchFiles() {
+      try {
+        const API_ROOT = location.pathname.includes('/pages/') ? '../api.php' : 'api.php';
+        const res = await fetch(`${API_ROOT}?do=listActiveFiles`, { cache: 'no-store' });
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          this.files = data;
+        } else if (data && Array.isArray(data.rows)) {
+          this.files = data.rows;
+        } else if (data && Array.isArray(data.data)) {
+          this.files = data.data;
+        }
+      } catch (e) {
+        console.error('fetchFiles error:', e);
+        Swal.fire('錯誤', '無法載入文件列表', 'error');
+      }
     }
-
   },
   watch:{
     selectedFileID(newVal){
       if(newVal){
-        this.selectedFileUrl = `templates/file_${newVal}.pdf`;
+        const file = this.files.find(f => f.file_ID == newVal);
+        if (file && file.file_url) {
+          this.selectedFileUrl = file.file_url;
+        } else {
+          this.selectedFileUrl = `templates/file_${newVal}.pdf`;
+        }
       }else{
         this.selectedFileUrl = '';
       }

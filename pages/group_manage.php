@@ -6,9 +6,9 @@ $groups = $conn->query("SELECT * FROM `groupdata` ORDER BY group_ID ASC")->fetch
 <link rel="stylesheet" href="css/group_manage.css?v=<?= time() ?>">
 
 <div class="group-management-container">
-    <div class="page-header-group">
-        <h1 class="page-title-group">
-            <i class="fa-solid fa-layer-group"></i>類組管理
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="fa-solid fa-layer-group me-2" style="color: #ffc107;"></i>類組管理
         </h1>
     </div>
 
@@ -55,7 +55,7 @@ $groups = $conn->query("SELECT * FROM `groupdata` ORDER BY group_ID ASC")->fetch
                     <table class="groups-table">
                         <thead>
                             <tr>
-                                <th style="width: 80px;">序號</th>
+                                <!-- <th style="width: 80px;">序號</th> -->
                                 <th>類組名稱</th>
                                 <th style="width: 150px;">狀態</th>
                                 <th style="width: 180px;">操作</th>
@@ -64,7 +64,7 @@ $groups = $conn->query("SELECT * FROM `groupdata` ORDER BY group_ID ASC")->fetch
                         <tbody>
                             <?php foreach ($groups as $i => $g): ?>
                                 <tr>
-                                    <td><?= $i + 1 ?></td>
+                                    <!-- <td><?= $i + 1 ?></td> -->
                                     <td>
                                         <strong><?= htmlspecialchars($g['group_name']) ?></strong>
                                     </td>

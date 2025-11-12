@@ -35,9 +35,9 @@ $cohorts  = $conn->query("SELECT * FROM cohortdata ORDER BY cohort_ID DESC")->fe
 <link rel="stylesheet" href="css/admin_edituser.css?v=<?= time() ?>">
 
 <div class="edit-user-container">
-  <div class="page-header-edit">
-    <h1 class="page-title-edit">
-      <i class="fa-solid fa-user-pen"></i>編輯使用者
+  <div class="page-header">
+    <h1 class="page-title">
+      <i class="fa-solid fa-user-pen me-2" style="color: #ffc107;"></i>編輯使用者
     </h1>
   </div>
 

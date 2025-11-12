@@ -1,31 +1,10 @@
-/* 類組管理頁面樣式 */
+/* 類組管理頁面專用樣式 */
+/* 注意：通用樣式已移至 style.css，只保留此頁面特有的樣式 */
+
 .group-management-container {
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
-}
-
-.page-header-group {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #e9ecef;
-}
-
-.page-title-group {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #1a1a2e;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.page-title-group i {
-    color: #ffc107;
 }
 
 .add-group-card {
