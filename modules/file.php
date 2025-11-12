@@ -185,57 +185,107 @@ case 'get_all_TemplatesFile':
     // 獲取文件及其目標範圍
     case 'get_files_with_targets':
         try {
-            // 先檢查 filedata 表是否有新欄位，如果沒有則使用預設值
+            // 檢查欄位是否存在，如果不存在則使用預設值
+            $hasFileDes = false;
+            $hasIsRequired = false;
+            $hasFileStartD = false;
+            $hasFileEndD = false;
+            
+            try {
+                $test = $conn->query("SELECT file_des FROM filedata LIMIT 1");
+                $hasFileDes = true;
+            } catch (Exception $e) {}
+            
+            try {
+                $test = $conn->query("SELECT is_required FROM filedata LIMIT 1");
+                $hasIsRequired = true;
+            } catch (Exception $e) {}
+            
+            try {
+                $test = $conn->query("SELECT file_start_d FROM filedata LIMIT 1");
+                $hasFileStartD = true;
+            } catch (Exception $e) {}
+            
+            try {
+                $test = $conn->query("SELECT file_end_d FROM filedata LIMIT 1");
+                $hasFileEndD = true;
+            } catch (Exception $e) {}
+            
+            // 構建 SQL 查詢
+            $selectFields = "f.file_ID, f.file_name, f.file_url, f.file_status, f.is_top, f.file_update_d";
+            
+            if ($hasFileDes) {
+                $selectFields .= ", COALESCE(f.file_des, '') as file_des";
+            } else {
+                $selectFields .= ", '' as file_des";
+            }
+            
+            if ($hasIsRequired) {
+                $selectFields .= ", COALESCE(f.is_required, 0) as is_required";
+            } else {
+                $selectFields .= ", 0 as is_required";
+            }
+            
+            if ($hasFileStartD) {
+                $selectFields .= ", f.file_start_d";
+            } else {
+                $selectFields .= ", NULL as file_start_d";
+            }
+            
+            if ($hasFileEndD) {
+                $selectFields .= ", f.file_end_d";
+            } else {
+                $selectFields .= ", NULL as file_end_d";
+            }
+            
             $rows = $conn->query("
-                SELECT 
-                    f.file_ID, 
-                    f.file_name, 
-                    f.file_url, 
-                    f.file_status, 
-                    f.is_top, 
-                    f.file_update_d,
-                    COALESCE(f.file_des, '') as file_des,
-                    COALESCE(f.is_required, 0) as is_required,
-                    f.file_start_d,
-                    f.file_end_d
+                SELECT $selectFields
                 FROM filedata f
                 ORDER BY f.is_top DESC, f.file_ID DESC
             ")->fetchAll(PDO::FETCH_ASSOC);
+
+            // 檢查 filetargetdata 表是否存在
+            $hasFiletargetTable = false;
+            try {
+                $test = $conn->query("SELECT 1 FROM filetargetdata LIMIT 1");
+                $hasFiletargetTable = true;
+            } catch (Exception $e) {
+                $hasFiletargetTable = false;
+            }
 
             // 獲取每個文件的目標範圍
             foreach ($rows as &$row) {
                 $file_ID = $row['file_ID'];
                 
-                // 檢查是否有 filetargetdata 表
-                try {
-                    $targets = $conn->query("
-                        SELECT file_target_type, file_target_ID
-                        FROM filetargetdata
-                        WHERE file_ID = $file_ID
-                    ")->fetchAll(PDO::FETCH_ASSOC);
-                    
-                    $row['target_all'] = false;
-                    $row['target_cohorts'] = [];
-                    $row['target_grades'] = [];
-                    $row['target_classes'] = [];
-                    
-                    foreach ($targets as $target) {
-                        if ($target['file_target_type'] === 'ALL') {
-                            $row['target_all'] = true;
-                        } elseif ($target['file_target_type'] === 'COHORT') {
-                            $row['target_cohorts'][] = $target['file_target_ID'];
-                        } elseif ($target['file_target_type'] === 'GRADE') {
-                            $row['target_grades'][] = $target['file_target_ID'];
-                        } elseif ($target['file_target_type'] === 'CLASS') {
-                            $row['target_classes'][] = $target['file_target_ID'];
+                $row['target_all'] = false;
+                $row['target_cohorts'] = [];
+                $row['target_grades'] = [];
+                $row['target_classes'] = [];
+                
+                if ($hasFiletargetTable) {
+                    try {
+                        $stmt = $conn->prepare("
+                            SELECT file_target_type, file_target_ID
+                            FROM filetargetdata
+                            WHERE file_ID = ?
+                        ");
+                        $stmt->execute([$file_ID]);
+                        $targets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        
+                        foreach ($targets as $target) {
+                            if ($target['file_target_type'] === 'ALL') {
+                                $row['target_all'] = true;
+                            } elseif ($target['file_target_type'] === 'COHORT') {
+                                $row['target_cohorts'][] = $target['file_target_ID'];
+                            } elseif ($target['file_target_type'] === 'GRADE') {
+                                $row['target_grades'][] = $target['file_target_ID'];
+                            } elseif ($target['file_target_type'] === 'CLASS') {
+                                $row['target_classes'][] = $target['file_target_ID'];
+                            }
                         }
+                    } catch (Exception $e) {
+                        // 忽略錯誤，使用預設值
                     }
-                } catch (Exception $e) {
-                    // 如果表不存在，使用預設值
-                    $row['target_all'] = false;
-                    $row['target_cohorts'] = [];
-                    $row['target_grades'] = [];
-                    $row['target_classes'] = [];
                 }
             }
             unset($row);
@@ -244,7 +294,7 @@ case 'get_all_TemplatesFile':
             echo json_encode($rows, JSON_UNESCAPED_UNICODE);
             exit;
         } catch (Throwable $e) {
-            http_response_code(500);
+            http_response_code(400);
             echo json_encode(['status'=>'error','message'=>'資料讀取失敗：'.$e->getMessage()]);
             exit;
         }

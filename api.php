@@ -12,7 +12,9 @@ switch (true) {
         break;
 
     // 檔案/模板管理（file.php 會用到）
-    case in_array($do, ['get_all_TemplatesFile', 'get_files', 'update_template', 'upload_template', 'listActiveFiles']):
+    case in_array($do, ['get_all_TemplatesFile', 'get_files', 'update_template', 'upload_template', 'listActiveFiles', 
+                        'get_files_with_targets', 'upload_file_with_targets', 'update_file_with_targets', 
+                        'delete_file', 'batch_delete_files']):
         require __DIR__ . '/modules/file.php';
         break;
 
