@@ -2,6 +2,17 @@
 session_start();
 require '../includes/pdo.php'; // 取得 $conn (PDO)
 
+if (isset($conn) && !isset($pdo)) {
+  $pdo = $conn;
+}
+
+$pdo = $pdo ?? null;
+
+if (!$pdo instanceof PDO) {
+  http_response_code(500);
+  die('DB connection not available.');
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $id     = $_POST['apply_ID'] ?? null;
   $action = $_POST['action'] ?? null;
@@ -9,8 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   if ($id && in_array($action, ['approve', 'reject'], true)) {
     $status = ($action === 'approve') ? 3 : 2; // 3=已通過, 2=退件
-    // 這裡用 applydata（和下面 SELECT 一致）
-    $stmt = $conn->prepare(
+    $stmt = $pdo->prepare(
       "UPDATE applydata 
        SET apply_status = ?, apply_b_u_ID = ?, approved_d = NOW()
        WHERE apply_ID = ?"
@@ -31,15 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 try {
-  $sql  = "select  a.*, f.file_ID , f.file_name, u.u_ID as apply_user
-              from applydata a 
-              left join filedata f on a.file_ID = f.file_ID
-              left join userdata u on a.apply_a_u_ID = u.u_ID
-              order by a.apply_status asc, a.apply_created_d desc
-              ";
-  $rows = $conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+  $sql  = "SELECT a.*, f.file_ID, f.file_name, u.u_ID AS apply_user
+           FROM applydata a
+           LEFT JOIN filedata f ON a.file_ID = f.file_ID
+           LEFT JOIN userdata u ON a.apply_a_u_ID = u.u_ID
+           ORDER BY a.apply_status ASC, a.apply_created_d DESC";
+  $rows = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-  $fileTypes = $conn->query("SELECT file_ID, file_name FROM filedata")
+  $fileTypes = $pdo->query("SELECT file_ID, file_name FROM filedata")
     ->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
   http_response_code(500);
@@ -55,6 +64,26 @@ try {
   .fixed-thumb:hover {
     transform: scale(1.05);
     transition: transform 0.2s;
+  }
+
+  #imgModal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+  }
+
+  #imgModal img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.35);
   }
 </style>
 
@@ -122,10 +151,8 @@ try {
           <tbody>
             <?php foreach ($rows as $r): ?>
               <tr
-                data-fileid="<?= htmlspecialchars((string)($r['file_ID'] ?? ''), ENT_QUOTES) ?>".
-
+                data-fileid="<?= htmlspecialchars((string)($r['file_ID'] ?? ''), ENT_QUOTES) ?>"
                 data-filename="<?= htmlspecialchars($r['apply_other'] ?? '', ENT_QUOTES) ?>"
-
                 data-applicant="<?= htmlspecialchars($r['apply_user'] ?? '', ENT_QUOTES) ?>">
 
                 <td><?= htmlspecialchars($r['file_name'] ?? '') ?></td>

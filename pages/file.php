@@ -56,7 +56,7 @@ $groups = $conn->query("SELECT * FROM groupdata WHERE group_status = 1 ORDER BY 
                         <input type="text" 
                                class="form-control" 
                                v-model="form.file_des" 
-                               placeholder="文件說明（選填）">
+                               placeholder="文件說明（選）">
                     </div>
 
                     <!-- 檔案上傳 -->
