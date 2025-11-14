@@ -3,6 +3,90 @@ global $conn;
 $p = $_POST;
 $do = $_GET['do'] ?? '';
 
+$normalizeInputDateTime = static function ($value) {
+    if ($value === null || $value === '') {
+        return null;
+    }
+    $value = trim((string)$value);
+    if ($value === '') {
+        return null;
+    }
+    $value = str_replace('T', ' ', $value);
+    if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/', $value)) {
+        $value .= ':00';
+    }
+    return $value;
+};
+
+$ensureFiledataTable = static function () use ($conn): void {
+    try {
+        $conn->query("SELECT 1 FROM filedata LIMIT 1");
+        return;
+    } catch (Throwable $e) {
+        // continue to create table
+    }
+
+    $createSql = "
+        CREATE TABLE IF NOT EXISTS filedata (
+            file_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            file_name VARCHAR(255) NOT NULL,
+            file_url VARCHAR(255) NOT NULL,
+            file_des TEXT DEFAULT NULL,
+            is_required TINYINT(1) DEFAULT 0,
+            file_start_d DATETIME DEFAULT NULL,
+            file_end_d DATETIME DEFAULT NULL,
+            file_status TINYINT(1) DEFAULT 1,
+            is_top TINYINT(1) DEFAULT 0,
+            file_update_d DATETIME DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (file_ID)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+    ";
+
+    try {
+        $conn->exec($createSql);
+    } catch (Throwable $e) {
+        // 如果無法建立，向上拋出
+        json_err('無法建立 filedata：' . $e->getMessage());
+    }
+
+    try {
+        $count = (int)$conn->query("SELECT COUNT(*) FROM filedata")->fetchColumn();
+        if ($count > 0) {
+            return;
+        }
+    } catch (Throwable $e) {
+        // 若查詢失敗直接返回，後續流程會處理
+        return;
+    }
+
+    // 嘗試從舊的 file 表匯入資料（若存在）
+    try {
+        $legacyRows = $conn->query("SELECT file_ID, file_name, file_url, file_status, is_top, file_updated_d FROM file")->fetchAll(PDO::FETCH_ASSOC);
+        if (!$legacyRows) {
+            return;
+        }
+
+        $insertStmt = $conn->prepare("
+            INSERT INTO filedata (file_ID, file_name, file_url, file_status, is_top, file_update_d)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+        foreach ($legacyRows as $row) {
+            $insertStmt->execute([
+                $row['file_ID'] ?? null,
+                $row['file_name'] ?? '',
+                $row['file_url'] ?? '',
+                $row['file_status'] ?? 1,
+                $row['is_top'] ?? 0,
+                $row['file_updated_d'] ?? date('Y-m-d H:i:s'),
+            ]);
+        }
+    } catch (Throwable $e) {
+        // 舊表可能不存在或結構不同，忽略即可
+    }
+};
+
+$ensureFiledataTable();
+
 switch ($do) {
     // 舊 API（apply.php 用）：啟用檔案列表
 case 'get_all_TemplatesFile':
@@ -304,8 +388,8 @@ case 'get_all_TemplatesFile':
         $file_name = trim($p['file_name'] ?? '');
         $file_des = trim($p['file_des'] ?? '');
         $is_required = intval($p['is_required'] ?? 0);
-        $file_start_d = !empty($p['file_start_d']) ? $p['file_start_d'] : null;
-        $file_end_d = !empty($p['file_end_d']) ? $p['file_end_d'] : null;
+        $file_start_d = $normalizeInputDateTime($p['file_start_d'] ?? null);
+        $file_end_d = $normalizeInputDateTime($p['file_end_d'] ?? null);
         $target_all = intval($p['target_all'] ?? 0);
         $target_cohorts = json_decode($p['target_cohorts'] ?? '[]', true) ?: [];
         $target_grades = json_decode($p['target_grades'] ?? '[]', true) ?: [];
@@ -429,8 +513,8 @@ case 'get_all_TemplatesFile':
         $file_name = trim($p['file_name'] ?? '');
         $file_des = trim($p['file_des'] ?? '');
         $is_required = intval($p['is_required'] ?? 0);
-        $file_start_d = !empty($p['file_start_d']) ? $p['file_start_d'] : null;
-        $file_end_d = !empty($p['file_end_d']) ? $p['file_end_d'] : null;
+        $file_start_d = $normalizeInputDateTime($p['file_start_d'] ?? null);
+        $file_end_d = $normalizeInputDateTime($p['file_end_d'] ?? null);
         $target_all = intval($p['target_all'] ?? 0);
         $target_cohorts = json_decode($p['target_cohorts'] ?? '[]', true) ?: [];
         $target_grades = json_decode($p['target_grades'] ?? '[]', true) ?: [];
