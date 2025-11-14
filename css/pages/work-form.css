@@ -1,11 +1,13 @@
+.work-form-page {
+  background-color: #fff;
+}
 
-/* ====== Hint text ====== */
 .work-form-page .hint {
   font-size: .9rem;
   color: #6c757d;
 }
 
-/* ====== Section Box ====== */
+/* --- 外框 --- */
 .work-form-page .section-box {
   border: 2px solid #444;
   border-radius: 8px;
@@ -14,7 +16,6 @@
   margin-bottom: 20px;
 }
 
-/* 讓上下兩個 section-box 組合成一個完整外框 */
 .work-form-page #work-main-form > .section-box:first-of-type {
   border-bottom: none;
   border-bottom-left-radius: 0;
@@ -28,14 +29,13 @@
   border-top-right-radius: 0;
 }
 
-/* ====== Form Container ====== */
+/* --- 表單容器 --- */
 .work-form-page #work-main-form {
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
-/* ====== Title Input ====== */
+/* --- 標題輸入區 --- */
 .work-form-page .title-input,
 .work-form-page #work_title {
   width: 100%;
@@ -45,32 +45,33 @@
   box-sizing: border-box;
 }
 
-/* ====== Content Textarea ====== */
+/* --- 內容輸入區 textarea --- */
 .work-form-page .content-area,
 .work-form-page #work_content {
   width: 100%;
   height: 200px !important;
   min-height: 160px !important;
   max-height: 220px !important;
+  box-sizing: border-box;
   resize: none !important;
   overflow-y: auto;
   overflow-x: hidden;
-  box-sizing: border-box;
 }
 
-/* ====== General: Prevent Resize ====== */
+/* 保險起見，所有 textarea 和 input 都禁止拖拉 */
 .work-form-page textarea,
 .work-form-page input[type="text"] {
   resize: none !important;
-  user-select: text;
+  pointer-events: auto !important;
+  user-select: text !important;
 }
 
-/* 隱藏 webkit 的右下角拖拉器 */
+/* 禁止所有可能的拖拽调整大小 - Webkit浏览器 */
 .work-form-page textarea::-webkit-resizer {
   display: none !important;
 }
 
-/* ====== Footer Buttons ====== */
+/* --- 表單底部按鈕區 --- */
 .work-form-page .form-footer {
   display: flex;
   align-items: center;
