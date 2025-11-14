@@ -30,5 +30,5 @@
   </form>
 </div>
 
-<link rel="stylesheet" href="css/pages/work-form.css">
+<link rel="stylesheet" href="../css/pages/work-form.css">
 <script src="../js/work-form.js"></script>

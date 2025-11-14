@@ -67,6 +67,8 @@
 
 
 <?php include "modules/notify.php"; ?>
+<script src="js/work-draft.js"></script>
+<script src="js/work-form.js"></script>
 <!-- 再載你的 app.js（最後） -->
 <script src="js/app.js"></script>
 

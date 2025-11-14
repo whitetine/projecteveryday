@@ -1,74 +1,68 @@
-body {
+/* ==============================
+   固定表格、不浮動、不捲動、像 Excel 格線
+   ============================== */
+
+/* 最外層容器：絕對禁止水平捲軸 */
+.table-responsive {
+  overflow-x: hidden !important;
+  max-width: 100%;
+  width: 100%;
+}
+
+/* 表格固定，不隨內容撐開 */
+.table {
+  width: 100%;
+  table-layout: fixed; 
+  border-collapse: collapse !important;
+  background: #fff;
+  max-width: 100%;
+}
+
+/* 每格都畫線，並防止內容溢出 */
+.table th,
+.table td {
+  border: 1px solid #dee2e6 !important; /* 格線 */
+  padding: 8px;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  vertical-align: top;
+  overflow: hidden !important; /* 防止內容溢出 */
+  max-width: 0; /* 配合 table-layout: fixed 使用 */
+}
+
+/* 標題列背景 */
+.table thead th {
   background: #f8f9fa;
+  font-weight: 600;
 }
 
-.table td,
-.table th {
-  vertical-align: middle;
+/* 防止按鈕 hover 時撐開表格 */
+.table td .btn {
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* 去除所有造成浮動的 overflow */
+.table td div {
+  overflow: hidden !important; /* 改為 hidden 防止溢出 */
+  max-width: 100%;
+}
+
+/* 內容預覽與標題預覽不再用 scroll，只用格子框住即可 */
+.title-preview,
 .content-preview {
-  max-width: 520px;
-  max-height: 100px;
-  overflow: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
+  max-height: none !important;
+  overflow: hidden !important; /* 改為 hidden */
+  white-space: normal !important;
+  word-break: break-word !important;
+  max-width: 100%;
 }
-
-.filter-row .form-select,
-.filter-row .form-control {
-  min-width: 180px;
-}
-
-.title-preview {
-  max-height: 72px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  white-space: pre-wrap;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-.pager-bar {
-  background: #f4a46022;
-  border-top: 2px solid #f4a460;
-  padding: 6px 10px;
-  text-align: center;
-}
-
-.pager-bar a,
-.pager-bar span {
-  display: inline-block;
-  padding: 2px 6px;
-  margin: 0 2px;
-  text-decoration: none;
-  color: #444;
-  border-radius: 3px;
-  font-size: 14px;
-}
-
-.pager-bar a:hover {
-  background: #ffe2c2;
-}
-
-.pager-bar .active {
-  background: #f4a460;
-  color: #fff;
-  font-weight: 700;
-}
-
-.pager-bar .disabled {
-  color: #aaa;
-  pointer-events: none;
-}
-
-/* Modal 內容排版 */
-#vm-content {
-  white-space: pre-wrap;
-}
-
-/* 留言列表捲動區 */
 #cmn-list {
   max-height: 250px;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }

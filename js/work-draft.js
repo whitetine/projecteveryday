@@ -1,57 +1,32 @@
 // 動態解析 API URL（支援動態載入）
-function resolveApiUrl() {
-  // 如果是在 main.php 的 #content 中載入（動態載入），使用絕對路徑
-  const contentEl = document.getElementById('content');
-  if (contentEl && (contentEl.querySelector('.container') || contentEl.querySelector('.work-form-page'))) {
-    return 'pages/work_draft_data.php';
+function resolveWorkDraftApiUrl() {
+  const path = window.location.pathname || '';
+  if (path.includes('/pages/')) {
+    return 'work_draft_data.php';
   }
-  
-  // 檢查當前頁面路徑
-  const path = window.location.pathname;
-  if (path.includes('main.php') || path.includes('/pages/')) {
-    return 'pages/work_draft_data.php';
-  }
-  
-  // 否則根據 script 位置判斷
-  const script = document.currentScript || Array.from(document.querySelectorAll('script[src*="work-draft"]')).pop();
-  if (script && script.src) {
-    if (script.src.includes('/js/')) {
-      return '../pages/work_draft_data.php';
-    }
-  }
-  
   return 'pages/work_draft_data.php';
 }
 
-let API_URL = resolveApiUrl();
-
-// 支援動態載入：如果 DOM 已就緒就直接執行，否則等待
-function initWorkDraft() {
-  // 防止重複初始化
-  if (window._workDraftInitialized) {
-    console.log('work-draft already initialized, skipping...');
-    return;
+window.initWorkDraft = function () {
+  const table = document.querySelector('#work-table-body');
+  if (!table) {
+    window._workDraftInitialized = false;
+    return false;
   }
+  if (window._workDraftInitialized) return true;
   window._workDraftInitialized = true;
-  API_URL = resolveApiUrl();
-  
-  const viewModal = document.getElementById('viewModal');
-  const commentModal = document.getElementById('commentModal');
+
+  const tbody = document.querySelector('#work-table-body');
+  const pager = document.querySelector('#pager-bar');
   const filterForm = document.getElementById('filter-form');
-  if (!filterForm) return; // 如果元素不存在，可能是還沒載入完成
-  
-  const whoSelect = filterForm.querySelector('select[name="who"]');
-  const fromInput = filterForm.querySelector('input[name="from"]');
-  const toInput = filterForm.querySelector('input[name="to"]');
-  const theadRow = document.getElementById('work-thead-row');
-  const tbody = document.getElementById('work-table-body');
-  const pagerBar = document.getElementById('pager-bar');
+  const whoSelect = filterForm?.querySelector('select[name="who"]');
+  const fromInput = filterForm?.querySelector('input[name="from"]');
+  const toInput = filterForm?.querySelector('input[name="to"]');
 
   let showAuthor = false;
   let currentPage = 1;
   let totalPages = 1;
-  let currentWorkId = 0;
-  let initializedWhoOptions = false;
+  let currentWorkId = null;
 
   // HTML escape helper
   function escapeHtml(str) {
@@ -75,14 +50,17 @@ function initWorkDraft() {
     html += '<th style="width:180px">狀態</th>';
     html += '<th style="width:120px">留言</th>';
     html += '<th style="width:140px">查看</th>';
-    theadRow.innerHTML = html;
+    const theadRow = document.getElementById('work-thead-row');
+    if (theadRow) {
+      theadRow.innerHTML = html;
+    }
   }
 
   function renderRows(rows) {
     const hasAuthor = showAuthor;
     const colspan = hasAuthor ? 7 : 6;
 
-    if (!rows || rows.length === 0) {
+    if (!Array.isArray(rows) || rows.length === 0) {
       tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center text-muted py-4">查無資料</td></tr>`;
       return;
     }
@@ -132,10 +110,10 @@ function initWorkDraft() {
   }
 
   function buildPager(page, pages) {
-    if (!pagerBar) return;
+    if (!pager) return;
 
     if (!pages || pages <= 1) {
-      pagerBar.innerHTML = '<span class="disabled">1</span>';
+      pager.innerHTML = '<span class="disabled">1</span>';
       return;
     }
 
@@ -161,9 +139,9 @@ function initWorkDraft() {
       html += '<span class="disabled">&raquo;</span>';
     }
 
-    pagerBar.innerHTML = html;
+    pager.innerHTML = html;
 
-    pagerBar.querySelectorAll('a[data-page]').forEach(a => {
+    pager.querySelectorAll('a[data-page]').forEach(a => {
       a.addEventListener('click', e => {
         e.preventDefault();
         const p = parseInt(a.dataset.page, 10);
@@ -206,35 +184,20 @@ function initWorkDraft() {
     }).join('');
   }
 
-  async function loadList(page) {
+  async function loadList(page = 1) {
     try {
-      const params = new URLSearchParams();
-      params.set('action', 'list');
+      const params = new URLSearchParams({ action: 'list', page });
+      if (whoSelect?.value) params.set('who', whoSelect.value);
+      if (fromInput?.value) params.set('from', fromInput.value);
+      if (toInput?.value) params.set('to', toInput.value);
 
-      const who = whoSelect.value || '';
-      const from = fromInput.value || '';
-      const to = toInput.value || '';
+      const apiUrl = `${resolveWorkDraftApiUrl()}?${params.toString()}`;
+      console.log('work-draft fetch:', apiUrl);
 
-      if (who) params.set('who', who);
-      if (from) params.set('from', from);
-      if (to) params.set('to', to);
-      if (page) params.set('page', page);
-
-      const apiUrl = `${API_URL}?${params.toString()}`;
-      console.log('Fetching:', apiUrl); // 除錯用
-      
-      const res = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        },
-        credentials: 'same-origin'
-      });
-
+      const res = await fetch(apiUrl, { credentials: 'same-origin' });
       if (!res.ok) {
-        const errorText = await res.text().catch(() => '');
-        console.error('API Error:', res.status, errorText);
-        throw new Error(`HTTP ${res.status}: ${errorText || '伺服器錯誤'}`);
+        console.error('API Error:', res.status);
+        throw new Error(`HTTP ${res.status}`);
       }
 
       const j = await res.json();
@@ -254,39 +217,38 @@ function initWorkDraft() {
       }
 
       // 更新 who 選項
-      if (!initializedWhoOptions && j.me && j.teamMembers) {
+      if (whoSelect && j.me && j.teamMembers) {
         const currentWho = (j.filter && j.filter.who) || 'me';
         updateWhoOptions(j.me, j.teamMembers, currentWho);
-        initializedWhoOptions = true;
       }
 
       // 如果後端因為參數修正過 who，也同步更新
-      if (j.filter && j.filter.who && whoSelect.value !== j.filter.who) {
+      if (whoSelect && j.filter && j.filter.who && whoSelect.value !== j.filter.who) {
         whoSelect.value = j.filter.who;
       }
 
       showAuthor = !!j.showAuthor;
       renderTableHead(showAuthor);
       renderRows(j.rows || []);
-
       currentPage = j.page || 1;
       totalPages = j.pages || 1;
       buildPager(currentPage, totalPages);
     } catch (err) {
-      console.error(err);
+      console.error('work-draft loadList error:', err);
       const colspan = showAuthor ? 7 : 6;
-      tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center text-danger py-4">資料載入失敗</td></tr>`;
-      pagerBar.innerHTML = '<span class="disabled">1</span>';
+      tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-danger text-center">資料載入失敗</td></tr>`;
+      pager.innerHTML = '<span class="disabled">1</span>';
     }
   }
 
   // 篩選表單送出
-  filterForm.addEventListener('submit', e => {
+  filterForm?.addEventListener('submit', e => {
     e.preventDefault();
     loadList(1);
   });
 
   // 查看 Modal：顯示內容
+  const viewModal = document.getElementById('viewModal');
   if (viewModal) {
     viewModal.addEventListener('show.bs.modal', e => {
       const button = e.relatedTarget;
@@ -302,6 +264,7 @@ function initWorkDraft() {
   }
 
   // 留言 Modal：載入 & 送出
+  const commentModal = document.getElementById('commentModal');
   if (commentModal) {
     const listBox = commentModal.querySelector('#cmn-list');
     const textArea = commentModal.querySelector('#cmn-text');
@@ -321,7 +284,7 @@ function initWorkDraft() {
         fd.append('action', 'get_comments');
         fd.append('work_id', currentWorkId);
 
-        const res = await fetch(API_URL, {
+        const res = await fetch(resolveWorkDraftApiUrl(), {
           method: 'POST',
           body: fd
         });
@@ -358,7 +321,7 @@ function initWorkDraft() {
         fd.append('work_id', currentWorkId);
         fd.append('text', t);
 
-        const res = await fetch(API_URL, {
+        const res = await fetch(resolveWorkDraftApiUrl(), {
           method: 'POST',
           body: fd
         });
@@ -386,10 +349,9 @@ function initWorkDraft() {
 
   // 首次載入
   loadList(1);
-}
 
-// 暴露到全域，讓 app.js 可以調用
-window.initWorkDraft = initWorkDraft;
+  return true;
+};
 
 // 根據 DOM 狀態決定如何初始化
 function tryInitWorkDraft() {

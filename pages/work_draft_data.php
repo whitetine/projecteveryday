@@ -144,9 +144,9 @@ if ($action === 'add_comment') {
 
     $comments = json_decode($r['comment'] ?? '[]', true) ?: [];
     $comments[] = [
-        'uid' => $uid,
+        'uid'  => $uid,
         'text' => $text,
-        'at' => date('Y-m-d H:i:s')
+        'at'   => date('Y-m-d H:i:s')
     ];
 
     $st = $conn->prepare("UPDATE $TABLE SET comment=?, work_update_d=NOW() WHERE work_ID=?");
@@ -178,8 +178,8 @@ if ($action === 'list') {
         [$from, $to] = [$to, $from];
     }
 
-    $per   = 10;
-    $page  = max(1, (int)($_GET['page'] ?? 1));
+    $per    = 10;
+    $page   = max(1, (int)($_GET['page'] ?? 1));
     $offset = ($page - 1) * $per;
 
     $rows       = [];
@@ -223,7 +223,7 @@ if ($action === 'list') {
         if ($teamMemberIDs) {
             $in = implode(',', array_fill(0, count($teamMemberIDs), '?'));
 
-            $params = $teamMemberIDs;
+            $params   = $teamMemberIDs;
             $params[] = $from . ' 00:00:00';
             $params[] = dayEnd($to);
 
@@ -259,7 +259,7 @@ if ($action === 'list') {
             $rows = $st->fetchAll(PDO::FETCH_ASSOC);
         } else {
             $total = 0;
-            $rows = [];
+            $rows  = [];
         }
         $showAuthor = true;
 
@@ -301,13 +301,13 @@ if ($action === 'list') {
     $rowsOut = [];
     foreach ($rows as $r) {
         $rowsOut[] = [
-            'work_ID'       => (int)$r['work_ID'],
-            'work_title'    => $r['work_title'] ?? '',
-            'work_content'  => $r['work_content'] ?? '',
-            'work_status'   => (int)$r['work_status'],
-            'work_update_dt'=> fmtDt($r['work_update_d'] ?? ''),
-            'work_u_ID'     => $r['work_u_ID'],
-            'author_name'   => nameOf($r['work_u_ID'], $userNameMap),
+            'work_ID'        => (int)$r['work_ID'],
+            'work_title'     => $r['work_title'] ?? '',
+            'work_content'   => $r['work_content'] ?? '',
+            'work_status'    => (int)$r['work_status'],
+            'work_update_dt' => fmtDt($r['work_update_d'] ?? ''),
+            'work_u_ID'      => $r['work_u_ID'],
+            'author_name'    => nameOf($r['work_u_ID'], $userNameMap),
         ];
     }
 

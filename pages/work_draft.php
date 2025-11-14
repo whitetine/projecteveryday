@@ -6,10 +6,12 @@ if (!isset($_SESSION['u_ID'])) {
 }
 ?>
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">我的日誌紀錄</h4>
-    <a class="btn btn-outline-secondary ajax-link" href="pages/work_form.php">回日誌填寫</a>
-  </div>
+<link rel="stylesheet" href="../css/work-draft.css">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">我的日誌紀錄</h4>
+  <a href="pages/work_form.php" class="btn btn-outline-secondary ajax-link">回日誌填寫</a>
+</div>
 
   <!-- 篩選區 -->
   <form id="filter-form" class="card mb-3" method="get">
@@ -55,7 +57,7 @@ if (!isset($_SESSION['u_ID'])) {
       </div>
     </div>
   </div>
-</div>
+
 
 <!-- 查看 Modal -->
 <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true">
@@ -91,6 +93,5 @@ if (!isset($_SESSION['u_ID'])) {
   </div>
 </div>
 
-<link rel="stylesheet" href="css/pages/work-draft.css">
+<link rel="stylesheet" href="../css/pages/work-draft.css">
 <script src="../js/work-draft.js"></script>
-

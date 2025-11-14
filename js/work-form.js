@@ -1,168 +1,91 @@
-let API_URL = 'work_form_data.php';
+function resolveWorkFormApiUrl() {
+  const formEl = document.getElementById("work-main-form");
+  const path = window.location.pathname || "";
 
-function resolveApiUrl() {
-  const formEl = document.getElementById('work-main-form');
-  if (!formEl) return API_URL;
-  const base = (formEl.dataset.apiBase || '').trim();
-  if (!base) return 'work_form_data.php';
-  return base.endsWith('/')
-    ? `${base}work_form_data.php`
-    : `${base}/work_form_data.php`;
+  if (!formEl) {
+    if (path.includes("/pages/")) {
+      return "work_form_data.php";
+    }
+    return "pages/work_form_data.php";
+  }
+
+  const base = (formEl.dataset.apiBase || "").trim();
+  console.log("work-form resolveApiUrl base:", base, "path:", path);
+  if (!base || base === ".") {
+    return path.includes("/pages/") ? "work_form_data.php" : "pages/work_form_data.php";
+  }
+
+  if (base === "pages" || base === "/pages") {
+    return path.includes("/pages/") ? "work_form_data.php" : "pages/work_form_data.php";
+  }
+
+  if (base.toLowerCase().includes("work_draft")) {
+    return "pages/work_form_data.php";
+  }
+
+  const suffix = base.endsWith("/") ? "work_form_data.php" : "/work_form_data.php";
+  return `${base}${suffix}`;
 }
 
 async function loadData() {
   try {
-    const res = await fetch(`${API_URL}?action=get`, {
-      credentials: 'same-origin'
-    });
-    if (!res.ok) throw new Error(`伺服器回應異常（${res.status}）`);
-    const data = await res.json();
+    const apiUrl = resolveWorkFormApiUrl();
+    console.log("work-form loadData ->", apiUrl + "?action=get");
+    const res = await fetch(apiUrl + "?action=get", { credentials: "same-origin" });
+    const j = await res.json();
 
-    if (data.success) {
-      document.getElementById('work_id').value = data.work.work_ID || '';
-      document.getElementById('work_title').value = data.work.work_title || '';
-      document.getElementById('work_content').value = data.work.work_content || '';
+    if (!j.success) throw new Error(j.msg || "資料載入失敗");
 
-      if (data.readOnly) {
-        document.getElementById('work_title').setAttribute('readonly', true);
-        document.getElementById('work_content').setAttribute('readonly', true);
-        document.getElementById('action-buttons').classList.add('d-none');
-        document.getElementById('doneBadge').classList.remove('d-none');
-      }
-    } else {
-      Swal.fire('錯誤', data.msg || '資料載入失敗', 'error');
+    document.querySelector("#work_id").value = j.work.work_ID || "";
+    document.querySelector("#work_title").value = j.work.work_title || "";
+    document.querySelector("#work_content").value = j.work.work_content || "";
+
+    if (j.readOnly) {
+      document.querySelector("#work_title").readOnly = true;
+      document.querySelector("#work_content").readOnly = true;
+      document.querySelector("#action-buttons").classList.add("d-none");
+      document.querySelector("#doneBadge").classList.remove("d-none");
     }
-  } catch (err) {
-    console.error(err);
-    Swal.fire('錯誤', err.message || '資料載入失敗', 'error');
+  } catch (e) {
+    Swal.fire("錯誤", e.message, "error");
   }
 }
 
-async function saveData(action) {
+async function saveData(type) {
   try {
-    const formEl = document.getElementById('work-main-form');
-    if (!formEl) return;
-    
-    // 驗證表單
-    if (!formEl.checkValidity()) {
-      formEl.reportValidity();
-      return;
-    }
-    
-    const formData = new FormData(formEl);
-    formData.append('action', action);
+    const form = document.querySelector("#work-main-form");
+    const fd = new FormData(form);
+    fd.append("action", type);
 
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      credentials: 'same-origin',
-      body: formData
+    const res = await fetch(resolveWorkFormApiUrl(), {
+      method: "POST",
+      credentials: "same-origin",
+      body: fd
     });
-    if (!res.ok) throw new Error(`伺服器回應異常（${res.status}）`);
 
-    const data = await res.json();
+    const j = await res.json();
 
-    Swal.fire({
-      icon: data.success ? 'success' : 'error',
-      title: data.success ? '成功' : '失敗',
-      text: data.msg,
-    }).then(() => {
-      if (data.reload) {
-        loadData();
-      }
-    });
-  } catch (err) {
-    console.error(err);
-    Swal.fire('錯誤', err.message || '資料送出失敗', 'error');
+    Swal.fire(j.success ? "成功" : "錯誤", j.msg, j.success ? "success" : "error")
+      .then(() => j.reload && loadData());
+
+  } catch (e) {
+    Swal.fire("錯誤", e.message, "error");
   }
 }
 
-function initWorkForm() {
-  // 防止重複初始化
-  if (window._workFormInitialized) {
-    console.log('work-form already initialized, skipping...');
-    return;
-  }
-  window._workFormInitialized = true;
-  
-  API_URL = resolveApiUrl();
-  loadData();
-  
-  const formEl = document.getElementById('work-main-form');
-  if (!formEl) return;
-  
-  // 防止表單提交（使用 AJAX 而非傳統提交）
-  formEl.addEventListener('submit', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+window.initWorkForm = function () {
+  const formEl = document.querySelector("#work-main-form");
+  if (!formEl) {
+    window._workFormInitialized = false;
     return false;
-  });
-  
-  // 綁定按鈕事件，明確阻止預設行為
-  const saveBtn = document.getElementById('saveBtn');
-  const submitBtn = document.getElementById('submitBtn');
-  
-  if (saveBtn) {
-    saveBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      saveData('save');
-      return false;
-    });
   }
-  
-  if (submitBtn) {
-    submitBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      saveData('submit');
-      return false;
-    });
-  }
-}
+  if (window._workFormInitialized) return true;
 
-// 暴露到全域，讓 app.js 可以調用
-window.initWorkForm = initWorkForm;
+  window._workFormInitialized = true;
 
-// 根據 DOM 狀態決定如何初始化
-function tryInitWorkForm() {
-  const formEl = document.getElementById('work-main-form');
-  if (formEl) {
-    initWorkForm();
-    return true;
-  }
-  return false;
-}
+  loadData();
 
-// 立即嘗試初始化（如果元素已存在）
-if (!tryInitWorkForm()) {
-  // 如果元素不存在，等待 DOMContentLoaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      tryInitWorkForm();
-    }, { once: true });
-  } else {
-    // DOM 已就緒但元素可能還沒載入，延遲再試
-    setTimeout(() => {
-      if (!tryInitWorkForm()) {
-        // 如果還是沒有，監聽自定義事件（動態載入完成時觸發）
-        $(document).on('pageLoaded', function(e, path) {
-          if (path && path.includes('work_form')) {
-            setTimeout(tryInitWorkForm, 200);
-          }
-        });
-      }
-    }, 100);
-  }
-}
-
-// 監聽自定義事件（當頁面動態載入完成時）
-$(document).on('pageLoaded scriptExecuted', function(e, path) {
-  if (path && path.includes('work_form')) {
-    setTimeout(() => {
-      if (!tryInitWorkForm()) {
-        // 如果第一次失敗，再試一次
-        setTimeout(tryInitWorkForm, 300);
-      }
-    }, 200);
-  }
-});
+  document.querySelector("#saveBtn")?.addEventListener("click", () => saveData("save"));
+  document.querySelector("#submitBtn")?.addEventListener("click", () => saveData("submit"));
+  return true;
+};

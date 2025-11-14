@@ -144,6 +144,8 @@
   const CONTENT_SEL = '#content';      // 主內容容器
   const BASE_PREFIX = 'pages/';        // 受控子頁的前綴
   let currentApp = null;               // 若子頁用 Vue，這裡接住以便換頁時 unmount
+  const loadedScriptSrcs = new Set();  // 已載入的腳本清單
+  const loadedStyleHrefs = new Set();  // 已載入的樣式表清單
 
   // 檔名 -> render 函式名：apply.php -> renderApplyPage
   function filenameToRenderFn(filePath) {
@@ -239,20 +241,50 @@ mounted() {
     // 重置頁面初始化標記，允許重新初始化
     window._workDraftInitialized = false;
     window._workFormInitialized = false;
+    window.__workDraftApiUrl = undefined;
+    window.__workFormApiUrl = undefined;
 
     // 显示加载提示，保持容器高度避免跳动
     $(CONTENT_SEL).html('<div class="p-5 text-center text-secondary" style="min-height: 400px; display: flex; align-items: center; justify-content: center;">載入中…</div>');
 
+    const callPageSpecificInit = (delay = 200) => {
+      if (path && path.includes('work_draft') && typeof window.initWorkDraft === 'function') {
+        setTimeout(() => {
+          const filterForm = document.getElementById('filter-form');
+          if (filterForm) {
+            try {
+              window.initWorkDraft();
+            } catch (e) {
+              console.error('Failed to init work-draft:', e);
+            }
+          }
+        }, delay);
+      }
+      if (path && path.includes('work_form') && typeof window.initWorkForm === 'function') {
+        setTimeout(() => {
+          const formEl = document.getElementById('work-main-form');
+          if (formEl) {
+            try {
+              window.initWorkForm();
+            } catch (e) {
+              console.error('Failed to init work-form:', e);
+            }
+          }
+        }, delay);
+      }
+    };
+
     // 使用 fetch 載入頁面內容，然後手動處理
-    fetch(path)
+    fetch(path, { credentials: 'same-origin' })
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         return res.text();
       })
       .then(html => {
         // 創建臨時容器來解析 HTML
-        const tempDiv = document.createElement('div');
+        const tempDiv = document.createElement('html');
         tempDiv.innerHTML = html;
+        const baseUrl = new URL(path, window.location.origin);
         
         // 提取 body 內容（如果有的話），否則使用整個 HTML
         let content = '';
@@ -271,11 +303,33 @@ mounted() {
           }
         }
         
-        // 在插入前先提取所有 script 標籤
+        // 在插入前先提取所有 script 標籤與樣式
         const tempScriptContainer = document.createElement('div');
         tempScriptContainer.innerHTML = content;
+        const styleLinks = Array.from(tempScriptContainer.querySelectorAll('link[rel~="stylesheet"]'));
         const scripts = Array.from(tempScriptContainer.querySelectorAll('script'));
         
+        // 處理樣式：追加至 <head>，避免重複載入
+        styleLinks.forEach(link => {
+          const hrefAttr = link.getAttribute('href');
+          if (!hrefAttr) return;
+          try {
+            const absHref = new URL(hrefAttr, baseUrl).href;
+            if (!loadedStyleHrefs.has(absHref)) {
+              loadedStyleHrefs.add(absHref);
+              const newLink = document.createElement('link');
+              newLink.rel = link.rel || 'stylesheet';
+              newLink.href = absHref;
+              if (link.media) newLink.media = link.media;
+              if (link.crossOrigin) newLink.crossOrigin = link.crossOrigin;
+              document.head.appendChild(newLink);
+            }
+          } catch (e) {
+            console.error('Failed to process stylesheet:', hrefAttr, e);
+          }
+          link.remove();
+        });
+
         // 移除 script 標籤後再插入內容
         scripts.forEach(script => script.remove());
         content = tempScriptContainer.innerHTML;
@@ -287,43 +341,46 @@ mounted() {
         
         if (totalScripts === 0) {
           // 如果沒有 script，直接初始化
+          callPageSpecificInit(120);
           setTimeout(initAfterLoad, 100);
         } else {
-          scripts.forEach((script, index) => {
+          scripts.forEach((script) => {
             if (script.src) {
               // 外部腳本：動態載入
               const newScript = document.createElement('script');
-              newScript.src = script.src;
+              const srcAttr = script.getAttribute('src');
+              let absSrc = srcAttr;
+              try {
+                absSrc = srcAttr ? new URL(srcAttr, baseUrl).href : script.src;
+              } catch (e) {
+                console.error('Failed to resolve script URL:', srcAttr, e);
+              }
+
+              if (absSrc) {
+                if (loadedScriptSrcs.has(absSrc)) {
+                  // 已載入，直接觸發初始化
+                  loadedCount++;
+                  callPageSpecificInit(120);
+                  setTimeout(() => {
+                    $(document).trigger('scriptExecuted', [path]);
+                  }, 60);
+                  if (loadedCount === totalScripts) {
+                    setTimeout(initAfterLoad, 100);
+                  }
+                  script.remove();
+                  return;
+                }
+                loadedScriptSrcs.add(absSrc);
+                newScript.src = absSrc;
+              } else {
+                newScript.src = script.src;
+              }
               newScript.async = false;
               
               // 等待腳本載入完成
               newScript.onload = function() {
                 loadedCount++;
-                // 腳本載入完成後，立即嘗試初始化特定頁面
-                if (path && path.includes('work_draft') && typeof window.initWorkDraft === 'function') {
-                  setTimeout(() => {
-                    const filterForm = document.getElementById('filter-form');
-                    if (filterForm) {
-                      try {
-                        window.initWorkDraft();
-                      } catch (e) {
-                        console.error('Failed to init work-draft:', e);
-                      }
-                    }
-                  }, 150);
-                }
-                if (path && path.includes('work_form') && typeof window.initWorkForm === 'function') {
-                  setTimeout(() => {
-                    const formEl = document.getElementById('work-main-form');
-                    if (formEl) {
-                      try {
-                        window.initWorkForm();
-                      } catch (e) {
-                        console.error('Failed to init work-form:', e);
-                      }
-                    }
-                  }, 150);
-                }
+                callPageSpecificInit(150);
                 // 腳本載入完成後，給一點時間執行，然後觸發事件
                 setTimeout(() => {
                   $(document).trigger('scriptExecuted', [path]);
@@ -335,6 +392,7 @@ mounted() {
               newScript.onerror = function() {
                 console.error('Failed to load script:', script.src);
                 loadedCount++;
+                callPageSpecificInit(200);
                 if (loadedCount === totalScripts) {
                   setTimeout(initAfterLoad, 100);
                 }
@@ -349,34 +407,9 @@ mounted() {
                 if (scriptContent.trim()) {
                   // 使用 Function 構造函數更安全
                   (new Function(scriptContent))();
-                  // 執行後立即嘗試初始化特定頁面
-                  if (path && path.includes('work_draft') && typeof window.initWorkDraft === 'function') {
-                    setTimeout(() => {
-                      const filterForm = document.getElementById('filter-form');
-                      if (filterForm) {
-                        try {
-                          window.initWorkDraft();
-                        } catch (e) {
-                          console.error('Failed to init work-draft:', e);
-                        }
-                      }
-                    }, 150);
-                  }
-                  if (path && path.includes('work_form') && typeof window.initWorkForm === 'function') {
-                    setTimeout(() => {
-                      const formEl = document.getElementById('work-main-form');
-                      if (formEl) {
-                        try {
-                          window.initWorkForm();
-                        } catch (e) {
-                          console.error('Failed to init work-form:', e);
-                        }
-                      }
-                    }, 150);
-                  }
-                  // 執行後立即嘗試初始化（給腳本一點時間）
+                  callPageSpecificInit(120);
+                  // 執行後立即觸發事件
                   setTimeout(() => {
-                    // 觸發一個立即初始化事件
                     $(document).trigger('scriptExecuted', [path]);
                   }, 50);
                 }
@@ -401,6 +434,7 @@ mounted() {
     
     // 初始化函數
     function initAfterLoad() {
+      callPageSpecificInit(150);
 
       // 确保 CSS 已加载后再显示内容（防止跑版）
       const userManagementContent = $(CONTENT_SEL).find('#userManagementContent');
