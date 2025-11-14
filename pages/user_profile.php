@@ -25,22 +25,14 @@ $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>個人檔案</title>
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"> -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><!--密碼眼睛 -->
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/user_profile.css?v=<?= time() ?>">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    .avatar-img {
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-  </style>
 </head>
 
-<body class="p-5">
+<body>
   <div class="container">
         <div class="card mb-4">
            <div class="card-header">
@@ -52,94 +44,128 @@ $data = $stmt->fetch(PDO::FETCH_ASSOC);
 $img = !empty($data['u_img']) 
     ? "headshot/" . $data['u_img'] 
     : "https://cdn-icons-png.flaticon.com/512/1144/1144760.png";
+$hasImage = !empty($data['u_img']);
 ?>
 <div class="mb-3 text-center">
-    <img id="avatarPreview" src="<?= $img ?>" class="avatar-img border">
+    <img id="avatarPreview" src="<?= $img ?>" class="avatar-img border" 
+         style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #667eea; object-fit: cover; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
+         data-has-image="<?= $hasImage ? '1' : '0' ?>">
 </div>
 
 
 
-    <form id="profileForm" method="post" action="../api.php?do=update_profile" enctype="multipart/form-data">
+    <form id="profileForm" method="post" action="" enctype="multipart/form-data">
       <input type="hidden" name="u_ID" value="<?= $data['u_ID'] ?>">
 
       <div class="mb-3">
-        <label class="form-label">帳號</label>
+        <label class="form-label">
+          <i class="fa-solid fa-user me-2" style="color: #667eea;"></i>帳號
+        </label>
         <input class="form-control" type="text" value="<?= $data['u_ID'] ?>" readonly>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">姓名</label>
+        <label class="form-label">
+          <i class="fa-solid fa-id-card me-2" style="color: #667eea;"></i>姓名
+        </label>
         <input class="form-control" type="text" value="<?= $data['u_name'] ?>" readonly>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">信箱</label>
+        <label class="form-label">
+          <i class="fa-solid fa-envelope me-2" style="color: #667eea;"></i>信箱
+        </label>
         <input class="form-control" type="text" name="u_gmail" id="gmailInput" value="<?= $data['u_gmail'] ?>" readonly>
-
       </div>
 
       <div class="mb-3">
-        <label class="form-label">自我介紹</label>
-        <textarea name="profile" class="form-control" id="profileText" rows="4" readonly><?= $data['u_profile'] ?></textarea>
+        <label class="form-label">
+          <i class="fa-solid fa-comment me-2" style="color: #667eea;"></i>自我介紹
+        </label>
+        <textarea name="u_profile" class="form-control" id="profileText" rows="4" readonly><?= $data['u_profile'] ?></textarea>
       </div>
 
       <div class="mb-3 d-none" id="avatarUpload">
-        <label class="form-label">上傳頭貼</label>
+        <label class="form-label">
+          <i class="fa-solid fa-image me-2" style="color: #667eea;"></i>上傳頭貼
+        </label>
         <input type="file" class="form-control" name="u_img" accept="image/*" onchange="previewAvatar(event)">
         <input type="hidden" name="clear_avatar" id="clear_avatar" value="0">
-        <button type="button" class="btn btn-outline-danger" id="btnClearAvatar">清除頭貼</button>
+        <button type="button" class="btn btn-outline-danger mt-2" id="btnClearAvatar">
+          <i class="fa-solid fa-trash me-2"></i>清除頭貼
+        </button>
       </div>
 
       <div id="profileBtns">
-        <button type="button" class="btn btn-primary" onclick="enableEdit()">修改資料</button>
-        <button type="button" class="btn btn-warning" onclick="showPwdForm()">修改密碼</button>
+        <button type="button" class="btn btn-primary" onclick="enableEdit()">
+          <i class="fa-solid fa-pen-to-square me-2"></i>修改資料
+        </button>
+        <button type="button" class="btn btn-warning" onclick="showPwdForm()">
+          <i class="fa-solid fa-lock me-2"></i>修改密碼
+        </button>
       </div>
 
       <div class="d-none" id="editBtns">
-        <button type="submit" class="btn btn-success">儲存資料</button>
-        <button type="button" class="btn btn-secondary" onclick="cancelEdit()">取消</button>
+        <button type="submit" class="btn btn-success">
+          <i class="fa-solid fa-check me-2"></i>儲存資料
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="cancelEdit()">
+          <i class="fa-solid fa-times me-2"></i>取消
+        </button>
       </div>
     </form>
 
-    <form id="pwdForm" class="mt-5 d-none" method="post" action="../api.php?do=update_password">
+    <form id="pwdForm" class="mt-5 d-none" method="post" action="">
       <input type="hidden" name="u_ID" value="<?= $data['u_ID'] ?>">
-      <h4>變更密碼</h4>
-      <div class="mb-2">
-        <div class="mb-2">
-          <label>目前密碼</label>
-          <div class="input-group">
-            <input type="password" name="old_password" id="oldPassword" class="form-control" required>
-            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('oldPassword', this)">
-              <i class="fa-solid fa-eye"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="mb-2">
-          <label>新密碼</label>
-          <div class="input-group">
-            <input type="password" name="new_password" id="newPassword" class="form-control" required
-              value="<?= htmlspecialchars($_GET['np'] ?? '') ?>">
-
-            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('newPassword', this)">
-              <i class="fa-solid fa-eye"></i>
-            </button>
-          </div>
-        </div>
-
-      </div>
-      <div class="mb-2">
-        <label>確認新密碼</label>
+      <h4>
+        <i class="fa-solid fa-lock me-2"></i>變更密碼
+      </h4>
+      
+      <div class="mb-3">
+        <label class="form-label">
+          <i class="fa-solid fa-key me-2" style="color: #667eea;"></i>目前密碼
+        </label>
         <div class="input-group">
-          <input type="password" name="confirm_password" id="confirmPassword" class="form-control" required>
+          <input type="password" name="old_password" id="oldPassword" class="form-control" required placeholder="輸入目前密碼">
+          <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('oldPassword', this)">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">
+          <i class="fa-solid fa-key me-2" style="color: #667eea;"></i>新密碼
+        </label>
+        <div class="input-group">
+          <input type="password" name="new_password" id="newPassword" class="form-control" required 
+            placeholder="輸入新密碼"
+            value="<?= htmlspecialchars($_GET['np'] ?? '') ?>">
+          <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('newPassword', this)">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">
+          <i class="fa-solid fa-key me-2" style="color: #667eea;"></i>確認新密碼
+        </label>
+        <div class="input-group">
+          <input type="password" name="confirm_password" id="confirmPassword" class="form-control" required placeholder="再次輸入新密碼">
           <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmPassword', this)">
             <i class="fa-solid fa-eye"></i>
           </button>
         </div>
       </div>
-      <div>
-        <button type="submit" class="btn btn-success">儲存密碼</button>
-        <button type="button" class="btn btn-secondary" onclick="cancelPwd()">取消</button>
+
+      <div id="pwdBtns">
+        <button type="submit" class="btn btn-success">
+          <i class="fa-solid fa-check me-2"></i>儲存密碼
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="cancelPwd()">
+          <i class="fa-solid fa-times me-2"></i>取消
+        </button>
       </div>
     </form>
   </div>
@@ -176,7 +202,9 @@ $img = !empty($data['u_img'])
     function previewAvatar(event) { //頭貼選擇圖片時即時預覽
       const reader = new FileReader();
       reader.onload = function() {
-        document.getElementById('avatarPreview').src = reader.result; // 預覽圖片
+        const img = document.getElementById('avatarPreview');
+        img.src = reader.result; // 預覽圖片
+        img.setAttribute('data-has-image', '1'); // 標記為有圖片
       }
       reader.readAsDataURL(event.target.files[0]); // 讀取上傳的圖片
     }
@@ -196,14 +224,58 @@ $img = !empty($data['u_img'])
       }
     }
 
-    // ✅ 清除頭貼：用正確的 input id 與預設圖路徑
+    // ✅ 設置表單 action（動態計算正確的路徑）
+    (function() {
+      // 從當前 URL 推斷基礎路徑
+      const pathname = window.location.pathname;
+      let apiPath;
+      
+      if (pathname.includes('/original/')) {
+        // 如果 URL 包含 /original/，使用絕對路徑
+        apiPath = '/original/api.php';
+      } else {
+        // 否則使用相對路徑（從 pages/ 目錄到根目錄）
+        apiPath = '../api.php';
+      }
+      
+      // 設置個人資料表單的 action
+      const profileForm = document.getElementById('profileForm');
+      if (profileForm) {
+        profileForm.action = apiPath + '?do=update_profile';
+      }
+      
+      // 設置密碼表單的 action
+      const pwdForm = document.getElementById('pwdForm');
+      if (pwdForm) {
+        pwdForm.action = apiPath + '?do=update_password';
+      }
+    })();
+
+    // ✅ 清除頭貼按鈕功能
     document.getElementById('btnClearAvatar').addEventListener('click', function(e) {
       e.preventDefault();
-      document.getElementById('clear_avatar').value = '1';
-      const fi = document.getElementById('avatarInput');
-      if (fi) fi.value = '';
       const img = document.getElementById('avatarPreview');
-      if (img) img.src = '../headshot/default.jpg'; // 用和上面預覽一致的相對路徑
+      const clearAvatarInput = document.getElementById('clear_avatar');
+      const fileInput = document.querySelector('input[name="u_img"]');
+      
+      // 設定清除標籤
+      clearAvatarInput.value = '1';
+      
+      // 清除文件輸入
+      if (fileInput) fileInput.value = '';
+      
+      // 將圖片改為 icon（預設頭貼）
+      img.src = 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png';
+      img.setAttribute('data-has-image', '0');
+      
+      // 顯示提示訊息
+      Swal.fire({
+        icon: 'success',
+        title: '已清除頭貼',
+        text: '保存資料後將恢復為預設頭貼',
+        timer: 2000,
+        showConfirmButton: false
+      });
     });
   </script>
 
