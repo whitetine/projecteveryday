@@ -1,12 +1,22 @@
 <?php
 session_start();
 if (!isset($_SESSION['u_ID'])) {
-    echo "<script>alert('請先登入');location.href='index.php';</script>";
+    echo "<script>alert('請先登入');location.href='../index.php';</script>";
+    exit;
+}
+// 檢查是否為 AJAX 請求（jQuery load 會設定此 header）或 partial 參數
+$isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+$isPartial = isset($_GET['partial']) && $_GET['partial'] === '1';
+// 檢查是否從 main.php 透過 hash 路由載入（透過檢查 referer）
+$isFromMain = isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'main.php') !== false;
+
+// 只有在非 AJAX、非 partial 且不是從 main.php 載入的情況下才重定向
+// 這樣可以確保透過 main.php 的 hash 路由載入時不會被重定向
+if (!$isPartial && !$isAjax && !$isFromMain) {
+    header('Location: ../main.php#pages/work_draft.php');
     exit;
 }
 ?>
-
-<link rel="stylesheet" href="../css/work-draft.css">
 
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h4 class="mb-0">我的日誌紀錄</h4>
@@ -93,5 +103,5 @@ if (!isset($_SESSION['u_ID'])) {
   </div>
 </div>
 
-<link rel="stylesheet" href="../css/pages/work-draft.css">
+<link rel="stylesheet" href="../css/work-draft.css">
 <script src="../js/work-draft.js"></script>

@@ -12,7 +12,7 @@
 /* 表格固定，不隨內容撐開 */
 .table {
   width: 100%;
-  table-layout: fixed; 
+  table-layout: fixed; /* 改為 fixed，讓列寬固定，防止內容撐開 */
   border-collapse: collapse !important;
   background: #fff;
   max-width: 100%;
@@ -24,17 +24,113 @@
   border: 1px solid #dee2e6 !important; /* 格線 */
   padding: 8px;
   white-space: normal !important;
-  word-break: break-word !important;
-  overflow-wrap: anywhere !important;
-  vertical-align: top;
-  overflow: hidden !important; /* 防止內容溢出 */
-  max-width: 0; /* 配合 table-layout: fixed 使用 */
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  vertical-align: middle !important;
+  /* 防止內容撐開表格 */
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* 標題列特殊處理 - 包含 title-preview 的列 */
+.table td:has(.title-preview),
+.table th:nth-child(3),
+.table td:nth-child(3) {
+  max-width: 260px;
+  width: 260px;
+}
+
+/* 當有提交者時，標題列是第4列 */
+.table th:nth-child(4),
+.table td:nth-child(4) {
+  max-width: 260px;
+  width: 260px;
+}
+
+/* 內容預覽列 - 直接針對包含 content-preview 的 td */
+.table td:has(.content-preview) {
+  max-width: 250px !important;
+  width: 250px !important;
+  /* 確保內容不會撐開 */
+  overflow: hidden;
+}
+
+/* 如果瀏覽器不支持 :has()，使用備用方案 - 針對第4列（無提交者）或第5列（有提交者） */
+.table th:nth-child(4):not([style*="width:260px"]):not([style*="width:160px"]):not([style*="width:180px"]):not([style*="width:120px"]):not([style*="width:140px"]),
+.table td:nth-child(4):not([style*="width:260px"]):not([style*="width:160px"]):not([style*="width:180px"]):not([style*="width:120px"]):not([style*="width:140px"]),
+.table th:nth-child(5):not([style*="width:260px"]):not([style*="width:160px"]):not([style*="width:180px"]):not([style*="width:120px"]):not([style*="width:140px"]),
+.table td:nth-child(5):not([style*="width:260px"]):not([style*="width:160px"]):not([style*="width:180px"]):not([style*="width:120px"]):not([style*="width:140px"]) {
+  max-width: 250px !important;
+  width: 250px !important;
+  overflow: hidden;
+}
+
+/* 內容預覽 div 的寬度限制 */
+.table td .content-preview {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  /* 確保不會溢出父容器 */
+  word-break: break-word;
+  overflow-wrap: break-word;
+  display: block;
 }
 
 /* 標題列背景 */
 .table thead th {
   background: #f8f9fa;
   font-weight: 600;
+}
+
+/* 狀態列和留言列居中對齊 */
+/* 狀態列：包含 badge 的列（第5列無提交者，第6列有提交者） */
+.table th:has(+ th[style*="width:120px"]),
+.table td:has(.badge) {
+  text-align: center !important;
+}
+
+/* 留言列：包含留言按鈕的列（第6列無提交者，第7列有提交者） */
+.table th[style*="width:120px"],
+.table td:has(.btn-primary[data-bs-target="#commentModal"]) {
+  text-align: center !important;
+}
+
+/* 備用方案：使用 nth-child 定位 */
+/* 狀態列：第5列（無提交者）或第6列（有提交者） */
+.table th:nth-child(5),
+.table td:nth-child(5),
+.table th:nth-child(6),
+.table td:nth-child(6) {
+  text-align: center !important;
+}
+
+/* 留言列：第6列（無提交者）或第7列（有提交者） */
+.table th:nth-child(6),
+.table td:nth-child(6),
+.table th:nth-child(7),
+.table td:nth-child(7) {
+  text-align: center !important;
+}
+
+/* 確保狀態和留言列的按鈕和內容都居中 */
+.table td:has(.badge),
+.table td:has(.btn-primary[data-bs-target="#commentModal"]) {
+  text-align: center !important;
+}
+
+.table td .badge,
+.table td .btn {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* 時間列特殊處理，確保正常顯示 */
+.table td.time-cell {
+  white-space: nowrap !important; /* 時間不換行 */
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  overflow: visible !important; /* 確保時間完整顯示 */
+  min-width: 160px; /* 確保有足夠寬度 */
 }
 
 /* 防止按鈕 hover 時撐開表格 */
@@ -48,20 +144,298 @@
 
 /* 去除所有造成浮動的 overflow */
 .table td div {
-  overflow: hidden !important; /* 改為 hidden 防止溢出 */
+  overflow: visible !important; /* 改為 visible，讓內容正常顯示 */
   max-width: 100%;
 }
 
-/* 內容預覽與標題預覽不再用 scroll，只用格子框住即可 */
-.title-preview,
-.content-preview {
-  max-height: none !important;
-  overflow: hidden !important; /* 改為 hidden */
+/* 內容預覽 div 例外，需要滾動功能 */
+.table td div.content-preview {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* 標題預覽特殊處理 */
+.title-preview {
+  max-width: 260px; /* 對應表格中標題列的寬度 */
+  max-height: 60px; /* 標題預覽保持2行 */
+  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   white-space: normal !important;
   word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 減少到2行 */
+  line-clamp: 2; /* 標準屬性 */
+  -webkit-box-orient: vertical;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* 內容預覽特殊處理 - 最多顯示5行，超過時顯示滾動條 */
+.content-preview {
   max-width: 100%;
+  max-height: 105px; /* 約5行的高度 (line-height 1.4 * font-size 15px * 5行) */
+  overflow-y: auto !important; /* 超過5行時顯示垂直滾動條 */
+  overflow-x: hidden !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  line-height: 1.4;
+  display: block;
+  box-sizing: border-box;
+  min-width: 0;
+  /* 優化滾動條樣式 */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #cbd5e0 #f7fafc; /* Firefox */
+}
+
+/* Webkit 瀏覽器滾動條樣式 */
+.content-preview::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-preview::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 3px;
+}
+
+.content-preview::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+.content-preview::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
 }
 #cmn-list {
   max-height: 250px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ==============================
+   Modal z-index 設定（確保在導航欄上方）
+   ============================== */
+body .modal {
+  z-index: 1080 !important; /* 高於導航欄的 1060 */
+  position: fixed !important;
+}
+
+body .modal-backdrop {
+  z-index: 1079 !important; /* 在 modal 下方，但在導航欄上方 */
+  position: fixed !important;
+}
+
+/* 確保 Modal 顯示在最上層 */
+body #viewModal,
+body #commentModal {
+  z-index: 1080 !important;
+  position: fixed !important;
+}
+
+body #viewModal .modal-dialog,
+body #commentModal .modal-dialog {
+  z-index: 1081 !important;
+  position: relative !important;
+}
+
+/* ==============================
+   響應式設計
+   ============================== */
+
+/* 平板設備 (768px - 991px) */
+@media (max-width: 991px) {
+  /* 表格在小屏幕上允許橫向滾動 */
+  .table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* 表格列寬調整 */
+  .table {
+    min-width: 800px; /* 確保表格最小寬度 */
+  }
+  
+  /* 時間列寬度調整 */
+  .table td.time-cell {
+    min-width: 140px;
+  }
+  
+  /* 篩選表單改為垂直排列 */
+  .filter-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  
+  .filter-row > div {
+    width: 100% !important;
+    margin-bottom: 0.5rem;
+  }
+  
+  .filter-row > div.ms-auto {
+    margin-left: 0 !important;
+    margin-top: 0.5rem;
+  }
+  
+  /* 按鈕全寬 */
+  .filter-row .btn {
+    width: 100%;
+  }
+  
+  /* Modal 寬度調整 */
+  .modal-dialog {
+    max-width: 90% !important;
+    margin: 1rem auto;
+  }
+}
+
+/* 手機設備 (最大 767px) */
+@media (max-width: 767px) {
+  /* 頁面標題和按鈕改為垂直排列 */
+  .d-flex.justify-content-between.align-items-center {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+  
+  .d-flex.justify-content-between.align-items-center .btn {
+    width: 100%;
+  }
+  
+  /* 表格最小寬度 */
+  .table {
+    min-width: 600px;
+    font-size: 0.875rem;
+  }
+  
+  /* 表格內邊距縮小 */
+  .table th,
+  .table td {
+    padding: 6px 4px;
+  }
+  
+  /* 時間列寬度 */
+  .table td.time-cell {
+    min-width: 120px;
+    font-size: 0.8rem;
+  }
+  
+  /* 按鈕文字大小 */
+  .table td .btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  /* 內容預覽高度調整 */
+  .title-preview,
+  .content-preview {
+    max-height: 60px;
+    font-size: 0.8rem;
+  }
+  
+  /* 卡片內邊距 */
+  .card-body {
+    padding: 0.75rem !important;
+  }
+  
+  /* Modal 全屏 */
+  .modal-dialog {
+    max-width: 100% !important;
+    margin: 0;
+    height: 100%;
+  }
+  
+  .modal-content {
+    height: 100%;
+    border-radius: 0;
+  }
+  
+  /* 留言列表高度調整 */
+  #cmn-list {
+    max-height: 200px;
+  }
+  
+  /* 分頁器調整 */
+  .pager-bar {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .pager-bar a,
+  .pager-bar span {
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.125rem;
+  }
+}
+
+/* 小手機設備 (最大 575px) */
+@media (max-width: 575px) {
+  /* 表格字體更小 */
+  .table {
+    min-width: 500px;
+    font-size: 0.75rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 4px 2px;
+  }
+  
+  /* 時間列 */
+  .table td.time-cell {
+    min-width: 100px;
+    font-size: 0.7rem;
+  }
+  
+  /* 按鈕更小 */
+  .table td .btn {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+  
+  /* 標題字體 */
+  h4 {
+    font-size: 1.25rem;
+  }
+  
+  /* 表單元素 */
+  .form-label {
+    font-size: 0.875rem;
+  }
+  
+  .form-control,
+  .form-select {
+    font-size: 0.875rem;
+  }
+  
+  /* Modal 標題 */
+  .modal-title {
+    font-size: 1rem;
+  }
+  
+  /* 留言輸入框 */
+  #cmn-text {
+    font-size: 0.875rem;
+  }
+}
+
+/* 橫向模式優化 */
+@media (max-width: 991px) and (orientation: landscape) {
+  /* 表格在橫向模式下保持可讀性 */
+  .table {
+    min-width: 900px;
+  }
+  
+  /* Modal 高度調整 */
+  .modal-dialog {
+    max-height: 90vh;
+  }
+  
+  .modal-body {
+    max-height: calc(90vh - 120px);
+    overflow-y: auto;
+  }
 }

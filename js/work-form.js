@@ -65,8 +65,17 @@ async function saveData(type) {
 
     const j = await res.json();
 
-    Swal.fire(j.success ? "成功" : "錯誤", j.msg, j.success ? "success" : "error")
-      .then(() => j.reload && loadData());
+    if (j.success) {
+      // 成功後顯示提示訊息，然後跳轉到 work_draft.php
+      Swal.fire("成功", j.msg, "success")
+        .then(() => {
+          // 跳轉到 work_draft.php（透過 hash 路由）
+          window.location.hash = 'pages/work_draft.php';
+        });
+    } else {
+      // 失敗時只顯示錯誤訊息
+      Swal.fire("錯誤", j.msg, "error");
+    }
 
   } catch (e) {
     Swal.fire("錯誤", e.message, "error");
@@ -79,7 +88,18 @@ window.initWorkForm = function () {
     window._workFormInitialized = false;
     return false;
   }
-  if (window._workFormInitialized) return true;
+  
+  // 檢查元素是否在當前 DOM 中（頁面切換時可能元素被移除又重新加入）
+  const isInDOM = document.body.contains(formEl);
+  if (!isInDOM) {
+    window._workFormInitialized = false;
+    return false;
+  }
+  
+  // 如果已經初始化過，但元素仍然存在，先重置再重新初始化（處理頁面切換的情況）
+  if (window._workFormInitialized) {
+    window._workFormInitialized = false;
+  }
 
   window._workFormInitialized = true;
 
@@ -89,3 +109,60 @@ window.initWorkForm = function () {
   document.querySelector("#submitBtn")?.addEventListener("click", () => saveData("submit"));
   return true;
 };
+
+// 自動初始化（類似 work_draft.js 的做法）
+function tryInitWorkForm() {
+  const formEl = document.querySelector("#work-main-form");
+  if (formEl) {
+    // 如果元素存在但初始化標記已設定，先重置（處理頁面切換的情況）
+    if (window._workFormInitialized) {
+      window._workFormInitialized = false;
+    }
+    initWorkForm();
+    return true;
+  } else {
+    // 如果元素不存在，重置初始化標記
+    window._workFormInitialized = false;
+  }
+  return false;
+}
+
+// 立即嘗試初始化（如果元素已存在）
+if (!tryInitWorkForm()) {
+  // 如果元素不存在，等待 DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      tryInitWorkForm();
+    }, { once: true });
+  } else {
+    // DOM 已就緒但元素可能還沒載入（透過 AJAX 載入），延遲再試
+    // 使用多層次的檢查機制，確保能捕捉到動態載入的內容
+    let attempts = 0;
+    const maxAttempts = 20; // 最多嘗試 20 次（約 2 秒）
+    
+    const checkInterval = setInterval(() => {
+      attempts++;
+      if (tryInitWorkForm() || attempts >= maxAttempts) {
+        clearInterval(checkInterval);
+      }
+    }, 100);
+    
+    // 同時使用 MutationObserver 監聽 DOM 變化（更即時）
+    const observer = new MutationObserver(() => {
+      if (tryInitWorkForm()) {
+        observer.disconnect();
+        clearInterval(checkInterval);
+      }
+    });
+    observer.observe(document.body || document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+    
+    // 10 秒後停止觀察和檢查（避免記憶體洩漏）
+    setTimeout(() => {
+      observer.disconnect();
+      clearInterval(checkInterval);
+    }, 10000);
+  }
+}

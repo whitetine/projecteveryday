@@ -5,7 +5,26 @@
     <a href="pages/work_draft.php" class="btn btn-outline-secondary ajax-link">查看日誌</a>
   </div>
 
-  <?php $apiBase = rtrim(dirname($_SERVER['PHP_SELF']), '/'); ?>
+<?php
+session_start();
+// if (!isset($_SESSION['u_ID'])) {
+//     echo "<script>alert('請先登入');location.href='../index.php';</script>";
+//     exit;
+// }
+// 檢查是否為 AJAX 請求（jQuery load 會設定此 header）或 partial 參數
+$isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+$isPartial = isset($_GET['partial']) && $_GET['partial'] === '1';
+// 檢查是否從 main.php 透過 hash 路由載入（透過檢查 referer）
+$isFromMain = isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'main.php') !== false;
+
+// 只有在非 AJAX、非 partial 且不是從 main.php 載入的情況下才重定向
+// 這樣可以確保透過 main.php 的 hash 路由載入時不會被重定向
+if (!$isPartial && !$isAjax && !$isFromMain) {
+    header('Location: work_form.php?partial=1');
+    exit;
+}
+$apiBase = rtrim(dirname($_SERVER['PHP_SELF']), '/'); 
+?>
   <form id="work-main-form" data-api-base="<?= htmlspecialchars($apiBase, ENT_QUOTES) ?>">
     <input type="hidden" name="work_id" id="work_id">
 
@@ -30,5 +49,5 @@
   </form>
 </div>
 
-<link rel="stylesheet" href="../css/pages/work-form.css">
+<link rel="stylesheet" href="../css/work-form.css">
 <script src="../js/work-form.js"></script>
