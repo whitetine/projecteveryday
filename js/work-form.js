@@ -166,3 +166,15 @@ if (!tryInitWorkForm()) {
     }, 10000);
   }
 }
+
+// 監聽自定義事件（當頁面動態載入完成時）
+$(document).on('pageLoaded scriptExecuted', function(e, path) {
+  if (path && path.includes('work_form')) {
+    setTimeout(() => {
+      if (!tryInitWorkForm()) {
+        // 如果第一次失敗，再試一次
+        setTimeout(tryInitWorkForm, 300);
+      }
+    }, 200);
+  }
+});

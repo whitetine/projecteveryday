@@ -1,16 +1,10 @@
-
-<div class="work-form-page">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">每日工作日誌</h1>
-    <a href="pages/work_draft.php" class="btn btn-outline-secondary ajax-link">查看日誌</a>
-  </div>
-
 <?php
 session_start();
-// if (!isset($_SESSION['u_ID'])) {
-//     echo "<script>alert('請先登入');location.href='../index.php';</script>";
-//     exit;
-// }
+if (!isset($_SESSION['u_ID'])) {
+    echo "<script>alert('請先登入');location.href='../index.php';</script>";
+    exit;
+}
+
 // 檢查是否為 AJAX 請求（jQuery load 會設定此 header）或 partial 參數
 $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 $isPartial = isset($_GET['partial']) && $_GET['partial'] === '1';
@@ -23,8 +17,16 @@ if (!$isPartial && !$isAjax && !$isFromMain) {
     header('Location: work_form.php?partial=1');
     exit;
 }
+
 $apiBase = rtrim(dirname($_SERVER['PHP_SELF']), '/'); 
 ?>
+
+<div class="work-form-page">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">每日工作日誌</h1>
+    <a href="pages/work_draft.php" class="btn btn-outline-secondary ajax-link">查看日誌</a>
+  </div>
+
   <form id="work-main-form" data-api-base="<?= htmlspecialchars($apiBase, ENT_QUOTES) ?>">
     <input type="hidden" name="work_id" id="work_id">
 

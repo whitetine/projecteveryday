@@ -1,21 +1,9 @@
 // 動態解析 API URL（支援動態載入）
 function resolveWorkDraftApiUrl() {
   const path = window.location.pathname || '';
-  const hash = window.location.hash || '';
-  
-  // 如果當前頁面路徑直接包含 /pages/（例如直接訪問 pages/work_draft.php）
-  // 則返回相對路徑 work_draft_data.php
   if (path.includes('/pages/')) {
     return 'work_draft_data.php';
   }
-  
-  // 如果是透過 main.php 的 hash 路由載入（hash 包含 pages/ 但 path 是 main.php）
-  // 則返回絕對路徑 pages/work_draft_data.php
-  if (hash.includes('pages/') || path.includes('main.php')) {
-    return 'pages/work_draft_data.php';
-  }
-  
-  // 預設返回 pages/ 下的路徑
   return 'pages/work_draft_data.php';
 }
 

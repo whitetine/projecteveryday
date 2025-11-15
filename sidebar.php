@@ -45,16 +45,12 @@ $isAdmin = in_array($role_ID, [1, 2]);
       <i class="fa-solid fa-eye"></i><span>apply_preview</span></a>
        <!-- <a class="nav-link ajax-link" href="pages/admin_notify.php">
       <i class="fa-solid fa-file-lines"></i><span>notify</span></a> -->
-       <a class="nav-link ajax-link" href="pages/checkreviewperiods.php">
-      <i class="fa-solid fa-file-arrow-up"></i><span>互評時段管理</span>
-    </a>
-    
       <?php elseif ($role_ID == 6): ?>
  <a class="nav-link ajax-link" href="pages/apply.php">
       <i class="fa-solid fa-file-arrow-up"></i><span>文件管理</span>
     </a>
 
-   
+    
           <a class="nav-link ajax-link" href="pages/work_form.php">
       <i class="fa-solid fa-file-circle-plus"></i><span>work_form</span></a>
     <?php elseif ($role_ID == 4): ?>

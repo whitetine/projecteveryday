@@ -1,79 +1,15 @@
-
-/* ====== Hint text ====== */
-.work-form-page .hint {
-  font-size: .9rem;
-  color: #6c757d;
+/* css/work-form.css */
+.hint{font-size:.9rem;color:#6c757d}
+.textarea-fixed{
+  width:100%;height:240px;min-height:240px;max-height:240px;
+  overflow-y:auto;overflow-x:hidden;resize:none;
+  white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;line-height:1.6;
 }
 
-/* ====== Section Box ====== */
-.work-form-page .section-box {
-  border: 2px solid #444;
-  border-radius: 8px;
-  padding: 15px 20px;
-  background-color: #fff;
-  margin-bottom: 20px;
+/* 檔案上傳列：input 撐滿，按鈕靠右 */
+.file-row{
+  display:flex; align-items:center; gap:.5rem; width:100%;
 }
-
-/* 讓上下兩個 section-box 組合成一個完整外框 */
-.work-form-page #work-main-form > .section-box:first-of-type {
-  border-bottom: none;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  margin-bottom: 0;
-}
-
-.work-form-page #work-main-form > .section-box + .section-box {
-  border-top: none;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-/* ====== Form Container ====== */
-.work-form-page #work-main-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-/* ====== Title Input ====== */
-.work-form-page .title-input,
-.work-form-page #work_title {
-  width: 100%;
-  height: 38px !important;
-  resize: none !important;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-/* ====== Content Textarea ====== */
-.work-form-page .content-area,
-.work-form-page #work_content {
-  width: 100%;
-  height: 200px !important;
-  min-height: 160px !important;
-  max-height: 220px !important;
-  resize: none !important;
-  overflow-y: auto;
-  overflow-x: hidden;
-  box-sizing: border-box;
-}
-
-/* ====== General: Prevent Resize ====== */
-.work-form-page textarea,
-.work-form-page input[type="text"] {
-  resize: none !important;
-  user-select: text;
-}
-
-/* 隱藏 webkit 的右下角拖拉器 */
-.work-form-page textarea::-webkit-resizer {
-  display: none !important;
-}
-
-/* ====== Footer Buttons ====== */
-.work-form-page .form-footer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
+.file-row .file-input{
+  flex:1 1 auto; min-width:0; width:auto !important;
 }

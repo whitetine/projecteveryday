@@ -1,45 +1,6 @@
 <?php
 session_start();
 require '../includes/pdo.php'; // 取得 $conn (PDO)
-
-if (isset($conn) && !isset($pdo)) {
-    $pdo = $conn;
-}
-
-$pdo = $pdo ?? null;
-$userId = '';
-$userName = '';
-
-if ($pdo instanceof PDO) {
-    try {
-        if (!isset($_SESSION['u_ID']) || !preg_match('/^\d+$/', (string)$_SESSION['u_ID'])) {
-            unset($_SESSION['u_ID']);
-        }
-
-        if (empty($_SESSION['u_ID'])) {
-            $stmt = $pdo->query("SELECT u_ID FROM userdata WHERE u_ID REGEXP '^[0-9]+$' ORDER BY RAND() LIMIT 1");
-            $randomUser = $stmt ? $stmt->fetchColumn() : false;
-            if ($randomUser !== false) {
-                $_SESSION['u_ID'] = (string)$randomUser;
-            }
-        }
-
-        $userId = (string)($_SESSION['u_ID'] ?? '');
-        if ($userId !== '') {
-            $stmt = $pdo->prepare("SELECT u_name FROM userdata WHERE u_ID = ?");
-            $stmt->execute([$userId]);
-            $userName = (string)($stmt->fetchColumn() ?: '');
-        }
-    } catch (PDOException $e) {
-        // 保留現有 session，僅於除錯時使用
-    }
-} else {
-    $userId = (string)($_SESSION['u_ID'] ?? '');
-}
-
-$displayName = $userName !== '' && $userId !== ''
-    ? sprintf('%s（%s）', $userName, $userId)
-    : ($userName !== '' ? $userName : $userId);
 ?>
 <header>
     <h2 class="mb-4">申請文件上傳</h2>
@@ -153,9 +114,5 @@ $displayName = $userName !== '' && $userId !== ''
 </div>
 
 <script>
-    window.CURRENT_USER = <?= json_encode([
-        'u_ID' => $userId,
-        'u_name' => $userName,
-        'display_name' => $displayName,
-    ], JSON_UNESCAPED_UNICODE) ?>;
+    window.CURRENT_USER = <?= json_encode(['u_ID' => (string)($_SESSION['u_ID'] ?? '')], JSON_UNESCAPED_UNICODE) ?>;
 </script>

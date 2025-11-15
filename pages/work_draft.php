@@ -4,6 +4,7 @@ if (!isset($_SESSION['u_ID'])) {
     echo "<script>alert('請先登入');location.href='../index.php';</script>";
     exit;
 }
+
 // 檢查是否為 AJAX 請求（jQuery load 會設定此 header）或 partial 參數
 $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 $isPartial = isset($_GET['partial']) && $_GET['partial'] === '1';
@@ -23,51 +24,50 @@ if (!$isPartial && !$isAjax && !$isFromMain) {
   <a href="pages/work_form.php" class="btn btn-outline-secondary ajax-link">回日誌填寫</a>
 </div>
 
-  <!-- 篩選區 -->
-  <form id="filter-form" class="card mb-3" method="get">
-    <div class="card-body filter-row d-flex flex-wrap align-items-end gap-3">
-      <div>
-        <label class="form-label mb-1">查看對象</label>
-        <select name="who" class="form-select">
-          <!-- 選項由 JS 依後端資料動態載入 -->
-        </select>
-      </div>
-      <div>
-        <label class="form-label mb-1">起始日期</label>
-        <input type="date" name="from" class="form-control">
-      </div>
-      <div>
-        <label class="form-label mb-1">結束日期</label>
-        <input type="date" name="to" class="form-control">
-      </div>
-      <div class="ms-auto">
-        <button class="btn btn-primary" type="submit">套用篩選</button>
-      </div>
+<!-- 篩選區 -->
+<form id="filter-form" class="card mb-3" method="get">
+  <div class="card-body filter-row d-flex flex-wrap align-items-end gap-3">
+    <div>
+      <label class="form-label mb-1">查看對象</label>
+      <select name="who" class="form-select">
+        <!-- 選項由 JS 依後端資料動態載入 -->
+      </select>
     </div>
-  </form>
-
-  <!-- 資料表 -->
-  <div class="card">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover mb-0" id="work-table">
-          <thead class="table-light">
-            <tr id="work-thead-row"></tr>
-          </thead>
-          <tbody id="work-table-body">
-            <tr>
-              <td colspan="7" class="text-center text-muted py-4">載入中...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="pager-bar" id="pager-bar">
-        <span class="disabled">1</span>
-      </div>
+    <div>
+      <label class="form-label mb-1">起始日期</label>
+      <input type="date" name="from" class="form-control">
+    </div>
+    <div>
+      <label class="form-label mb-1">結束日期</label>
+      <input type="date" name="to" class="form-control">
+    </div>
+    <div class="ms-auto">
+      <button class="btn btn-primary" type="submit">套用篩選</button>
     </div>
   </div>
+</form>
 
+<!-- 資料表 -->
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0" id="work-table">
+        <thead class="table-light">
+          <tr id="work-thead-row"></tr>
+        </thead>
+        <tbody id="work-table-body">
+          <tr>
+            <td colspan="7" class="text-center text-muted py-4">載入中...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pager-bar" id="pager-bar">
+      <span class="disabled">1</span>
+    </div>
+  </div>
+</div>
 
 <!-- 查看 Modal -->
 <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true">
