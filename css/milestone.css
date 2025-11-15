@@ -1,0 +1,681 @@
+/* 
+ * 里程碑頁面 - 遊戲風格樣式
+ * 
+ * 修改記錄：
+ * 2025-01-XX XX:XX - 標題置中對齊
+ *   改動內容：將標題文字置中對齊
+ *   相關功能：頁面標題區域
+ *   方式：在 .page-title 中添加 text-align: center
+ * 
+ * 2025-01-XX XX:XX - 調整標題內邊距
+ *   改動內容：增加標題區域的內邊距，讓標題文字與外框保持適當距離
+ *   相關功能：頁面標題區域
+ *   方式：將 padding 從 0.875rem 1rem 調整為 1rem 1.5rem
+ * 
+ * 2025-01-XX XX:XX - 移除圖標、簡化配色、整合新增按鈕到篩選區域
+ *   改動內容：移除所有圖標（除新增按鈕的加號），將背景從漸變紫色改為灰色，新增按鈕整合到篩選區域
+ *   相關功能：頁面整體視覺設計、圖標顯示、配色方案
+ *   方式：移除所有 <i> 標籤，簡化背景為單色，整合按鈕到 filter-header，簡化所有漸變和動畫效果
+ * 
+ * 2025-01-XX XX:XX - 分離標題和新增按鈕，優化間距和篩選尺寸
+ *   改動內容：將新增按鈕從標題區域分離，增加圖標與標題間距，進一步縮小篩選區域
+ *   相關功能：頁面標題區域、新增按鈕區域、篩選區域
+ *   方式：創建獨立的 action-header，調整 gap 和 padding，縮小篩選區域所有尺寸
+ * 
+ * 2025-01-XX XX:XX - 優化標題和篩選區域，提升親和力
+ *   改動內容：簡化標題設計（移除漸變文字、動畫），縮小篩選區域尺寸，優化按鈕樣式
+ *   相關功能：頁面標題區域、篩選區域
+ *   方式：使用簡潔的顏色和字體，減少視覺複雜度，縮小 padding 和字體大小
+ * 
+ * 2025-01-XX XX:XX - 優化排版設計
+ *   改動內容：改善卡片內部排版、資訊層次結構、間距和視覺分組
+ *   相關功能：里程碑卡片內容排版優化
+ *   方式：使用 flexbox 和 grid 布局、優化字體大小和行高、添加資訊分組背景
+ * 
+ * 2025-01-XX XX:XX - 美化版面設計
+ *   改動內容：增強視覺效果，添加漸變背景、陰影、動畫效果
+ *   相關功能：里程碑管理頁面整體美化
+ *   方式：使用 CSS3 漸變、陰影、過渡動畫、響應式設計
+ */
+
+.milestone-container {
+    padding: 1rem;
+    background: #f8f9fa;
+    min-height: 100vh;
+    position: relative;
+}
+
+@media (min-width: 768px) {
+    .milestone-container {
+        padding: 2rem;
+    }
+}
+
+/* 頁面標題 */
+.milestone-container .page-header {
+    margin-bottom: 0.75rem;
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    display: block !important;
+    justify-content: center !important;
+}
+
+/* 篩選標題區域 */
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.milestone-container .page-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+    text-align: center !important;
+}
+
+@media (min-width: 768px) {
+    .milestone-container .page-title {
+        font-size: 1.4rem;
+    }
+}
+
+.btn-create-milestone {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
+}
+
+.btn-create-milestone:hover {
+    background: #5568d3;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+}
+
+.btn-create-milestone:active {
+    background: #4a5bc4;
+    box-shadow: 0 1px 2px rgba(102, 126, 234, 0.3);
+}
+
+/* 篩選區域 */
+.filter-section {
+    margin-bottom: 1rem;
+}
+
+.filter-card {
+    background: white;
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.filter-label {
+    font-weight: 500;
+    color: #475569;
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+.filter-controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+}
+
+@media (min-width: 576px) {
+    .filter-controls {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .filter-controls {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+}
+
+.filter-select {
+    width: 100%;
+    padding: 0.4rem 0.75rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    background: white;
+    transition: all 0.2s ease;
+    color: #475569;
+}
+
+.filter-select:hover {
+    border-color: #cbd5e1;
+}
+
+@media (min-width: 768px) {
+    .filter-select {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.875rem;
+    }
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+/* 里程碑網格 */
+.milestones-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 576px) {
+    .milestones-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.25rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .milestones-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+/* 里程碑卡片 */
+.milestone-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .milestone-card {
+        border-radius: 20px;
+        padding: 1.5rem;
+    }
+}
+
+
+.milestone-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #cbd5e1;
+}
+
+/* 狀態樣式 */
+.milestone-card.status-pending {
+    border-left: 5px solid #f59e0b;
+}
+
+.milestone-card.status-completed {
+    border-left: 5px solid #10b981;
+}
+
+.milestone-card.status-approved {
+    border-left: 5px solid #3b82f6;
+}
+
+/* 卡片頂部 */
+.card-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(226, 232, 240, 0.5);
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.status-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.approved {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-icon {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.btn-icon:hover {
+    background: #f1f5f9;
+    color: #334155;
+    border-color: #cbd5e1;
+}
+
+.btn-icon.btn-danger {
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.btn-icon.btn-danger:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+
+/* 卡片內容 */
+.card-content {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.milestone-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    word-break: break-word;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+}
+
+@media (min-width: 768px) {
+    .milestone-title {
+        font-size: 1.6rem;
+    }
+}
+
+.milestone-desc {
+    color: #64748b;
+    margin: 0;
+    line-height: 1.7;
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #667eea;
+}
+
+/* 資訊分組 */
+.info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(248, 250, 252, 0.8);
+    border-radius: 10px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.requirement-link,
+.team-info {
+    color: #475569;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 0.5rem 0;
+}
+
+.time-info {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+}
+
+@media (min-width: 576px) {
+    .time-info {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.time-item {
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #475569;
+    border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.completion-info,
+.approval-info {
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #475569;
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    margin-top: 0.5rem;
+}
+
+/* 卡片底部 */
+.card-footer {
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid rgba(226, 232, 240, 0.5);
+}
+
+.btn-action {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-complete {
+    background: #10b981;
+    color: white;
+}
+
+.btn-complete:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-approve {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-approve:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* 空狀態 */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.empty-icon {
+    font-size: 5rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    color: #334155;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #64748b;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 95%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s ease;
+    margin: 1rem;
+    border: 1px solid #e2e8f0;
+}
+
+@media (min-width: 576px) {
+    .modal-content {
+        width: 90%;
+        border-radius: 20px;
+        margin: 0;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+@media (min-width: 768px) {
+    .modal-header {
+        padding: 1.5rem 2rem;
+    }
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+
+.btn-close-modal {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-close-modal:hover {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .modal-body {
+        padding: 2rem;
+    }
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.5rem;
+}
+
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1),
+                inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.btn-cancel,
+.btn-submit {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.btn-cancel:hover {
+    background: #e2e8f0;
+}
+
+.btn-submit {
+    background: #667eea;
+    color: white;
+}
+
+.btn-submit:hover {
+    background: #5568d3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
+
+.btn-submit:active {
+    background: #4a5bc4;
+    transform: translateY(0);
+}
+
+.text-danger {
+    color: #dc2626;
+}
+
+/* 文字顏色輔助 */
+.text-muted {
+    color: #64748b;
+    font-weight: normal;
+    font-size: 0.9em;
+}
+

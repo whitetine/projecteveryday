@@ -38,6 +38,12 @@ switch (true) {
         require __DIR__ . '/modules/notify.php';
         break;
 
+    // 里程碑管理
+    case in_array($do, ['get_milestones', 'get_requirements', 'get_teams', 'get_requirement_progress',
+                        'create_milestone', 'update_milestone', 'delete_milestone', 'approve_milestone']):
+        require __DIR__ . '/modules/milestone.php';
+        break;
+
     default:
         // 統一以 JSON 提示未知 action（避免前端誤判「不是 JSON」）
         json_err('Unknown action: ' . $do);
