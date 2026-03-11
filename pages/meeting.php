@@ -433,6 +433,27 @@
                             contenteditable="true"
                             data-placeholder="在此輸入會議內容，或使用左側工具上傳錄音..."></div>
                     </div>
+
+                    <!-- 隱藏的上傳 / 錄音控制元件，提供 JS 綁定使用 -->
+                    <div style="display:none;">
+                        <!-- 文字檔上傳 -->
+                        <input type="file" id="textInput" multiple>
+                        <div id="uploadTextZone"></div>
+
+                        <!-- 圖片上傳（圖片 OCR） -->
+                        <input type="file" id="imageInput" accept="image/*" multiple>
+                        <div id="uploadImageZone"></div>
+
+                        <!-- 音檔上傳（語音轉錄） -->
+                        <input type="file" id="audioInput" accept="audio/*" multiple>
+                        <div id="uploadAudioZone"></div>
+
+                        <!-- 系統錄音控制（開始 / 停止） -->
+                        <button type="button" id="recordBtn"></button>
+                        <button type="button" id="stopRecordBtn"></button>
+                        <span id="recordingStatus"></span>
+                        <span id="recordingTime"></span>
+                    </div>
                 </div>
             <?php endif; ?>
         </main>

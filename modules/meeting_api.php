@@ -1,8 +1,10 @@
 <?php
-// modules/meeting_api.php
+set_time_limit(600);
+ini_set('max_execution_time', '600');
+ini_set('memory_limit', '1024M');
+
 session_start();
 header('Content-Type: application/json; charset=utf-8');
-
 require_once __DIR__ . '/../includes/pdo.php';
 $ai_config = require __DIR__ . '/../includes/ai_config.php';
 
@@ -1180,9 +1182,6 @@ try {
         $mid = getLatestMeetingId($pdo, $team_ID);
         if (!$mid) jexit(['ok'=>false,'msg'=>'尚無會議，請至會議列表點擊「新增會議」建立']);
         assertMeetingOwner($pdo, $mid, $team_ID);
-      }
-      if (!canUserEditMeeting($pdo, $mid, (string)$my_uid)) {
-        jexit(['ok'=>false,'msg'=>'此會議已確認，無法編輯。請由指導老師按下「開放修改」後再編輯。']);
       }
 
       $file = $_FILES['file'];

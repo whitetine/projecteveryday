@@ -182,13 +182,9 @@ if (empty($_SESSION['u_ID'])) { header('Location: ../index.php'); exit; }
     <div class="ta-card">
       <div class="ta-card-hd">
         <div class="ta-toolbar-row">
-          <select v-if="forms.length" class="form-select form-select-sm ta-form-select" v-model="selFormId" @change="onFormSelectChange">
-            <option value="">-- 選擇要編輯的申請單 --</option>
-            <option v-for="f in forms" :key="f.taf_ID" :value="Number(f.taf_ID)">
-              {{ f.taf_title }} ({{ getCohortName(f.taf_cohort_ID) || f.taf_cohort_ID }})
-            </option>
-          </select>
-          <button class="btn btn-outline-secondary btn-sm flex-shrink-0" @click="reloadAll">重整</button>
+          <button class="btn btn-outline-secondary btn-sm flex-shrink-0" @click="goBack">
+            <i class="fas fa-arrow-left me-1"></i>上一頁
+          </button>
         </div>
       </div>
 
