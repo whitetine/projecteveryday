@@ -11,24 +11,48 @@ if (!isset($_SESSION['u_ID']) || ($_SESSION['role_ID'] ?? 0) != 6) {
 require_once __DIR__ . '/../includes/pdo.php';
 $u_ID = $_SESSION['u_ID'];
 
-// 2. 檢查是否已有「已通過」的團隊 (PHP 端先擋一次，避免畫面閃爍)
+// 2. 檢查是否已有「已結案且申請通過」的團隊
+// 規則：只有 teamdata.team_status = 3 且 對應 teamapply.tap_status = 3 才視為「完全通過」，顯示提示卡片
 $hasTeam = false;
 $teamName = '';
 try {
     // 兼容 team_u_ID 或 u_ID 欄位名稱
     $col = $conn->query("SHOW COLUMNS FROM teammember LIKE 'team_u_ID'")->fetch() ? 'team_u_ID' : 'u_ID';
-    $sql = "SELECT t.team_project_name FROM teamdata t 
-            JOIN teammember tm ON t.team_ID = tm.team_ID 
-            WHERE tm.$col = ? AND t.team_status = 1 AND tm.tm_status = 1 LIMIT 1";
-    $stmt = $conn->prepare($sql);
+
+    // 找出學生目前所屬的最新一個 team（含 team_status），限制 tm_status = 1
+    $sqlTeam = "SELECT t.team_ID, t.team_project_name, t.team_status
+                FROM teamdata t
+                JOIN teammember tm ON t.team_ID = tm.team_ID
+                WHERE tm.$col = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1)
+                ORDER BY t.team_update_d DESC, t.team_ID DESC
+                LIMIT 1";
+    $stmt = $conn->prepare($sqlTeam);
     $stmt->execute([$u_ID]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row) {
-        $hasTeam = true;
-        $teamName = $row['team_project_name'];
+    $teamRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($teamRow) {
+        $teamStatus = (int)($teamRow['team_status'] ?? 0);
+        $teamNameCandidate = $teamRow['team_project_name'] ?? '';
+
+        // 查詢該學生最新的 teamapply 狀態
+        $tapStatus = null;
+        try {
+            $st2 = $conn->prepare("SELECT tap_status FROM teamapply WHERE tap_u_ID = ? ORDER BY tap_update_d DESC LIMIT 1");
+            $st2->execute([$u_ID]);
+            $tapRow = $st2->fetch(PDO::FETCH_ASSOC);
+            if ($tapRow) {
+                $tapStatus = (int)($tapRow['tap_status'] ?? 0);
+            }
+        } catch (Exception $e2) {
+            $tapStatus = null;
+        }
+
+        if ($teamStatus === 3 && $tapStatus === 3) {
+            $hasTeam = true;
+            $teamName = $teamNameCandidate;
+        }
     }
-} catch (Exception $e) { /* 忽略錯誤 */
-}
+} catch (Exception $e) { /* 忽略錯誤 */ }
 
 // 3. 獲取類組選項 (由 PHP 直接渲染，加快速度)
 $groups = $conn->query("SELECT group_ID, group_name FROM groupdata WHERE group_status = 1")->fetchAll(PDO::FETCH_ASSOC);

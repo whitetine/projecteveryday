@@ -182,9 +182,7 @@ if (empty($_SESSION['u_ID'])) { header('Location: ../index.php'); exit; }
     <div class="ta-card">
       <div class="ta-card-hd">
         <div class="ta-toolbar-row">
-          <button class="btn btn-outline-secondary btn-sm flex-shrink-0" @click="goBack">
-            <i class="fas fa-arrow-left me-1"></i>上一頁
-          </button>
+          <!-- 建立指導申請單時，上方僅保留簡潔空間；實際「上一頁」按鈕放在下方卡片標題列 -->
         </div>
       </div>
 
@@ -197,9 +195,14 @@ if (empty($_SESSION['u_ID'])) { header('Location: ../index.php'); exit; }
           </div> -->
 
           <div class="ta-card" style="border-radius:12px;">
-            <div class="ta-card-hd">
-              <div class="fw-bold">申請單</div>
-              <div class="ta-muted">建立後可從上方下拉選單選擇編輯</div>
+            <div class="ta-card-hd d-flex justify-content-between align-items-center gap-2 flex-wrap">
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button class="btn btn-outline-secondary btn-sm flex-shrink-0" @click="goBack">
+                  <i class="fas fa-arrow-left me-1"></i>上一頁
+                </button>
+                <div class="fw-bold mb-0">申請單</div>
+              </div>
+              <div class="ta-muted" style="font-size:0.9rem;">建立後可從上方下拉選單選擇編輯</div>
             </div>
             <div class="ta-card-bd">
               <div class="mb-2">
