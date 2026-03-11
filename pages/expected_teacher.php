@@ -217,11 +217,6 @@
                         <p>可用勾選標記完成，並支援編輯 / 刪除 (每次異動需用文字說明！)。</p>
                     </div>
                 </div>
-                <div class="outcome-tools">
-                    <button class="btn-soft btn-primary" type="button" @click="openAllLogs(true)">
-                        查看異動紀錄
-                    </button>
-                </div>
             </div>
             <div class="outcome-table-wrap">
                 <table class="outcome-table">
@@ -278,16 +273,15 @@
                             </td>
                             <!-- 最後編輯時間/者（照你原本顯示方式） -->
                             <td>
-                                <button
-                                    type="button"
-                                    class="last-edit-btn"
-                                    @click="epxected_openLog(i)">
-                                    <div class="leb-time">{{ i.rd_finish_d || '-' }}</div>
-                                    <div class="leb-user">
+                                <div class="leb-time">{{ i.rd_finish_d || '-' }}</div>
+                                <div class="leb-user">
+                                    <template v-if="Number(i.rd_status) === 2">
+                                        <span style="color:#dc3545; font-weight:700;">老師已經退回，請修改</span>
+                                    </template>
+                                    <template v-else>
                                         <span>{{ i.rd_u_name_b ?? '' }}</span>
-                                        <span class="leb-hint-inline">（點擊查看異動紀錄）</span>
-                                    </div>
-                                </button>
+                                    </template>
+                                </div>
                             </td>
 
                             <!-- 負責人 -->
