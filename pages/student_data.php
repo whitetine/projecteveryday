@@ -35,7 +35,7 @@ try {
 }
 
 try {
-  // 取得當前用戶的團隊ID
+  // 取得當前用戶的組別ID
   $stTeam = $conn->prepare("
     SELECT team_ID 
     FROM teammember 
@@ -57,7 +57,7 @@ try {
     exit;
   }
 
-  // 取得團隊名稱
+  // 取得組別名稱
   $stName = $conn->prepare("
     SELECT COALESCE(team_project_name, CONCAT('Team ', :tid)) as team_name
     FROM teamdata 
@@ -67,7 +67,7 @@ try {
   $teamResult = $stName->fetch(PDO::FETCH_ASSOC);
   $teamName = $teamResult ? ($teamResult['team_name'] ?: "Team {$teamId}") : "Team {$teamId}";
 
-  // 取得團隊成員（僅學生角色，排除自己）
+  // 取得組別成員（僅學生角色，排除自己）
   $stMembers = $conn->prepare("
     SELECT 
       u.u_ID,

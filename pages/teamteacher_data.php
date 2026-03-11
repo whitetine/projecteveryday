@@ -40,7 +40,7 @@ try {
     $userRoleUidField = columnExists($conn, 'userrolesdata', 'ur_u_ID') ? 'ur_u_ID' : 'u_ID';
     $hasAdvisorField = columnExists($conn, 'teamdata', 'advisor');
     
-    // 1. 獲取指導老師指導的所有團隊（兩種來源：teammember 或 teamdata.advisor）
+    // 1. 獲取指導老師指導的所有組別（兩種來源：teammember 或 teamdata.advisor）
     $stmt = $conn->prepare("
         SELECT COUNT(*) 
         FROM userrolesdata 
@@ -53,7 +53,7 @@ try {
         echo json_encode([
             'ok' => true,
             'groups' => [],
-            'actions' => ['您目前沒有指導任何團隊']
+            'actions' => ['您目前沒有指導任何組別']
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
@@ -65,7 +65,7 @@ try {
     $sql = "
         SELECT DISTINCT 
             t.team_ID,
-            COALESCE(t.team_project_name, CONCAT('團隊 ', t.team_ID)) AS team_name,
+            COALESCE(t.team_project_name, CONCAT('組別 ', t.team_ID)) AS team_name,
             t.team_update_d
         FROM teammember tm
         JOIN teamdata t ON tm.team_ID = t.team_ID
@@ -97,7 +97,7 @@ try {
         $sqlAdvisor = "
             SELECT DISTINCT 
                 t.team_ID,
-                COALESCE(t.team_project_name, CONCAT('團隊 ', t.team_ID)) AS team_name,
+                COALESCE(t.team_project_name, CONCAT('組別 ', t.team_ID)) AS team_name,
                 t.team_update_d
             FROM teamdata t
             WHERE t.advisor = ?
@@ -129,7 +129,7 @@ try {
     error_log("Teamteacher Data - User ID: {$u_ID}, Team User Field: {$teamUserField}, User Role UID Field: {$userRoleUidField}, Found Teams: " . count($teams));
     
     if (count($teams) === 0) {
-        // 調試：檢查是否有團隊成員記錄
+        // 調試：檢查是否有組別成員記錄
         $debugStmt = $conn->prepare("
             SELECT COUNT(*) as cnt
             FROM teammember tm
@@ -304,7 +304,7 @@ try {
             ];
         }
         
-        // 9. 獲取團隊成員（僅學生角色，role_ID = 6）
+        // 9. 獲取組別成員（僅學生角色，role_ID = 6）
         $stmt = $conn->prepare("
             SELECT 
                 u.u_ID,
@@ -358,26 +358,26 @@ try {
         $latestActions = ['暫無最新動態'];
     }
     
-    // 如果沒有團隊，返回空陣列和提示訊息
+    // 如果沒有組別，返回空陣列和提示訊息
     if (empty($groups)) {
         // 返回調試信息（僅在開發環境）
         $debugInfo = [];
         if (count($teams) === 0) {
-            $debugInfo['reason'] = '查詢未找到任何團隊';
+            $debugInfo['reason'] = '查詢未找到任何組別';
             $debugInfo['query_params'] = [
                 'u_ID' => $u_ID,
                 'teamUserField' => $teamUserField,
                 'userRoleUidField' => $userRoleUidField
             ];
         } else {
-            $debugInfo['reason'] = '團隊數據處理後為空';
+            $debugInfo['reason'] = '組別數據處理後為空';
             $debugInfo['teams_found'] = count($teams);
         }
         
         echo json_encode([
             'ok' => true,
             'groups' => [],
-            'actions' => ['目前沒有指導任何團隊，或團隊資料尚未建立'],
+            'actions' => ['目前沒有指導任何組別，或組別資料尚未建立'],
             'debug' => $debugInfo
         ], JSON_UNESCAPED_UNICODE);
         exit;

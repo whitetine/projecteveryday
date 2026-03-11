@@ -8,7 +8,7 @@ if (!isset($_SESSION['u_ID'])) {
 <link rel="stylesheet" href="css/student.css">
 
 <div class="container-fluid student-page">
-  <h3 class="mb-4">團隊成員</h3>
+  <h3 class="mb-4">組別成員</h3>
 
   <!-- 專題日總彙標題和成員列表 -->
   <div class="team-group-wrapper">

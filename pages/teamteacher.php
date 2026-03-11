@@ -1,7 +1,7 @@
 
 <div class="container py-4">
 
-    <h2 class="mb-4 fw-bold">我指導的團隊</h2>
+    <h2 class="mb-4 fw-bold">我指導的組別</h2>
 
     <!-- 📌 里程碑達成率圖表（暫時隱藏） -->
     <!--
