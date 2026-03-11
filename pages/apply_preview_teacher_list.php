@@ -13,7 +13,16 @@ if (
   exit;
 }
 
-// 指導老師審核：沿用同一組更新邏輯
+// 指導老師審核：沿用同一組更新邏輯；審核結果寫入 dcsub_status2（1=審核中, 2=退件, 3=已結案）
+$hasDcsubStatus2 = false;
+try {
+  $chk = $conn->prepare("SHOW COLUMNS FROM document_submissions LIKE 'dcsub_status2'");
+  $chk->execute();
+  $hasDcsubStatus2 = $chk->fetch() !== false;
+} catch (Throwable $e) {
+  $hasDcsubStatus2 = false;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $id = $_POST['apply_ID'] ?? null;
   $action = $_POST['action'] ?? null;
@@ -24,18 +33,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $u_ID = $_SESSION['u_ID'] ?? 0;
 
       if ($action === 'cancel_approve') {
+        $setParts = ["dc_approved_u_ID = NULL", "dcsub_approved_d = NULL", "dcsub_remark = NULL"];
+        if ($hasDcsubStatus2) $setParts[] = "dcsub_status2 = 1"; // 審核中
         $stmt = $conn->prepare("
                     UPDATE document_submissions
-                    SET dc_approved_u_ID = NULL, dcsub_approved_d = NULL, dcsub_remark = NULL
+                    SET " . implode(', ', $setParts) . "
                     WHERE sub_ID = ?
                 ");
         $stmt->execute([$id]);
         $status = 0;
         $statusText = '待審核';
       } elseif ($action === 'approve') {
+        $setParts = ["dc_approved_u_ID = ?", "dcsub_approved_d = NOW()", "dcsub_remark = NULL"];
+        if ($hasDcsubStatus2) $setParts[] = "dcsub_status2 = 3"; // 已結案
         $stmt = $conn->prepare("
                     UPDATE document_submissions
-                    SET dc_approved_u_ID = ?, dcsub_approved_d = NOW(), dcsub_remark = NULL
+                    SET " . implode(', ', $setParts) . "
                     WHERE sub_ID = ?
                 ");
         $stmt->execute([$u_ID, $id]);
@@ -44,9 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       } else { // reject
         $reason = trim($_POST['reject_reason'] ?? '');
         $remark = 'REJECTED' . ($reason !== '' ? '：' . $reason : '');
+        $setParts = ["dc_approved_u_ID = ?", "dcsub_approved_d = NULL", "dcsub_remark = ?"];
+        if ($hasDcsubStatus2) $setParts[] = "dcsub_status2 = 2"; // 退件
         $stmt = $conn->prepare("
                     UPDATE document_submissions
-                    SET dc_approved_u_ID = ?, dcsub_approved_d = NULL, dcsub_remark = ?
+                    SET " . implode(', ', $setParts) . "
                     WHERE sub_ID = ?
                 ");
         $stmt->execute([$u_ID, $remark, $id]);
@@ -130,7 +145,8 @@ try {
       $page = min($page, $pages);
 
       $sql = "SELECT s.sub_ID, s.doc_ID, s.dcsub_u_ID, s.dcsub_status, s.dcsub_sub_d, s.dcsub_answers, s.attach_path,
-                       s.dcsub_approved_d, s.dc_approved_u_ID, s.dcsub_remark,
+                       s.dcsub_approved_d, s.dc_approved_u_ID, s.dcsub_remark"
+        . ($hasDcsubStatus2 ? ", s.dcsub_status2" : "") . ",
                        f.doc_name,
                        u.u_name AS apply_user,
                        td.team_project_name AS team_name
@@ -165,7 +181,8 @@ try {
       $page = min($page, $pages);
 
       $sql = "SELECT s.sub_ID, s.doc_ID, s.dcsub_u_ID, s.dcsub_status, s.dcsub_sub_d, s.dcsub_answers, s.attach_path,
-                       s.dcsub_approved_d, s.dc_approved_u_ID, s.dcsub_remark,
+                       s.dcsub_approved_d, s.dc_approved_u_ID, s.dcsub_remark"
+        . ($hasDcsubStatus2 ? ", s.dcsub_status2" : "") . ",
                        f.doc_name,
                        u.u_name AS apply_user,
                        td.team_project_name AS team_name
@@ -324,21 +341,30 @@ try {
               </tr>
             <?php endif; ?>
             <?php foreach ($rows as $r):
-              $approved_d = $r['dcsub_approved_d'] ?? null;
               $remark = $r['dcsub_remark'] ?? null;
-              $isRejected = ($remark !== null && $remark !== '' && strpos((string)$remark, 'REJECT') === 0);
-              $isApproved = !empty($approved_d);
-
-              if ($isRejected) {
-                $st = 2;
-                $statusText = '退件';
-              } elseif ($isApproved) {
-                $st = 1;
-                $statusText = '已通過';
+              // 審核狀態：優先使用 dcsub_status2（1=審核中, 2=退件, 3=已結案），無則依 dcsub_approved_d / dcsub_remark 推斷
+              $status2 = isset($r['dcsub_status2']) ? (int)$r['dcsub_status2'] : null;
+              if ($status2 !== null && $status2 >= 1 && $status2 <= 3) {
+                if ($status2 === 1) { $st = 0; $statusText = '審核中'; }
+                elseif ($status2 === 2) { $st = 2; $statusText = '退件'; }
+                else { $st = 1; $statusText = '已結案'; }
               } else {
-                $st = 0;
-                $statusText = '待審核';
+                $approved_d = $r['dcsub_approved_d'] ?? null;
+                $isRejectedByRemark = ($remark !== null && $remark !== '' && strpos((string)$remark, 'REJECT') === 0);
+                $isApproved = !empty($approved_d);
+                if ($isRejectedByRemark) {
+                  $st = 2;
+                  $statusText = '退件';
+                } elseif ($isApproved) {
+                  $st = 1;
+                  $statusText = '已通過';
+                } else {
+                  $st = 0;
+                  $statusText = '待審核';
+                }
               }
+              $isRejected = ($st === 2);
+              $isApproved = ($st === 1);
 
               $docId = (int) $r['doc_ID'];
               $subId = (int) $r['sub_ID'];

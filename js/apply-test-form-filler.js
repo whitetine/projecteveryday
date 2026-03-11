@@ -18,6 +18,8 @@ window.mountApplyTestFormFiller = function (mountSelector) {
           advisor: ''
         },
         submittedAt: '',
+        isRejected: false,
+        rejectReason: '',
         supplementPdfFile: null,
         supplementPdfFileName: '',
         draftAttachName: '',
@@ -774,12 +776,21 @@ window.mountApplyTestFormFiller = function (mountSelector) {
             this.setTodayForEmptyDateQuestions();
             this.initAllTableStates();
 
-            // 檢查是否已提交（dcsub_status = 'submitted'），一份表單只能提交一次，提交後唯讀
-            if (data.submission_status === 'submitted' || data.submission_status === true) {
+            // 檢查是否已提交（dcsub_status = 1）：若為退件(dcsub_status2=2)則可重新填寫並送出
+            if (data.submission_status === 'rejected') {
+              this.isSubmitted = false;
+              this.isRejected = true;
+              this.rejectReason = data.reject_reason || '';
+              this.submittedAt = data.submitted_at ? this.formatDateTime(data.submitted_at) : '';
+            } else if (data.submission_status === 'submitted' || data.submission_status === true) {
               this.isSubmitted = true;
+              this.isRejected = false;
+              this.rejectReason = '';
               this.submittedAt = data.submitted_at ? this.formatDateTime(data.submitted_at) : '已提交';
             } else {
               this.isSubmitted = false;
+              this.isRejected = false;
+              this.rejectReason = '';
               this.submittedAt = '';
             }
 
@@ -1974,6 +1985,7 @@ window.mountApplyTestFormFiller = function (mountSelector) {
 
             // 一份表單只能提交一次：設為已提交並顯示「本表單已提交」橫幅，表單變唯讀
             this.isSubmitted = true;
+            this.isRejected = false;
             this.submittedAt = data.submitted_at ? this.formatDateTime(data.submitted_at) : this.formatDateTime(new Date().toISOString());
             this.$nextTick(() => this.$forceUpdate()); // 強制更新視圖，確保所有 :disabled="isSubmitted" 立即生效
 

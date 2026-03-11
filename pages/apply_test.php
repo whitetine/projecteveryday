@@ -53,8 +53,22 @@ if ($currentUser['u_name'] === '' && isset($_SESSION['u_name'])) {
 <div id="app" class="main" v-cloak>
     <div class="form-fill-container">
         <div class="form-card">
+            <!-- 退件提示：顯示退件原因並可重新填寫與送出 -->
+            <div v-if="selectedFileID && isRejected" class="alert alert-danger rejected-banner mb-4 py-3 px-4"
+                role="alert" style="border-left: 5px solid #dc3545; font-size: 1.05rem;">
+                <div class="d-flex align-items-start">
+                    <i class="fa-solid fa-circle-xmark me-3 mt-1" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <strong class="d-block mb-1">您的申請已被退件</strong>
+                        <p v-if="rejectReason" class="mb-2"><strong>退件原因：</strong><span v-text="rejectReason"></span></p>
+                        <p v-else class="mb-2 text-muted">請根據審核意見修改後重新送出。</p>
+                        <div v-if="submittedAt" class="small text-muted">原提交時間：{{ submittedAt }}</div>
+                        <p class="mb-0 mt-2 small text-dark">您可以修改下方內容後重新送出申請。</p>
+                    </div>
+                </div>
+            </div>
             <!-- 送出後明顯提示：該表單該組已完成繳交，一份表單一組僅能填寫一次 -->
-            <div v-if="selectedFileID && isSubmitted" class="alert alert-success submitted-banner mb-4 py-3 px-4"
+            <div v-if="selectedFileID && isSubmitted && !isRejected" class="alert alert-success submitted-banner mb-4 py-3 px-4"
                 role="alert" style="border-left: 5px solid #198754; font-size: 1.05rem;">
                 <div class="d-flex align-items-center">
                     <i class="fa-solid fa-circle-check me-3" style="font-size: 1.5rem;"></i>

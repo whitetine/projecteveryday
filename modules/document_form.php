@@ -14,6 +14,13 @@ global $conn;
 
 $docSubHasQr = function_exists('document_submissions_has_column') ? document_submissions_has_column($conn, 'qr_modified_at') : false;
 $docSubHasSignD = function_exists('document_submissions_has_column') ? document_submissions_has_column($conn, 'sign_uploaded_d') : false;
+$docSubHasStatus2 = false;
+try {
+    $stmt = $conn->prepare("SHOW COLUMNS FROM document_submissions LIKE 'dcsub_status2'");
+    $stmt->execute();
+    $docSubHasStatus2 = $stmt->rowCount() > 0;
+} catch (Throwable $e) {
+}
 
 // 處理 JSON 請求
 $p = $_POST;
@@ -1782,14 +1789,17 @@ case 'get_document_form_detail':
                 // 忽略，project_data 保持預設
             }
 
-            // 檢查提交狀態：同組任一人已繳交即視為已繳交（一份表單一組只能繳交一次，繳交後全組唯讀）
+            // 檢查提交狀態：同組任一人已繳交即視為已繳交；若為退件(dcsub_status2=2)則可重新上傳
             $submission_status = null;
             $submitted_at = null;
+            $reject_reason = null;
             try {
+                $selCols = 'ds.dcsub_status, ds.dcsub_sub_d, ds.dcsub_remark';
+                if ($docSubHasStatus2) $selCols .= ', ds.dcsub_status2';
                 if (!empty($teamRow['team_ID'])) {
                     $team_ID = (int)$teamRow['team_ID'];
                     $stmtSub = $conn->prepare("
-                        SELECT ds.dcsub_status, ds.dcsub_sub_d
+                        SELECT {$selCols}
                         FROM document_submissions ds
                         INNER JOIN teammember tm ON tm.{$teamUserField} = ds.dcsub_u_ID AND tm.team_ID = ?
                         WHERE ds.doc_ID = ? AND ds.dcsub_status = 1
@@ -1799,8 +1809,10 @@ case 'get_document_form_detail':
                     $stmtSub->execute([$team_ID, $doc_ID]);
                     $subRow = $stmtSub->fetch(PDO::FETCH_ASSOC);
                 } else {
+                    $selColsSingle = 'dcsub_status, dcsub_sub_d, dcsub_remark';
+                    if ($docSubHasStatus2) $selColsSingle .= ', dcsub_status2';
                     $stmtSub = $conn->prepare("
-                        SELECT dcsub_status, dcsub_sub_d FROM document_submissions
+                        SELECT {$selColsSingle} FROM document_submissions
                         WHERE doc_ID = ? AND dcsub_u_ID = ? AND dcsub_status = 1
                         ORDER BY dcsub_sub_d DESC LIMIT 1
                     ");
@@ -1808,14 +1820,25 @@ case 'get_document_form_detail':
                     $subRow = $stmtSub->fetch(PDO::FETCH_ASSOC);
                 }
                 if ($subRow && (int)($subRow['dcsub_status'] ?? 0) === 1) {
-                    $submission_status = 'submitted';
+                    $status2 = isset($subRow['dcsub_status2']) ? (int)$subRow['dcsub_status2'] : null;
                     $submitted_at = !empty($subRow['dcsub_sub_d']) ? $subRow['dcsub_sub_d'] : null;
+                    if ($status2 === 2) {
+                        $submission_status = 'rejected';
+                        $remark = trim((string)($subRow['dcsub_remark'] ?? ''));
+                        $reject_reason = $remark !== '' ? preg_replace('/^REJECTED[：:]\s*/u', '', $remark) : '';
+                    } else {
+                        $submission_status = 'submitted';
+                    }
                 }
             } catch (Throwable $e) {
-                // 忽略錯誤
+                // 忽略錯誤（例如資料表無 dcsub_status2 欄位時）
             }
 
-            json_ok(['form' => $form, 'project_data' => $project_data, 'submission_status' => $submission_status, 'submitted_at' => $submitted_at]);
+            $payload = ['form' => $form, 'project_data' => $project_data, 'submission_status' => $submission_status, 'submitted_at' => $submitted_at];
+            if ($reject_reason !== null) {
+                $payload['reject_reason'] = $reject_reason;
+            }
+            json_ok($payload);
         } catch (PDOException $e) {
             json_err('資料庫錯誤：' . $e->getMessage(), 'DB_ERROR', 500);
         } catch (Throwable $e) {
@@ -2454,6 +2477,7 @@ case 'get_document_form_detail':
                     }
                     try {
                         $upParts = ['dcsub_answers = ?', 'attach_name = ?', 'attach_path = ?', 'sign_name = ?', 'sign_path = ?', 'original_pdf_path = ?', 'verify_result = ?', 'dcsub_status = 1', 'dcsub_sub_d = NOW()', 'dcsub_updated_d = NOW()'];
+                        if ($docSubHasStatus2) $upParts[] = 'dcsub_status2 = 1'; // 審核中
                         $upParams = [$dcsub_answers, $attach_name, $attach_path, $sign_name, $sign_path, $original_pdf_path, $verify_result, $current_sub_id];
                         if ($docSubHasSignD) {
                             $upParts[] = 'sign_uploaded_d = ?';
@@ -2467,6 +2491,7 @@ case 'get_document_form_detail':
                     } catch (Throwable $e) {
                         try {
                             $upParts = ['dcsub_answers = ?', 'attach_name = ?', 'attach_path = ?', 'sign_name = ?', 'sign_path = ?', 'original_pdf_path = ?', 'verify_result = ?', 'dcsub_status = 1', 'dcsub_sub_d = NOW()', 'dcsu_updated_d = NOW()'];
+                            if ($docSubHasStatus2) $upParts[] = 'dcsub_status2 = 1';
                             $upParams = [$dcsub_answers, $attach_name, $attach_path, $sign_name, $sign_path, $original_pdf_path, $verify_result, $current_sub_id];
                             if ($docSubHasSignD) {
                                 $upParts[] = 'sign_uploaded_d = ?';
@@ -2478,12 +2503,18 @@ case 'get_document_form_detail':
                             }
                             $conn->prepare("UPDATE document_submissions SET " . implode(', ', $upParts) . " WHERE sub_ID = ?")->execute($upParams);
                         } catch (Throwable $e2) {
-                            $conn->prepare("UPDATE document_submissions SET dcsub_answers = ?, attach_name = ?, attach_path = ?, sign_name = ?, sign_path = ?, dcsub_status = 1, dcsub_sub_d = NOW(), dcsu_updated_d = NOW() WHERE sub_ID = ?")->execute([$dcsub_answers, $attach_name, $attach_path, $sign_name, $sign_path, $current_sub_id]);
+                            $setFallback = "dcsub_answers = ?, attach_name = ?, attach_path = ?, sign_name = ?, sign_path = ?, dcsub_status = 1, dcsub_sub_d = NOW(), dcsu_updated_d = NOW()";
+                            if ($docSubHasStatus2) $setFallback .= ", dcsub_status2 = 1";
+                            $conn->prepare("UPDATE document_submissions SET " . $setFallback . " WHERE sub_ID = ?")->execute([$dcsub_answers, $attach_name, $attach_path, $sign_name, $sign_path, $current_sub_id]);
                         }
                     }
                 } else {
                     $ic = ['doc_ID', 'dcsub_u_ID', 'dcsub_status', 'dcsub_answers', 'attach_name', 'attach_path', 'sign_name', 'sign_path', 'original_pdf_path', 'verify_result', 'dcsub_created_d', 'dcsub_sub_d', 'dcsub_updated_d'];
                     $iv = [$doc_ID, $u_ID, 1, $dcsub_answers, $attach_name, $attach_path, $sign_name, $sign_path, $original_pdf_path, $verify_result];
+                    if ($docSubHasStatus2) {
+                        array_splice($ic, 10, 0, ['dcsub_status2']);
+                        array_splice($iv, 10, 0, [1]);
+                    }
                     if ($docSubHasSignD) {
                         array_splice($ic, 9, 0, ['sign_uploaded_d']);
                         array_splice($iv, 8, 0, [$sign_uploaded_d]);
@@ -2513,12 +2544,12 @@ case 'get_document_form_detail':
                     $fid = (int)$fallbackExisting['sub_ID'];
                     try {
                         $conn->prepare("
-                            UPDATE document_submissions SET dcsub_answers = ?, attach_name = ?, attach_path = ?, dcsub_status = 1, dcsub_sub_d = NOW(), dcsub_updated_d = NOW() WHERE sub_ID = ?
+                            UPDATE document_submissions SET dcsub_answers = ?, attach_name = ?, attach_path = ?, dcsub_status = 1, dcsub_sub_d = NOW(), dcsub_updated_d = NOW()" . ($docSubHasStatus2 ? ", dcsub_status2 = 1" : "") . " WHERE sub_ID = ?
                         ")->execute([$dcsub_answers, $attach_name, $attach_path, $fid]);
                     } catch (Throwable $e2) {
                         try {
                             $conn->prepare("
-                                UPDATE document_submissions SET dcsub_answers = ?, attach_name = ?, attach_path = ?, dcsub_status = 1, dcsub_sub_d = NOW(), dcsu_updated_d = NOW() WHERE sub_ID = ?
+                                UPDATE document_submissions SET dcsub_answers = ?, attach_name = ?, attach_path = ?, dcsub_status = 1, dcsub_sub_d = NOW(), dcsu_updated_d = NOW()" . ($docSubHasStatus2 ? ", dcsub_status2 = 1" : "") . " WHERE sub_ID = ?
                             ")->execute([$dcsub_answers, $attach_name, $attach_path, $fid]);
                         } catch (Throwable $e3) {
                             error_log('submit_document_form document_submissions fallback update: ' . $e3->getMessage());
@@ -2527,15 +2558,21 @@ case 'get_document_form_detail':
                     $existing = $existing ?? $fallbackExisting;
                 } else {
                     try {
+                        $cols = "doc_ID, dcsub_u_ID, dcsub_status, dcsub_answers, attach_name, attach_path, dcsub_created_d, dcsub_sub_d, dcsub_updated_d";
+                        $vals = "?, ?, 1, ?, ?, ?, NOW(), NOW(), NOW()";
+                        if ($docSubHasStatus2) { $cols .= ", dcsub_status2"; $vals .= ", 1"; }
                         $conn->prepare("
-                            INSERT INTO document_submissions (doc_ID, dcsub_u_ID, dcsub_status, dcsub_answers, attach_name, attach_path, dcsub_created_d, dcsub_sub_d, dcsub_updated_d)
-                            VALUES (?, ?, 1, ?, ?, ?, NOW(), NOW(), NOW())
+                            INSERT INTO document_submissions ($cols)
+                            VALUES ($vals)
                         ")->execute([$doc_ID, $u_ID, $dcsub_answers, $attach_name, $attach_path]);
                     } catch (Throwable $e2) {
                         try {
+                            $cols = "doc_ID, dcsub_u_ID, dcsub_status, dcsub_answers, attach_name, attach_path, dcsub_created_d, dcsub_sub_d, dcsu_updated_d";
+                            $vals = "?, ?, 1, ?, ?, ?, NOW(), NOW(), NOW()";
+                            if ($docSubHasStatus2) { $cols .= ", dcsub_status2"; $vals .= ", 1"; }
                             $conn->prepare("
-                                INSERT INTO document_submissions (doc_ID, dcsub_u_ID, dcsub_status, dcsub_answers, attach_name, attach_path, dcsub_created_d, dcsub_sub_d, dcsu_updated_d)
-                                VALUES (?, ?, 1, ?, ?, ?, NOW(), NOW(), NOW())
+                                INSERT INTO document_submissions ($cols)
+                                VALUES ($vals)
                             ")->execute([$doc_ID, $u_ID, $dcsub_answers, $attach_name, $attach_path]);
                         } catch (Throwable $e3) {
                             error_log('submit_document_form document_submissions: ' . $e3->getMessage());
@@ -2582,7 +2619,7 @@ case 'get_document_form_detail':
                 $conn->prepare("
                     UPDATE document_submissions
                     SET dcsub_status = 1,
-                        dcsub_sub_d = COALESCE(dcsub_sub_d, NOW())
+                        dcsub_sub_d = COALESCE(dcsub_sub_d, NOW())" . ($docSubHasStatus2 ? ",\n                        dcsub_status2 = 1" : "") . "
                     WHERE doc_ID = ? AND dcsub_u_ID = ?
                     ORDER BY dcsub_updated_d DESC
                     LIMIT 1
@@ -2593,7 +2630,7 @@ case 'get_document_form_detail':
                     $conn->prepare("
                         UPDATE document_submissions
                         SET dcsub_status = 1,
-                            dcsub_sub_d = COALESCE(dcsub_sub_d, NOW())
+                            dcsub_sub_d = COALESCE(dcsub_sub_d, NOW())" . ($docSubHasStatus2 ? ",\n                            dcsub_status2 = 1" : "") . "
                         WHERE doc_ID = ? AND dcsub_u_ID = ?
                         ORDER BY dcsu_updated_d DESC
                         LIMIT 1
