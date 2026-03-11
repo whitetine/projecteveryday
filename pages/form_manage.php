@@ -10,7 +10,7 @@ if (!in_array($role_ID, [1, 2])) {
     exit;
 }
 
-// 目標設定選項：頁面輸出時就從資料庫帶出，切頁再回來時選單不會是空的（不依賴 JS 動態載入）
+// 目標設定選項：頁面輸出時就從資料庫帶出，切頁再回來時選單不會是空的
 $targetGrades = [];
 $targetGroups = [];
 $targetClasses = [];
@@ -70,7 +70,7 @@ try {
     <!-- 操作按鈕 -->
     <div class="page-actions">
         <div></div>
-        <button class="btn-add-form" id="btnAddForm">
+        <button class="btn-add-form" id="btnAddForm" onclick="addForm()">
             <i class="fa-solid fa-plus"></i>
             新增表單
         </button>
@@ -101,10 +101,10 @@ try {
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title" id="modalTitle">新增表單</h2>
-            <button type="button" class="modal-close" id="btnCloseModal">&times;</button>
+            <button type="button" class="modal-close" id="btnCloseModal" onclick="safeCloseModal()">&times;</button>
         </div>
         <div class="modal-body">
-            <form id="formForm">
+            <form id="formForm" onsubmit="event.preventDefault(); saveForm(); return false;">
                 <input type="hidden" id="document_id" name="document_id" value="0">
 
                 <!-- 系統說明提示（固定顯示於頁面上方，僅說明預設行為，不影響欄位設定） -->
@@ -186,7 +186,7 @@ try {
                     </div>
                     <div class="question-actions-bottom"
                         style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
-                        <button type="button" class="btn-add-question" id="btnAddQuestion">
+                        <button type="button" class="btn-add-question" id="btnAddQuestion" onclick="addQuestion()">
                             <i class="fa-solid fa-plus me-1"></i>新增欄位
                         </button>
                     </div>
@@ -219,8 +219,8 @@ try {
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn-cancel" id="btnCancelForm">取消</button>
-            <button type="button" class="btn-save" id="btnSaveForm">儲存</button>
+            <button type="button" class="btn-cancel" id="btnCancelForm" onclick="safeCloseModal()">取消</button>
+            <button type="button" class="btn-save" id="btnSaveForm" onclick="saveForm()">儲存</button>
         </div>
     </div>
 </div>
@@ -230,7 +230,7 @@ try {
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title" id="dbLookupTitle">從資料庫帶入</h2>
-            <button class="modal-close" id="btnCloseDbLookup">&times;</button>
+            <button class="modal-close" id="btnCloseDbLookup" onclick="if(window.closeDbLookup) window.closeDbLookup()">&times;</button>
         </div>
         <div class="modal-body">
             <input type="text" class="db-lookup-search" id="dbLookupSearch" placeholder="輸入學號或姓名搜尋..."
