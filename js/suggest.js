@@ -3087,7 +3087,17 @@ function ensureSuggestTableStructure() {
     let tbody = document.getElementById("sg-team-tbody");
     if (!tbody) {
         container.innerHTML = `
-            <table class="sg-suggest-table" id="sg-suggest-table">
+            <div class="suggest-table-wrapper">
+                <div id="sg-batch-toolbar" class="suggest-batch-toolbar" style="display:none;">
+                    <span class="selected-count">已選取 <span id="sg-batch-count">0</span> 筆</span>
+                    <select id="sg-batch-status" class="form-select form-select-sm sg-batch-status-select" style="width:auto;display:inline-block;">
+                        <option value="">選擇審查結果</option>
+                    </select>
+                    <button type="button" id="sg-batch-apply-status" class="btn btn-primary btn-sm" disabled>套用到已選項目</button>
+                    <button type="button" id="sg-batch-delete" class="btn btn-danger btn-sm" disabled>批次刪除</button>
+                    <button type="button" id="sg-batch-clear" class="btn btn-secondary btn-sm" disabled>取消選取</button>
+                </div>
+                <table class="sg-suggest-table" id="sg-suggest-table">
                 <colgroup>
                     <col class="sg-col-name" style="width:26%">
                     <col class="sg-col-group" style="width:14%">
@@ -3098,7 +3108,10 @@ function ensureSuggestTableStructure() {
                 </colgroup>
                 <thead>
                     <tr>
-                        <th class="sg-th-name">團隊名稱</th>
+                        <th class="sg-th-name">
+                            <input type="checkbox" id="sg-select-all" class="form-check-input" />
+                            <span>團隊名稱</span>
+                        </th>
                         <th class="sg-th-group">類組</th>
                         <th class="sg-th-suggest">團隊建議</th>
                         <th class="sg-th-score">評分</th>
@@ -3108,6 +3121,7 @@ function ensureSuggestTableStructure() {
                 </thead>
                 <tbody id="sg-team-tbody"></tbody>
             </table>
+            </div>
         `;
         tbody = document.getElementById("sg-team-tbody");
     }
@@ -4093,6 +4107,8 @@ function bindTeamTableRowEvents() {
                 const teamList = payload.team || [];
                 const studentList = payload.students || [];
                 let html = "";
+                // 收集老師組別評分，用於計算平均分數；即使沒有任何資料，也要讓下面的按鈕區塊照常顯示
+                const avgScores = [];
                 if (teamList.length > 0 || studentList.length > 0) {
                     const teamByTeacher = {};
                     teamList.forEach(r => {
@@ -4118,7 +4134,6 @@ function bindTeamTableRowEvents() {
                     Object.keys(studentsByTeacher).forEach(name => {
                         if (name && !teacherOrder.includes(name)) teacherOrder.push(name);
                     });
-                    const avgScores = [];
                     teacherOrder.forEach(teacherName => {
                         const team = teamByTeacher[teacherName];
                         const students = studentsByTeacher[teacherName] || [];
@@ -4146,17 +4161,26 @@ function bindTeamTableRowEvents() {
                         }
                         html += `</div>`;
                     });
-                    // 按鈕區塊：新增指導老師建議（僅召集人）+ 平均分數
-                    const isConvener = !!window.isSuggestConvener;
-                    const scoresStr = avgScores.filter(v => !isNaN(v)).join(",");
-                    let actionsHtml = `<div class="teacher-suggest-actions">`;
-                    if (isConvener) {
+                }
+                // 按鈕區塊：新增指導老師建議（僅召集人）+ 平均分數
+                const isConvener = !!window.isSuggestConvener;
+                const readOnlyForConvener = !!window.SuggestReadOnlyForConvener;
+                const validScores = avgScores.filter(v => !isNaN(v));
+                const scoresStr = validScores.join(",");
+                let actionsHtml = `<div class="teacher-suggest-actions">`;
+                // 無論目前有沒有老師建議，只要是召集人就要有「新增指導老師建議」按鈕
+                if (isConvener) {
+                    if (readOnlyForConvener) {
+                        // 唯讀狀態下仍顯示按鈕但不可點擊
+                        actionsHtml += `<button type="button" class="btn btn-outline-secondary btn-sm sg-btn-add-teacher-suggest sg-btn-action-disabled" data-team="${teamId}" disabled>新增指導老師建議</button>`;
+                    } else {
                         actionsHtml += `<button type="button" class="btn btn-outline-secondary btn-sm sg-btn-add-teacher-suggest" data-team="${teamId}">新增指導老師建議</button>`;
                     }
-                    actionsHtml += `<button type="button" class="btn btn-outline-primary btn-sm sg-btn-avg-score" data-team="${teamId}" data-scores="${scoresStr}">平均分數</button>`;
-                    actionsHtml += `</div>`;
-                    html += actionsHtml;
                 }
+                // 需求：不管目前有沒有老師建議，只要展開團隊列，就要顯示「平均分數」按鈕
+                actionsHtml += `<button type="button" class="btn btn-outline-primary btn-sm sg-btn-avg-score" data-team="${teamId}" data-scores="${scoresStr}">平均分數</button>`;
+                actionsHtml += `</div>`;
+                html += actionsHtml;
                 if (!html) {
                     html = "<p class=\"text-muted small mb-0\">尚無指導老師或個別學生的建議與分數</p>";
                 }
@@ -4184,6 +4208,18 @@ function bindTeamTableRowEvents() {
                 if (addBtn) {
                     addBtn.addEventListener("click", function(e) {
                         e.stopPropagation();
+                        // 召集人唯讀（已送交科辦）時禁止新增指導老師建議
+                        if (window.SuggestReadOnlyForConvener) {
+                            if (Toast && Toast.fire) {
+                                Toast.fire({
+                                    icon: "info",
+                                    title: "此建議表已送交科辦，無法再新增指導老師建議"
+                                });
+                            } else {
+                                alert("此建議表已送交科辦，無法再新增指導老師建議");
+                            }
+                            return;
+                        }
                         openAddTeacherSuggestModal(teamId);
                     });
                 }
@@ -4218,6 +4254,8 @@ function bindTeamTableRowEvents() {
             }
         });
     });
+    // 綁定列選取與批次工具列事件
+    bindRowSelectionEvents();
     // 根據目前編輯模式更新按鈕啟用狀態
     updateActionButtonsState();
 }
@@ -4248,6 +4286,7 @@ function bindStatusSelectEvent() {
                 // 更新樣式
                 updateStatusSelectStyle(this);
                 // 注意：審查結果的更改需要通過「存檔」按鈕統一保存，不自動儲存
+                updateBatchToolbarState();
             });
         }
     });
@@ -5516,6 +5555,167 @@ function initDragAndDrop(cohortId, groupId) {
     }
     
     bindDragEvents();
+}
+
+/* ==========================================
+   11. 批次操作：列選取與工具列
+========================================== */
+function getSelectedTeamRows() {
+    const tbody = document.getElementById("sg-team-tbody");
+    if (!tbody) return [];
+    return Array.from(tbody.querySelectorAll("tr.sg-team-card")).filter(row => {
+        const cb = row.querySelector(".sg-row-select");
+        return cb && cb.checked;
+    });
+}
+
+function updateBatchToolbarState() {
+    const toolbar = document.getElementById("sg-batch-toolbar");
+    const tbody = document.getElementById("sg-team-tbody");
+    const headerCb = document.getElementById("sg-select-all");
+    if (!toolbar || !tbody) return;
+
+    const rows = Array.from(tbody.querySelectorAll("tr.sg-team-card"));
+    const selectedRows = getSelectedTeamRows();
+    const countSpan = document.getElementById("sg-batch-count");
+    const applyBtn = document.getElementById("sg-batch-apply-status");
+    const deleteBtn = document.getElementById("sg-batch-delete");
+    const clearBtn = document.getElementById("sg-batch-clear");
+
+    const selectedCount = selectedRows.length;
+    if (countSpan) countSpan.textContent = String(selectedCount);
+
+    const hasSelection = selectedCount > 0;
+    [applyBtn, deleteBtn, clearBtn].forEach(btn => {
+        if (!btn) return;
+        btn.disabled = !hasSelection;
+    });
+
+    // 工具列在有列時顯示，沒列時隱藏
+    toolbar.style.display = rows.length > 0 ? "flex" : "none";
+
+    // 更新表頭 checkbox 狀態
+    if (headerCb) {
+        const total = rows.length;
+        if (total === 0) {
+            headerCb.checked = false;
+            headerCb.indeterminate = false;
+        } else if (selectedCount === 0) {
+            headerCb.checked = false;
+            headerCb.indeterminate = false;
+        } else if (selectedCount === total) {
+            headerCb.checked = true;
+            headerCb.indeterminate = false;
+        } else {
+            headerCb.checked = false;
+            headerCb.indeterminate = true;
+        }
+    }
+}
+
+function initBatchStatusSelectOptions() {
+    const select = document.getElementById("sg-batch-status");
+    if (!select) return;
+    // 若已經有選項（不只預設），就不重複初始化
+    if (select.dataset.initialized === "1") return;
+
+    const isTopic = (window.suggestFormSfType === 'topic');
+    const placeholder = isTopic ? "請選擇初審建議" : "請選擇審查結果";
+    const optionsHtml = isTopic
+        ? '<option value="3">通過</option><option value="2">不通過</option><option value="1">修改</option><option value="4">待確認</option>'
+        : '<option value="3">通過</option><option value="2">不通過</option><option value="1">修改後通過</option><option value="4">修改後複評</option>';
+
+    select.innerHTML = `<option value="">${placeholder}</option>${optionsHtml}`;
+    select.dataset.initialized = "1";
+}
+
+function bindRowSelectionEvents() {
+    const tbody = document.getElementById("sg-team-tbody");
+    const headerCb = document.getElementById("sg-select-all");
+    if (!tbody) return;
+
+    initBatchStatusSelectOptions();
+
+    // 綁定每列 checkbox
+    tbody.querySelectorAll(".sg-row-select").forEach(cb => {
+        cb.addEventListener("change", function(e) {
+            e.stopPropagation();
+            updateBatchToolbarState();
+        });
+    });
+
+    // 表頭全選
+    if (headerCb && !headerCb.dataset.bound) {
+        headerCb.dataset.bound = "1";
+        headerCb.addEventListener("change", function() {
+            const checked = this.checked;
+            tbody.querySelectorAll(".sg-row-select").forEach(cb => {
+                cb.checked = checked;
+            });
+            updateBatchToolbarState();
+        });
+    }
+
+    // 工具列按鈕
+    const applyBtn = document.getElementById("sg-batch-apply-status");
+    const deleteBtn = document.getElementById("sg-batch-delete");
+    const clearBtn = document.getElementById("sg-batch-clear");
+    const statusSelect = document.getElementById("sg-batch-status");
+
+    if (applyBtn && !applyBtn.dataset.bound) {
+        applyBtn.dataset.bound = "1";
+        applyBtn.addEventListener("click", function() {
+            const selectedRows = getSelectedTeamRows();
+            const statusValue = statusSelect ? statusSelect.value : "";
+            if (!statusValue) {
+                Toast && Toast.fire ? Toast.fire({ icon: "info", title: "請先選擇審查結果" }) : alert("請先選擇審查結果");
+                return;
+            }
+            if (selectedRows.length === 0) return;
+            selectedRows.forEach(row => {
+                const teamId = row.getAttribute("data-team");
+                if (!teamId) return;
+                const selectEl = document.getElementById(`sg-status-${teamId}`);
+                if (selectEl) {
+                    selectEl.value = statusValue;
+                    updateStatusSelectStyle(selectEl);
+                }
+            });
+            updateBatchToolbarState();
+        });
+    }
+
+    if (deleteBtn && !deleteBtn.dataset.bound) {
+        deleteBtn.dataset.bound = "1";
+        deleteBtn.addEventListener("click", function() {
+            const selectedRows = getSelectedTeamRows();
+            const count = selectedRows.length;
+            if (count === 0) return;
+            const confirmMsg = `確定要刪除已選取的 ${count} 筆團隊嗎？此動作無法復原。`;
+            const ok = window.confirm(confirmMsg);
+            if (!ok) return;
+
+            selectedRows.forEach(row => {
+                const teamId = parseInt(row.getAttribute("data-team"));
+                if (!teamId) return;
+                // 批次刪除比照下方「刪除」按鈕：直接刪除整個團隊
+                deleteTeamFromSuggest(teamId);
+            });
+        });
+    }
+
+    if (clearBtn && !clearBtn.dataset.bound) {
+        clearBtn.dataset.bound = "1";
+        clearBtn.addEventListener("click", function() {
+            tbody.querySelectorAll(".sg-row-select").forEach(cb => {
+                cb.checked = false;
+            });
+            updateBatchToolbarState();
+        });
+    }
+
+    // 初始狀態更新
+    updateBatchToolbarState();
 }
 
 /* ==========================================
