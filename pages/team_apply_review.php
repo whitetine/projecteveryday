@@ -143,7 +143,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
           </div>
         </div>
 
-        <!-- 統計卡片：可指導 / 申請中 / 已審核 / 剩餘名額 -->
+        <!-- 統計區：左側 KPI / 右側 類組圓餅圖 -->
         <div class="tar-summary-row" v-if="teacherStats.length">
           <div class="tar-summary-card">
             <div class="tar-summary-label">可指導老師</div>
@@ -164,6 +164,15 @@ if (session_status() === PHP_SESSION_NONE) session_start();
             <div class="tar-summary-label">剩餘名額</div>
             <div class="tar-summary-value">{{ totalRemaining }}</div>
             <div class="tar-summary-sub">全體老師尚可收的組數</div>
+          </div>
+          <div class="tar-summary-card tar-summary-pie" v-if="groupDistributionWithRatio.length">
+            <div class="tar-summary-label">整屆類組分布</div>
+            <div class="tar-summary-pie-num">
+              共 {{ groupTotalTeams }} 組
+            </div>
+            <div class="tar-summary-pie-chart-wrap">
+              <canvas id="tarGroupPie" aria-label="整屆類組比例" role="img"></canvas>
+            </div>
           </div>
         </div>
 

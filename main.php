@@ -165,7 +165,7 @@
             $team_ID = null;
             $teamStatus = 0;
         }
-        // 先看 teamapply 最新狀態（決定學生是否應該被卡在申請頁）
+        // 先看 teamapply 最新狀態
         $latestApplyStatus = null;
         try {
             $stmt = $conn->prepare("SELECT tap_status FROM teamapply WHERE tap_u_ID = ? ORDER BY tap_update_d DESC LIMIT 1");
@@ -178,25 +178,8 @@
             $latestApplyStatus = null;
         }
 
-        // 若專題申請狀態不是 3（已通過），則檢查是否已在有效組別中：
-        // - 若只在 team_status = 0 的組別中或完全沒有組別，則必須留在指導申請單頁面
-        // - 若已有 team_status != 0 的組別，則允許進入系統
-        $hasNonZeroTeam = 0;
-        try {
-            $stmt = $conn->prepare("
-                SELECT COUNT(DISTINCT t.team_ID) AS cnt
-                FROM teammember tm
-                INNER JOIN teamdata t ON tm.team_ID = t.team_ID
-                WHERE tm.{$teamUserField} = ?
-                  AND (tm.tm_status IS NULL OR tm.tm_status = 1)
-                  AND (t.team_status IS NULL OR t.team_status <> 0)
-            ");
-            $stmt->execute([$u_ID]);
-            $hasNonZeroTeam = (int)$stmt->fetchColumn();
-        } catch (Exception $e) {
-            $hasNonZeroTeam = 0;
-        }
-        
+        // （新規則）不再看 team_status 來卡畫面，單純讓「沒有團隊 + 申請單未通過」的學生看到指導申請單
+
         // 檢查當前頁面
         $currentPage = $_SERVER['PHP_SELF'] ?? '';
         $currentUri = $_SERVER['REQUEST_URI'] ?? '';
@@ -214,10 +197,16 @@
                           strpos($currentUri, 'student_form_fill.php') !== false ||
                           strpos($currentHash, 'student_form_fill.php') !== false);
 
-        // 【統一登入門檻】只有「teamapply.tap_status = 3」且「teamdata.team_status = 3」（學生實際在該組內）才允許進入系統
-        // 其餘狀態一律停在專題申請頁（或表單填寫頁）
-        $canEnterSystem = ($team_ID && $teamStatus === 3 && $latestApplyStatus === 3);
-        if (!$canEnterSystem && !$isTeamApplyPage && !$isFormFillPage) {
+        // 【顯示指導申請單的唯一條件】（依你最新說明）
+        // 1) teamdata / teammember 中沒有該使用者的資料（尚未有任何團隊）
+        // 2) teamapply 資料表中該使用者的最新狀態是 0 / 1 / 2 / 4，或根本沒有資料列
+        $shouldShowTeamApply = false;
+        if (!$team_ID) {
+            if ($latestApplyStatus === null || in_array($latestApplyStatus, [0,1,2,4], true)) {
+                $shouldShowTeamApply = true;
+            }
+        }
+        if ($shouldShowTeamApply && !$isTeamApplyPage && !$isFormFillPage) {
             echo "<script>
                 (function() {
                     var currentHash = location.hash || '';
@@ -230,48 +219,9 @@
             exit;
         }
 
-        // 如果沒有團隊，是否要卡在專題申請頁，取決於 teamapply + teamdata 狀態：
-        // - 若最新 teamapply 狀態 = 3：視為申請已完成，可直接進入系統（不強制跳 team_apply）
-        // - 若狀態 ≠ 3，且在 teamdata/teammember 中沒有 team_status != 0 的組別（只有 0 或完全沒有），則必須停在 team_apply
-        if (!$team_ID) {
-            if ($latestApplyStatus !== 3 && $hasNonZeroTeam === 0) {
-                if (!$isTeamApplyPage) {
-                    echo "<script>
-                        (function() {
-                            var currentHash = location.hash || '';
-                            var isTeamApplyPage = currentHash.indexOf('team_apply.php') !== -1;
-                            if (!isTeamApplyPage) {
-                                location.href = 'pages/team_apply.php';
-                            }
-                        })();
-                    </script>";
-                    if (!$isTeamApplyPage) {
-                        exit;
-                    }
-                }
-            }
-        } elseif ($team_ID) {
-            // 有團隊：依 team_status 不同行為
-            // - team_status = 0 或其他未通過狀態：仍導向專題申請頁
-            // - team_status = 1：正常流程（可填寫後續表單）
-            // - team_status = 3：視為已結案，只鎖功能、不再要求申請單；此處允許直接進系統
-            if ($teamStatus === 0) {
-                // 視同「尚未完成申請」→ 導向專題申請單
-                if (!$isTeamApplyPage) {
-                    echo "<script>
-                        (function() {
-                            var currentHash = location.hash || '';
-                            var isTeamApplyPage = currentHash.indexOf('team_apply.php') !== -1;
-                            if (!isTeamApplyPage) {
-                                location.href = 'pages/team_apply.php';
-                            }
-                        })();
-                    </script>";
-                    if (!$isTeamApplyPage) {
-                        exit;
-                    }
-                }
-            } elseif ($teamStatus === 1) {
+        // 其餘情況：正常進入系統（但仍保留後面「學期表單」相關的導向邏輯）
+        if ($team_ID) {
+            if ($teamStatus === 1) {
                 // 團隊申請已通過，檢查是否還有需要填寫的表單
                 try {
                     // 獲取學生的類組資訊

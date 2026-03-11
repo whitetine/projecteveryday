@@ -265,6 +265,21 @@
 #reviewApp .tar-summary-card.tar-summary-highlight .tar-summary-value {
   color: var(--primary);
 }
+/* 類組圓餅圖卡片：窄一點、以圖為主 */
+#reviewApp .tar-summary-card.tar-summary-pie {
+  flex: 0 0 220px;
+  max-width: 260px;
+}
+#reviewApp .tar-summary-pie-num {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+#reviewApp .tar-summary-pie-chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 130px;
+}
 /* 老師負載：精簡 chip 列，不佔大空間 */
 #reviewApp .tar-teacher-load {
   margin-bottom: 1rem;

@@ -197,12 +197,11 @@ if (empty($_SESSION['u_ID'])) { header('Location: ../index.php'); exit; }
           <div class="ta-card" style="border-radius:12px;">
             <div class="ta-card-hd d-flex justify-content-between align-items-center gap-2 flex-wrap">
               <div class="d-flex align-items-center gap-2 flex-wrap">
-                <button class="btn btn-outline-secondary btn-sm flex-shrink-0" @click="goBack">
+             
+                <div class="fw-bold mb-0">指導申請單</div>
+              </div>   <button class="btn btn-outline-secondary btn-sm flex-shrink-0" @click="goBack">
                   <i class="fas fa-arrow-left me-1"></i>上一頁
                 </button>
-                <div class="fw-bold mb-0">申請單</div>
-              </div>
-              <div class="ta-muted" style="font-size:0.9rem;">建立後可從上方下拉選單選擇編輯</div>
             </div>
             <div class="ta-card-bd">
               <div class="mb-2">
@@ -237,7 +236,7 @@ if (empty($_SESSION['u_ID'])) { header('Location: ../index.php'); exit; }
 
               <div class="d-flex gap-2 align-items-center">
                 <button class="btn btn-primary" @click="saveCreate">儲存申請單</button>
-                <button class="btn btn-outline-secondary btn-sm" type="button" @click="goBack"><i class="fas fa-arrow-left me-1"></i>回上一頁</button>
+                <!-- <button class="btn btn-outline-se  condary btn-sm" type="button" @click="goBack"><i class="fas fa-arrow-left me-1"></i>回上一頁</button> -->
               </div>
             </div>
           </div>

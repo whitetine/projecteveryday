@@ -106,7 +106,7 @@ if (!$is_ajax) {
             </div>
             <div class="changelog-field">
                 <label>搜尋</label>
-                <input v-model="filters.team_search" @input="debounceLoad" @keydown.enter="loadData" class="changelog-input" placeholder="搜尋 團隊ID / 建立者 / 老師 / 組名" />
+                <input v-model="filters.team_search" @input="debounceLoad" @keydown.enter="loadData" class="changelog-input" placeholder="搜尋 組別 / 建立者 / 老師 / 組名" />
             </div>
             <button @click="loadData" class="changelog-btn" type="button">搜尋</button>
         </div>
@@ -161,7 +161,7 @@ if (!$is_ajax) {
                         <thead>
                             <tr>
                                 <th>類型</th>
-                                <th>團隊 / 內容</th>
+                                <th>組別 / 內容</th>
                                 <th>建立者</th>
                                 <th>時間</th>
                                 <th>狀態</th>
@@ -459,7 +459,7 @@ if (!$is_ajax) {
                                 <option value="">請選擇</option>
                                 <option v-for="s in availableStudents" :key="s.u_ID" :value="s.u_ID">{{ s.u_name }} ({{ s.u_ID }})</option>
                             </select>
-                            <div v-if="(applyType === 'MEMBER_ADD' || applyType === 'MEMBER_CHANGE') && availableStudents.length === 0" class="text-muted small mt-1">目前無可新增的組員（同屆尚未加入團隊的學生）</div>
+                            <div v-if="(applyType === 'MEMBER_ADD' || applyType === 'MEMBER_CHANGE') && availableStudents.length === 0" class="text-muted small mt-1">目前無可新增的組員（同屆尚未加入組別的學生）</div>
                         </div>
 
                         <div v-if="applyType === 'MEMBER_REMOVE'" class="mb-3">

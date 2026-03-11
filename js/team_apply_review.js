@@ -59,7 +59,13 @@
         selectedTeacherIds: [],
         showDeleted: false,
         deletedForms: [],
-        deletedFormsLoading: false
+        deletedFormsLoading: false,
+        // 類組分布（整屆）
+        groupDistribution: {
+          groups: [],
+          total_teams: 0
+        },
+        groupChart: null
       };
     },
     computed: {
@@ -119,6 +125,22 @@
         if (near.length) lines.push(`快滿：${near.map(t => t.u_name).join('、')}`);
         if (empty.length) lines.push(`尚可收：${empty.map(t => t.u_name).join('、')}`);
         return lines;
+      },
+      // 類組圓餅圖：總筆數與百分比
+      groupTotalTeams() {
+        const dist = this.groupDistribution || {};
+        const groups = dist.groups || [];
+        return groups.reduce((sum, g) => sum + (Number(g.team_count) || 0), 0);
+      },
+      groupDistributionWithRatio() {
+        const dist = this.groupDistribution || {};
+        const groups = dist.groups || [];
+        const total = this.groupTotalTeams || 0;
+        if (!total) return groups;
+        return groups.map(g => ({
+          ...g,
+          ratio: ((Number(g.team_count) || 0) / total) * 100
+        }));
       }
     },
     mounted() {
@@ -226,6 +248,10 @@
         this.filterStatus = 'all';
         await this.loadData();
         this.loadTeacherStats();
+        this.loadGroupDistribution();
+        this.$nextTick(() => {
+          this.renderGroupPie();
+        });
       },
       goEditForm(form) {
         if (!form || !form.taf_ID) return;
@@ -286,6 +312,11 @@
       backToFormList() {
         this.selectedForm = null;
         this.list = [];
+        this.groupDistribution = { groups: [], total_teams: 0 };
+        if (this.groupChart) {
+          this.groupChart.destroy();
+          this.groupChart = null;
+        }
       },
       getImageApiUrl(tap_ID, cacheBust = false) {
         if (!tap_ID) return '';
@@ -446,6 +477,89 @@
         } finally {
           this.teacherStatsLoading = false;
         }
+      },
+      async loadGroupDistribution() {
+        if (!this.selectedForm || !this.selectedForm.taf_cohort_ID) return;
+        try {
+          const cohort = this.selectedForm.taf_cohort_ID || 0;
+          const res = await fetch(`${API}?do=get_group_distribution&cohort_ID=${cohort}`);
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.msg || '載入失敗');
+          this.groupDistribution = {
+            groups: data.groups || [],
+            total_teams: data.total_teams || 0
+          };
+          this.$nextTick(() => this.renderGroupPie());
+        } catch (e) {
+          console.error(e);
+          this.groupDistribution = { groups: [], total_teams: 0 };
+        }
+      },
+      renderGroupPie() {
+        const canvas = document.getElementById('tarGroupPie');
+        if (!canvas || !window.Chart) return;
+        const ctx = canvas.getContext('2d');
+        const groups = this.groupDistributionWithRatio || [];
+        if (!groups.length) {
+          if (this.groupChart) {
+            this.groupChart.destroy();
+            this.groupChart = null;
+          }
+          return;
+        }
+        const labels = groups.map(g => g.group_name);
+        const dataVals = groups.map(g => Number(g.team_count) || 0);
+        const bgColors = [
+          '#4f46e5', '#22c55e', '#f97316', '#ec4899',
+          '#0ea5e9', '#a855f7', '#eab308', '#64748b'
+        ];
+        const colors = dataVals.map((_, idx) => bgColors[idx % bgColors.length]);
+
+        if (this.groupChart) {
+          this.groupChart.data.labels = labels;
+          this.groupChart.data.datasets[0].data = dataVals;
+          this.groupChart.data.datasets[0].backgroundColor = colors;
+          this.groupChart.update();
+          return;
+        }
+
+        this.groupChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels,
+            datasets: [{
+              data: dataVals,
+              backgroundColor: colors,
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'bottom',
+                labels: {
+                  boxWidth: 10,
+                  font: { size: 11 }
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label(context) {
+                    const label = context.label || '';
+                    const value = context.parsed || 0;
+                    const total = dataVals.reduce((s, v) => s + v, 0) || 1;
+                    const pct = Math.round((value / total) * 100);
+                    return `${label}：${value} 組（${pct}%）`;
+                  }
+                }
+              }
+            },
+            cutout: '62%'
+          }
+        });
       },
       startEditLimit(t) {
         this.editLimitTeacher = t.u_ID;

@@ -670,6 +670,52 @@ try {
   }
 
   // ------------------------------------------------------------
+  // F0) 取得整屆類組比例（group 分布）
+  // ------------------------------------------------------------
+  if ($do === 'get_group_distribution') {
+    $cohort_ID = (int)($_GET['cohort_ID'] ?? 0);
+    if ($cohort_ID <= 0) json_resp(false, '請提供屆別');
+
+    // 取出啟用中的類組，並計算該屆別中每個類組的組數（team_status=1 或 3 視為有效）
+    $sql = "
+      SELECT 
+        g.group_ID,
+        g.group_name,
+        g.group_status,
+        COUNT(DISTINCT t.team_ID) AS team_count
+      FROM groupdata g
+      LEFT JOIN teamdata t 
+        ON t.group_ID = g.group_ID 
+       AND t.cohort_ID = :cohort_ID
+       AND t.team_status IN (1,3)
+      WHERE g.group_status IN (0,1)
+      GROUP BY g.group_ID, g.group_name, g.group_status
+      ORDER BY g.group_status DESC, g.group_ID ASC
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([':cohort_ID' => $cohort_ID]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+    $groups = [];
+    $total = 0;
+    foreach ($rows as $r) {
+      $cnt = (int)($r['team_count'] ?? 0);
+      $total += $cnt;
+      $groups[] = [
+        'group_ID' => (int)$r['group_ID'],
+        'group_name' => $r['group_name'] ?: ('類組 ' . $r['group_ID']),
+        'group_status' => (int)($r['group_status'] ?? 0),
+        'team_count' => $cnt,
+      ];
+    }
+
+    json_resp(true, 'success', [
+      'groups' => $groups,
+      'total_teams' => $total,
+    ]);
+  }
+
+  // ------------------------------------------------------------
   // F) 設定指導老師帶組上限
   // ------------------------------------------------------------
   if ($do === 'set_teacher_team_limit') {
