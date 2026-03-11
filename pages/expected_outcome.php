@@ -53,6 +53,15 @@
                 transform: rotate(360deg);
             }
         }
+
+        th.sortable-th {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable-th:hover {
+            background-color: #f8f9fa;
+        }
     </style>
     <?php session_start(); ?>
     <div id="outcome_app">
@@ -276,6 +285,36 @@
                         <p>可用勾選標記完成，並支援編輯 / 刪除 (每次異動需用文字說明！)。</p>
                     </div>
                 </div>
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3" style="padding: 0 4px;">
+                    <template v-if="now_group.ID == 1">
+                        <div>
+                            <label class="me-2">角色</label>
+                            <select class="inline-input" v-model="filter_expected.role" style="min-width:100px;">
+                                <option value="">全部</option>
+                                <option v-for="r in roleOptions" :key="'filter_role_'+r" :value="r">
+                                    {{ r }}
+                                </option>
+                            </select>
+                        </div>
+                    </template>
+
+                    <div>
+                        <label class="me-2">關鍵字</label>
+                        <input
+                            type="text"
+                            class="inline-input"
+                            style="min-width:240px;"
+                            placeholder="搜尋標題或內容"
+                            v-model.trim="filter_expected.keyword">
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-soft btn-primary"
+                        @click="filter_expected.role=''; filter_expected.keyword=''">
+                        清除篩選
+                    </button>
+                </div>
                 <div class="outcome-tools">
                     <button class="btn-soft btn-primary" type="button" @click="openAllLogs(true)">
                         查看異動紀錄
@@ -285,23 +324,45 @@
                     </button>
                 </div>
             </div>
+
             <div class="outcome-table-wrap">
+
+
                 <table class="outcome-table">
                     <colgroup>
-                        <col style="width: 65px;">
-                        <col style="width: 280px;">
+                        <col style="width:65px;">
+                        <col style="width:120px;" v-if="now_group.ID == 1">
+                        <col style="width:220px;">
                         <col>
-                        <col style="width: 200px;">
-                        <col style="width: 120px;">
-                        <col style="width: 165px;">
+                        <col style="width:200px;">
+                        <col style="width:120px;">
+                        <col style="width:165px;">
                     </colgroup>
                     <thead>
                         <tr>
                             <th>完成</th>
+
+                            <th
+                                v-if="now_group.ID == 1"
+                                class="sortable-th"
+                                @click="sortExpectedBy('role')">
+                                角色{{ getSortMark('role') }}
+                            </th>
+
                             <th>標題</th>
                             <th>內容</th>
-                            <th>最後編輯時間/者</th>
-                            <th>負責人</th>
+
+                            <th
+                                class="sortable-th"
+                                @click="sortExpectedBy('finish')">
+                                最後編輯時間/者{{ getSortMark('finish') }}
+                            </th>
+                            <th
+                                class="sortable-th"
+                                @click="sortExpectedBy('owner')">
+                                負責人{{ getSortMark('owner') }}
+                            </th>
+
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -313,6 +374,19 @@
                                     <input class="form-check-input user-checkbox" type="checkbox" disabled>
                                 </div>
                             </td>
+                            <!-- 角色 -->
+                            <td v-if="now_group.ID == 1">
+                                <input
+                                    type="text"
+                                    class="inline-input"
+                                    placeholder="請輸入角色"
+                                    list="roleList"
+                                    v-model.trim="editRow_Expected.role">
+                                <datalist id="roleList">
+                                    <option v-for="r in roleOptions" :key="r" :value="r"></option>
+                                </datalist>
+                            </td>
+
                             <!-- 標題 -->
                             <td>
                                 <input
@@ -363,24 +437,41 @@
                             </td>
                         </tr>
 
-                        <tr v-for="(i, index) in all_expected" :key="i.rd_ID">
+                        <tr v-for="(i, index) in filtered_expected" :key="i.rd_ID">
                             <td>
                                 <div class="form-check user-select-checkbox">
                                     <input
                                         class="form-check-input user-checkbox"
                                         type="checkbox"
-                                        :disabled="editExpectedId !== i.rd_ID"
-                                        :class="{ 'is-readonly': editExpectedId !== i.rd_ID }"
                                         :checked="Number(get_expectedDone(i)) === 3"
                                         @change="onExpectedDoneChange(i, $event)">
                                 </div>
                             </td>
+                            <!-- 角色 -->
+                            <td v-if="now_group.ID == 1">
+                                <template v-if="editExpectedId !== i.rd_ID">
+                                    <span class="text-success fw-bold">{{ getRole(i.rd_title) || '-' }}</span>
+                                </template>
+
+                                <template v-else>
+                                    <input
+                                        type="text"
+                                        class="inline-input"
+                                        placeholder="請輸入角色"
+                                        list="roleListEdit"
+                                        v-model.trim="editRowExpected.role">
+                                    <datalist id="roleListEdit">
+                                        <option v-for="r in roleOptions" :key="'edit_role_'+r" :value="r"></option>
+                                    </datalist>
+                                </template>
+                            </td>
 
                             <!-- 標題 -->
                             <td>
-                                <!-- 顯示模式 -->
-                                <strong v-if="editExpectedId !== i.rd_ID">{{ i.rd_title }}</strong>
-                                <!-- 編輯模式 -->
+                                <strong v-if="editExpectedId !== i.rd_ID">
+                                    {{ getExpectedTitle(i.rd_title) }}
+                                </strong>
+
                                 <input
                                     v-else
                                     type="text"
@@ -409,8 +500,13 @@
                                     @click="epxected_openLog(i)">
                                     <div class="leb-time">{{ i.rd_finish_d || '-' }}</div>
                                     <div class="leb-user">
-                                        <span>{{ i.rd_u_name_b ?? '' }}</span>
-                                        <span class="leb-hint-inline">（點擊查看異動紀錄）</span>
+                                        <template v-if="Number(i.rd_status) === 2">
+                                            <span style="color:#dc3545; font-weight:700;">老師已經退回，請修改</span>
+                                        </template>
+                                        <template v-else>
+                                            <span>{{ i.rd_u_name_b ?? '' }}</span>
+                                        </template>
+                                        <span class="leb-hint-inline" v-if="Number(i.rd_status) !== 2">（點擊查看異動紀錄）</span>
                                     </div>
                                 </button>
                             </td>
@@ -470,6 +566,11 @@
                                         <i class="fa-solid fa-trash"></i>刪除
                                     </button>
                                 </div>
+                            </td>
+                        </tr>
+                        <tr v-if="filtered_expected.length === 0">
+                            <td :colspan="now_group.ID == 1 ? 7 : 6" class="text-center text-muted py-4">
+                                查無符合條件的資料
                             </td>
                         </tr>
                     </tbody>
@@ -570,7 +671,7 @@
                                             <tbody>
                                                 <tr v-for="e in getExpectedForSide('L')" :key="'L_e_'+e.rd_ID">
                                                     <td style="text-align:center;">{{ Number(e.rd_status) === 3 ? '是' : '' }}</td>
-                                                    <td>{{ e.rd_title }}</td>
+                                                    <td>{{ getDisplayTitle(e.rd_title) }}</td>
                                                     <td class="pdf-cell-break">{{ e.rd_content }}</td>
                                                     <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                                                 </tr>
@@ -653,7 +754,7 @@
                                             <tbody>
                                                 <tr v-for="e in getExpectedForSide('R')" :key="'R_e_'+e.rd_ID">
                                                     <td style="text-align:center;">{{ Number(e.rd_status) === 3 ? '是' : '' }}</td>
-                                                    <td>{{ e.rd_title }}</td>
+                                                    <td>{{ getDisplayTitle(e.rd_title) }}</td>
                                                     <td class="pdf-cell-break">{{ e.rd_content }}</td>
                                                     <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                                                 </tr>
@@ -753,7 +854,7 @@
                         <div class="modal-content">
                             <div class="modal-body">
                                 <h3 class="d-flex align-items-center">
-                                    <span>請填寫刪除({{editRowExpected.rd_title}})緣由：</span>
+                                    <span>請填寫刪除({{ getDisplayTitle(editRowExpected.rd_title) }})緣由：</span>
                                     <i class="fa-solid fa-square-xmark ms-auto"
                                         style="font-size: 24px; cursor:pointer;"
                                         @click="Expected_modal_close"></i>
@@ -775,7 +876,7 @@
                                     <select class="ms-2" v-model="filter_log.rd_ID">
                                         <option value="">全部</option>
                                         <option v-for="i in all_expected" :key="i.rd_ID" :value="String(i.rd_ID)">
-                                            {{ i.rd_ID }}({{ i.rd_title }})
+                                            {{ i.rd_ID }}({{ getDisplayTitle(i.rd_title) }})
                                         </option>
                                     </select>
                                     、內容關鍵字:
@@ -825,7 +926,7 @@
                                                 <td>{{ log.cr_u_name + log.cr_type }}</td>
                                                 <td class="text-start log-cell">
                                                     <ul class="m-0 ps-3" v-if="parseArr(log.cr_record).length">
-                                                        <li>標題：{{parseArr(log.cr_record).slice(0, 1)[0]}}</li>
+                                                        <li>標題：{{ getDisplayTitle(parseArr(log.cr_record).slice(0, 1)[0]) }}</li>
                                                         <li>內容：{{parseArr(log.cr_record).slice(1, 2)[0]}}</li>
                                                         <li>負責：{{ log.cr_record_name }}</li>
                                                     </ul>
@@ -833,8 +934,8 @@
                                                 </td>
                                                 <td class="text-start log-cell">
                                                     <ul class="m-0 ps-3" v-if="parseArr(log.cr_update_data).length">
-                                                        <li :class="diffClass(getTitle(log, 'u'), getTitle(log, 'r'))">
-                                                            標題：{{ getTitle(log, 'u') }}
+                                                        <li :class="diffClass(getDisplayTitle(getTitle(log, 'u')), getDisplayTitle(getTitle(log, 'r')))">
+                                                            標題：{{ getDisplayTitle(getTitle(log, 'u')) }}
                                                         </li>
                                                         <li :class="diffClass(getContent(log, 'u'), getContent(log, 'r'))">
                                                             內容：{{ getContent(log, 'u') }}
@@ -931,7 +1032,7 @@
                                             <tbody>
                                                 <tr v-for="e in all_expected" :key="'pe_'+e.rd_ID">
                                                     <td style="text-align:center;">{{ Number(get_expectedDone(e)) === 3 ? '是' : '' }}</td>
-                                                    <td>{{ e.rd_title }}</td>
+                                                    <td>{{ getDisplayTitle(e.rd_title) }}</td>
                                                     <td class="pdf-cell-break">{{ e.rd_content }}</td>
                                                     <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                                                 </tr>
@@ -1013,6 +1114,7 @@
                                 },
                                 showAddExpectedRow: false,
                                 editRow_Expected: {
+                                    role: "",
                                     title: "",
                                     value: "",
                                     CEO: "",
@@ -1021,6 +1123,7 @@
                                 editExpectedId: null, // 預期成果目前正在編輯哪一列（rd_ID）
                                 editRowExpected: {
                                     rd_ID: null,
+                                    role: '',
                                     rd_title: '',
                                     rd_content: '',
                                     rd_u_ID_a: '',
@@ -1045,6 +1148,14 @@
                                 _addsfd_auto_done: false,
 
                                 all_AI: [],
+                                filter_expected: {
+                                    role: "",
+                                    keyword: ""
+                                },
+                                sort_expected: {
+                                    key: '',
+                                    order: 'asc'
+                                },
                             }
                         },
 
@@ -1239,7 +1350,78 @@
                                 return (this.all_AI || [])
                                     .filter(x => (x.sfd_submit_d || '') <= this.todayYmd)
                                     .sort((a, b) => String(b.sfd_submit_d).localeCompare(String(a.sfd_submit_d))); // 新的在上面
-                            }
+                            },
+                            roleOptions() {
+                                const roles = new Set();
+                                (this.all_expected || []).forEach(e => {
+                                    const title = String(e.rd_title || "");
+                                    if (title.includes('|>')) {
+                                        roles.add(title.split('|>')[0].trim());
+                                    }
+                                });
+                                return Array.from(roles);
+                            },
+                            filtered_expected() {
+                                const roleFilter = String(this.filter_expected.role || "").trim().toLowerCase();
+                                const keyword = String(this.filter_expected.keyword || "").trim().toLowerCase();
+
+                                let rows = (this.all_expected || []).filter(i => {
+                                    const rawTitle = String(i.rd_title || "");
+                                    const pureTitle = String(this.getExpectedTitle(rawTitle) || "").toLowerCase();
+                                    const role = String(this.getRole(rawTitle) || "").toLowerCase();
+                                    const content = String(i.rd_content || "").toLowerCase();
+
+                                    // 角色篩選
+                                    if (String(this.now_group.ID) === "1" && roleFilter !== "") {
+                                        if (role !== roleFilter) return false;
+                                    }
+
+                                    // 關鍵字篩選：同時查標題 + 內容
+                                    if (keyword !== "") {
+                                        const hitTitle = pureTitle.includes(keyword);
+                                        const hitContent = content.includes(keyword);
+
+                                        if (!hitTitle && !hitContent) return false;
+                                    }
+
+                                    return true;
+                                });
+
+                                // ✅ 排序
+                                const sortKey = String(this.sort_expected.key || '');
+                                const sortOrder = this.sort_expected.order === 'desc' ? 'desc' : 'asc';
+
+                                if (!sortKey) return rows;
+
+                                rows = rows.slice().sort((a, b) => {
+                                    let valA = '';
+                                    let valB = '';
+
+                                    if (sortKey === 'role') {
+                                        valA = String(this.getRole(a.rd_title) || '').trim().toLowerCase();
+                                        valB = String(this.getRole(b.rd_title) || '').trim().toLowerCase();
+                                    } else if (sortKey === 'finish') {
+                                        valA = String(a.rd_finish_d || '').trim();
+                                        valB = String(b.rd_finish_d || '').trim();
+                                    } else if (sortKey === 'owner') {
+                                        valA = String(a.rd_u_name_a || '未定').trim().toLowerCase();
+                                        valB = String(b.rd_u_name_a || '未定').trim().toLowerCase();
+                                    }
+
+                                    if (sortKey === 'finish') {
+                                        const timeA = valA ? new Date(valA.replace(' ', 'T')).getTime() : 0;
+                                        const timeB = valB ? new Date(valB.replace(' ', 'T')).getTime() : 0;
+
+                                        return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
+                                    }
+
+                                    const result = valA.localeCompare(valB, 'zh-Hant');
+
+                                    return sortOrder === 'asc' ? result : -result;
+                                });
+
+                                return rows;
+                            },
 
                         },
                         methods: {
@@ -1472,75 +1654,95 @@
                                 })
                             },
                             openAddExpectedRow() {
-                                // 開啟新增成果列
                                 this.showAddExpectedRow = true;
                                 this.editRow_Expected = {
+                                    role: "",
                                     title: "",
                                     value: "",
                                     CEO: ""
                                 };
                             },
                             cancelAddExpected() {
-                                // 取消新增成果
                                 this.showAddExpectedRow = false;
                                 this.editRow_Expected = {
+                                    role: "",
                                     title: "",
                                     value: "",
                                     CEO: ""
                                 };
                             },
                             submitAddExpected() {
-                                // 提交新增成果
+                                const role = (this.editRow_Expected.role || "").trim();
                                 const t = (this.editRow_Expected.title || "").trim();
                                 const v = (this.editRow_Expected.value || "").trim();
+
                                 if (t === "" || v === "") {
                                     alert("請先填寫「標題」與「內容」");
                                     return;
                                 }
+
+                                let title = t;
+
+                                if (String(this.now_group.ID) == "1" && role !== "") {
+                                    title = role + "|>" + t;
+                                }
+
                                 $.post("../modules/expected_outcome.php?do=add_expected", {
-                                    ...this.editRow_Expected
+                                    title: title,
+                                    value: v,
+                                    CEO: this.editRow_Expected.CEO
                                 }, (res) => {
                                     toast({
                                         type: 'success',
                                         title: '新增成功'
-                                    })
-                                    this.get_expected()
+                                    });
+
+                                    this.get_expected();
+                                    this.showAddExpectedRow = false;
+                                    this.editRow_Expected = {
+                                        role: "",
+                                        title: "",
+                                        value: "",
+                                        CEO: ""
+                                    };
                                 }).fail(() => {
-                                    alert("新增失敗，請稍後再試")
+                                    alert("新增失敗，請稍後再試");
                                 });
-                                this.showAddExpectedRow = false;
-                                this.editRow_Expected = {
-                                    title: "",
-                                    value: "",
-                                    CEO: ""
-                                };
                             },
                             // ===== 預期成果：編輯流程（邏輯同 req） =====
                             startEditExpected(i) {
-                                this.editExpectedId = i.rd_ID
+                                this.editExpectedId = i.rd_ID;
 
-                                // 依你的資料欄位：rd_title、rd_content、rd_u_ID_a、rd_done / rd_status（如果有）
-                                this.editRowExpected.rd_ID = i.rd_ID;
-                                this.editRowExpected.rd_title = i.rd_title || ''
-                                this.editRowExpected.rd_content = i.rd_content || ''
-                                // 負責人：如果後端有給 rd_u_ID_a 就用，沒有就先空
-                                this.editRowExpected.rd_u_ID_a = i.rd_u_ID_a ?? ''
-                                // 完成狀態：如果你有 rd_status 就優先，沒有就用 rd_done
-                                if (Number(i?.rd_status) === 3) {
-                                    this.editRowExpected.rd_done = 3
-                                } else {
-                                    this.editRowExpected.rd_done = Number(i?.rd_done || 0)
+                                const rawTitle = String(i.rd_title || '');
+                                let role = '';
+                                let pureTitle = rawTitle;
+
+                                if (String(this.now_group.ID) === '1' && rawTitle.includes('|>')) {
+                                    const parts = rawTitle.split('|>');
+                                    role = String(parts[0] || '').trim();
+                                    pureTitle = String(parts.slice(1).join('|>') || '').trim();
                                 }
-                            },
 
+                                this.editRowExpected = {
+                                    rd_ID: i.rd_ID,
+                                    role: role,
+                                    rd_title: pureTitle,
+                                    rd_content: i.rd_content || '',
+                                    rd_u_ID_a: i.rd_u_ID_a ?? '',
+                                    rd_done: Number(i?.rd_status) === 3 ? 3 : Number(i?.rd_done || 0),
+                                    cr_reason: ''
+                                };
+                            },
                             cancelEditExpected() {
                                 this.editExpectedId = null;
                                 this.editRowExpected = {
                                     rd_ID: null,
+                                    role: '',
                                     rd_title: '',
                                     rd_content: '',
                                     rd_u_ID_a: '',
-                                    rd_done: 0
+                                    rd_done: 0,
+                                    cr_reason: ''
                                 };
                             },
 
@@ -1554,9 +1756,18 @@
                                     }
 
                                     // ✅ 暫存 payload（給 type==2 用）
+                                    let finalTitle = this.editRowExpected.rd_title;
+
+                                    if (String(this.now_group.ID) === '1') {
+                                        const role = String(this.editRowExpected.role || '').trim();
+                                        const pureTitle = String(this.editRowExpected.rd_title || '').trim();
+
+                                        finalTitle = role ? `${role}|>${pureTitle}` : pureTitle;
+                                    }
+
                                     this.pendingExpectedPayload = {
                                         rd_ID: i.rd_ID,
-                                        rd_title: this.editRowExpected.rd_title,
+                                        rd_title: finalTitle,
                                         rd_content: this.editRowExpected.rd_content,
                                         rd_u_ID_a: this.editRowExpected.rd_u_ID_a,
                                         rd_done: this.editRowExpected.rd_done,
@@ -1659,16 +1870,64 @@
                                 return Number(i?.rd_done || 0);
                             },
                             onExpectedDoneChange(i, evt) {
+                                const checked = evt.target.checked;
+
+                                // ✅ 如果目前不是正在編輯這筆，就先把這筆資料載入編輯區
                                 if (this.editExpectedId !== i.rd_ID) {
-                                    evt.preventDefault();
-                                    return;
+                                    this.startEditExpected(i);
                                 }
-                                this.editRowExpected.rd_done = evt.target.checked ? 3 : 1;
+
+                                // ✅ 更新完成狀態
+                                this.editRowExpected.rd_done = checked ? 3 : 1;
+
+                                // ✅ 組出送出用標題
+                                let finalTitle = this.editRowExpected.rd_title;
+
+                                if (String(this.now_group.ID) === '1') {
+                                    const role = String(this.editRowExpected.role || '').trim();
+                                    const pureTitle = String(this.editRowExpected.rd_title || '').trim();
+                                    finalTitle = role ? `${role}|>${pureTitle}` : pureTitle;
+                                }
+
+                                // ✅ 完成勾選異動：直接送出，不需要異動理由
+                                const payload = {
+                                    rd_ID: i.rd_ID,
+                                    rd_title: finalTitle,
+                                    rd_content: this.editRowExpected.rd_content,
+                                    rd_u_ID_a: this.editRowExpected.rd_u_ID_a,
+                                    rd_done: this.editRowExpected.rd_done,
+                                    team_ID: this.now_team_ID,
+                                    group_ID: this.now_group.ID,
+                                    cr_reason: ''
+                                };
+
+                                $.post("../modules/expected_outcome.php?do=update_expected", payload, (res) => {
+                                    toast({
+                                        type: 'success',
+                                        title: '完成狀態已更新'
+                                    });
+
+                                    this.get_expected();
+                                    this.cancelEditExpected();
+                                    this.pendingExpectedPayload = null;
+                                    this.editRowExpected.cr_reason = '';
+                                }).fail(() => {
+                                    alert('更新失敗，請稍後再試');
+                                    // 失敗時把 checkbox 顯示恢復
+                                    this.get_expected();
+                                    this.cancelEditExpected();
+                                });
                             },
                             Expected_modal_close() {
-                                $("#Expected_modal").modal("hide")
-                                $("#del_Expected_modal").modal("hide")
-                                this.editRowExpected.cr_reason = ""
+                                const expectedModal = document.getElementById('Expected_modal');
+                                const delModal = document.getElementById('del_Expected_modal');
+
+                                bootstrap.Modal.getInstance(expectedModal)?.hide();
+                                bootstrap.Modal.getInstance(delModal)?.hide();
+
+                                this.editRowExpected.cr_reason = '';
+                                this.pendingExpectedPayload = null;
+                                this.cancelEditExpected();
                             },
                             exresultdata_modal_show() {
                                 // ✅ 資料還沒載完就阻止開啟（避免預覽空白）
@@ -2056,7 +2315,51 @@
                             },
                             go_show_all() {
                                 window.location.href = "main.php#pages/expected_show_all.php";
-                            }
+                            },
+                            getRole(title) {
+                                title = String(title || "");
+                                if (!title.includes('|>')) return "";
+                                return title.split('|>')[0].trim();
+                            },
+
+                            getExpectedTitle(title) {
+                                title = String(title || "");
+
+                                if (!title.includes('|>')) return title;
+
+                                return title.split('|>')[1].trim();
+                            },
+                            getDisplayTitle(title) {
+                                const rawTitle = String(title || '').trim();
+
+                                if (String(this.now_group.ID) !== '1') {
+                                    return rawTitle;
+                                }
+
+                                const role = this.getRole(rawTitle);
+                                const pureTitle = this.getExpectedTitle(rawTitle);
+
+                                if (role) {
+                                    return `(${role})${pureTitle}`;
+                                }
+
+                                return pureTitle;
+                            },
+                            getDisplayTitleByRow(row) {
+                                return this.getDisplayTitle(row?.rd_title || '');
+                            },
+                            sortExpectedBy(key) {
+                                if (this.sort_expected.key === key) {
+                                    this.sort_expected.order = this.sort_expected.order === 'asc' ? 'desc' : 'asc';
+                                } else {
+                                    this.sort_expected.key = key;
+                                    this.sort_expected.order = 'asc';
+                                }
+                            },
+                            getSortMark(key) {
+                                if (this.sort_expected.key !== key) return '';
+                                return this.sort_expected.order === 'asc' ? ' ▲' : ' ▼';
+                            },
                         },
                         mounted() {
                             this.get_requirement()
@@ -2132,7 +2435,7 @@
                         <tbody>
                             <tr v-for="e in all_expected" :key="'e_'+e.rd_ID">
                                 <td style="text-align:center;">{{ Number(get_expectedDone(e)) === 3 ? '是' : '' }}</td>
-                                <td>{{ e.rd_title }}</td>
+                                <td>{{ getDisplayTitle(e.rd_title) }}</td>
                                 <td>{{ e.rd_content }}</td>
                                 <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                             </tr>
@@ -2201,7 +2504,7 @@
                         <tbody>
                             <tr v-for="e in getExpectedForSide('L')" :key="'DL_e_'+e.rd_ID">
                                 <td style="text-align:center;">{{ Number(e.rd_status) === 3 ? '是' : '' }}</td>
-                                <td>{{ e.rd_title }}</td>
+                                <td>{{ getDisplayTitle(e.rd_title) }}</td>
                                 <td class="pdf-cell-break">{{ e.rd_content }}</td>
                                 <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                             </tr>
@@ -2268,7 +2571,7 @@
                         <tbody>
                             <tr v-for="e in getExpectedForSide('R')" :key="'DR_e_'+e.rd_ID">
                                 <td style="text-align:center;">{{ Number(e.rd_status) === 3 ? '是' : '' }}</td>
-                                <td>{{ e.rd_title }}</td>
+                                <td>{{ getDisplayTitle(e.rd_title) }}</td>
                                 <td class="pdf-cell-break">{{ e.rd_content }}</td>
                                 <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                             </tr>

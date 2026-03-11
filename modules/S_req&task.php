@@ -104,12 +104,12 @@ switch ($_GET["do"]) {
         // 各欄位套用
         if ($p["form"]["select1"] == "miles") {
             $ms_ID = $p["form"]["select2"]; // 有值
-            $req_ID = "NULL";               // 無值
+            $rd_ID = "NULL";               // 無值
         } else if ($p["form"]["select1"] == "req") {
-            $req_ID = $p["form"]["select2"];
+            $rd_ID = $p["form"]["select2"];
             $ms_ID = "NULL";
         } else {
-            $req_ID = "NULL";
+            $rd_ID = "NULL";
             $ms_ID = "NULL";
         }
         $title = toNull($p["form"]["title"]);
@@ -128,7 +128,7 @@ switch ($_GET["do"]) {
         task_u_ID       = '{$_SESSION["u_ID"]}',
         task_cohort_ID  = '$cohort_ID',
         ms_ID           = $ms_ID,
-        req_ID          = $req_ID,
+        rd_ID          = $rd_ID,
         task_title      = $title,
         task_desc       = $desc,
         task_start_d    = $start_d,

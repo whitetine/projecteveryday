@@ -226,16 +226,18 @@
             <div class="outcome-table-wrap">
                 <table class="outcome-table">
                     <colgroup>
-                        <col style="width: 65px;">
-                        <col style="width: 280px;">
+                        <col style="width:65px;">
+                        <col v-if="now_group.ID == 1" style="width:120px;">
+                        <col style="width:220px;">
                         <col>
-                        <col style="width: 200px;">
-                        <col style="width: 120px;">
-                        <col style="width: 165px;">
+                        <col style="width:200px;">
+                        <col style="width:120px;">
+                        <col style="width:165px;">
                     </colgroup>
                     <thead>
                         <tr>
                             <th>完成</th>
+                            <th v-if="now_group.ID == 1">角色</th>
                             <th>標題</th>
                             <th>內容</th>
                             <th>最後編輯時間/者</th>
@@ -258,11 +260,14 @@
                                 </div>
                             </td>
 
+                            <!-- 角色 -->
+                            <td v-if="now_group.ID == 1" class="text-success fw-bold">
+                                {{ getExpectedDisplayRole(i) || '-' }}
+                            </td>
+
                             <!-- 標題 -->
                             <td>
-                                <!-- 顯示模式 -->
-                                <strong>{{ i.rd_title }}</strong>
-
+                                <strong>{{ getExpectedDisplayTitle(i) }}</strong>
                             </td>
 
                             <!-- 內容 -->
@@ -298,8 +303,8 @@
                                         v-if="editExpectedId !== i.rd_ID"
                                         class="btn-soft btn-primary"
                                         type="button"
-                                        @click="startEditExpected(i)">
-                                        <i class="fa-solid fa-eye"></i>已閱
+                                        @click="backEditExpected(i)">
+                                        <i class="fa-solid fa-xmark"></i>退回
                                     </button>
                                 </div>
                             </td>
@@ -402,7 +407,7 @@
                                             <tbody>
                                                 <tr v-for="e in getExpectedForSide('L')" :key="'L_e_'+e.rd_ID">
                                                     <td style="text-align:center;">{{ Number(e.rd_status) === 3 ? '是' : '' }}</td>
-                                                    <td>{{ e.rd_title }}</td>
+                                                    <td>{{ getExpectedDisplayFullTitle(e) }}</td>
                                                     <td class="pdf-cell-break">{{ e.rd_content }}</td>
                                                     <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                                                 </tr>
@@ -485,7 +490,7 @@
                                             <tbody>
                                                 <tr v-for="e in getExpectedForSide('R')" :key="'R_e_'+e.rd_ID">
                                                     <td style="text-align:center;">{{ Number(e.rd_status) === 3 ? '是' : '' }}</td>
-                                                    <td>{{ e.rd_title }}</td>
+                                                    <td>{{ getExpectedDisplayFullTitle(e) }}</td>
                                                     <td class="pdf-cell-break">{{ e.rd_content }}</td>
                                                     <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                                                 </tr>
@@ -648,7 +653,7 @@
                                     <select class="ms-2" v-model="filter_log.rd_ID">
                                         <option value="">全部</option>
                                         <option v-for="i in all_expected" :key="i.rd_ID" :value="String(i.rd_ID)">
-                                            {{ i.rd_ID }}({{ i.rd_title }})
+                                            {{ i.rd_ID }}({{ getExpectedDisplayFullTitle(i) }})
                                         </option>
                                     </select>
                                     、內容關鍵字:
@@ -696,7 +701,7 @@
                                             <td>{{ log.cr_type }}</td>
                                             <td class="text-start log-cell">
                                                 <ul class="m-0 ps-3" v-if="parseArr(log.cr_record).length">
-                                                    <li>標題：{{parseArr(log.cr_record).slice(0, 1)[0]}}</li>
+                                                    <li>標題：{{ getExpectedDisplayFullTitleByText(parseArr(log.cr_record).slice(0, 1)[0]) }}</li>
                                                     <li>內容：{{parseArr(log.cr_record).slice(1, 2)[0]}}</li>
                                                     <li>負責：{{ log.cr_record_name }}</li>
                                                 </ul>
@@ -704,8 +709,8 @@
                                             </td>
                                             <td class="text-start log-cell">
                                                 <ul class="m-0 ps-3" v-if="parseArr(log.cr_update_data).length">
-                                                    <li :class="diffClass(getTitle(log, 'u'), getTitle(log, 'r'))">
-                                                        標題：{{ getTitle(log, 'u') }}
+                                                    <li :class="diffClass(getExpectedDisplayFullTitleByText(getTitle(log, 'u')), getExpectedDisplayFullTitleByText(getTitle(log, 'r')))">
+                                                        標題：{{ getExpectedDisplayFullTitleByText(getTitle(log, 'u')) }}
                                                     </li>
                                                     <li :class="diffClass(getContent(log, 'u'), getContent(log, 'r'))">
                                                         內容：{{ getContent(log, 'u') }}
@@ -800,7 +805,7 @@
                                             <tbody>
                                                 <tr v-for="e in all_expected" :key="'pe_'+e.rd_ID">
                                                     <td style="text-align:center;">{{ Number(get_expectedDone(e)) === 3 ? '是' : '' }}</td>
-                                                    <td>{{ e.rd_title }}</td>
+                                                    <td>{{ getExpectedDisplayFullTitle(e) }}</td>
                                                     <td class="pdf-cell-break">{{ e.rd_content }}</td>
                                                     <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                                                 </tr>
@@ -881,6 +886,7 @@
                                     rp_done: 0
                                 },
                                 editRow_Expected: {
+                                    role: "",
                                     title: "",
                                     value: "",
                                     CEO: "",
@@ -1172,7 +1178,30 @@
 
                                 return data;
                             },
+                            isRoleMode() {
+                                return String(this.now_group.ID) === '1';
+                            },
 
+                            roleOptions() {
+                                const set = new Set();
+
+                                (this.all_expected || []).forEach(row => {
+                                    const rawTitle = String(row.rd_title || '').trim();
+                                    if (!rawTitle) return;
+
+                                    if (rawTitle.includes('|>')) {
+                                        const role = rawTitle.split('|>')[0].trim();
+                                        if (role) set.add(role);
+                                    }
+
+                                    // 如果你之後 get_expected 已經先拆好 rd_role，也一起收
+                                    if (row.rd_role && String(row.rd_role).trim()) {
+                                        set.add(String(row.rd_role).trim());
+                                    }
+                                });
+
+                                return [...set];
+                            },
 
                         },
                         methods: {
@@ -1256,14 +1285,6 @@
                                 });
                             },
 
-                            get_expected() {
-                                return $.post("../modules/expected_outcome.php?do=get_Expected", {
-                                    tm: this.all_teammumber.filter(x => x.team_ID == this.now_team_ID && x.role_ID == 6)
-                                }, item => {
-                                    this.all_expected = JSON.parse(item) || [];
-                                });
-                            },
-
                             get_exresultdata() {
                                 return $.post("../modules/expected_outcome.php?do=get_exresultdata", {
                                     team_ID: this.now_team_ID
@@ -1325,29 +1346,45 @@
                                 $.post("../modules/expected_outcome.php?do=get_Expected", {
                                     tm: this.all_teammumber.filter(x => x.team_ID == this.now_team_ID && x.role_ID == 6)
                                 }, item => {
-                                    this.all_expected = JSON.parse(item);
-                                })
+                                    const rows = JSON.parse(item) || [];
+
+                                    this.all_expected = rows.map(row => {
+                                        const parsed = this.parseExpectedTitle(row.rd_title);
+                                        return {
+                                            ...row,
+                                            rd_role: parsed.role,
+                                            rd_title_pure: parsed.title
+                                        };
+                                    });
+                                });
                             },
                             submitAddExpected() {
-                                // 提交新增成果
+                                const role = (this.editRow_Expected.role || "").trim();
                                 const t = (this.editRow_Expected.title || "").trim();
                                 const v = (this.editRow_Expected.value || "").trim();
+
                                 if (t === "" || v === "") {
                                     alert("請先填寫「標題」與「內容」");
                                     return;
                                 }
+
+                                const finalTitle = this.buildExpectedTitle(role, t);
+
                                 $.post("../modules/expected_outcome.php?do=add_expected", {
-                                    ...this.editRow_Expected
+                                    ...this.editRow_Expected,
+                                    title: finalTitle
                                 }, (res) => {
                                     toast({
                                         type: 'success',
                                         title: '新增成功'
-                                    })
-                                    this.get_expected()
+                                    });
+                                    this.get_expected();
                                 }).fail(() => {
-                                    alert("新增失敗，請稍後再試")
+                                    alert("新增失敗，請稍後再試");
                                 });
+
                                 this.editRow_Expected = {
+                                    role: "",
                                     title: "",
                                     value: "",
                                     CEO: ""
@@ -2021,8 +2058,70 @@
                                 // 截止日 <= 今天，才算可顯示
                                 return d <= today;
                             },
-                            go_show_all(){
+                            go_show_all() {
                                 window.location.href = "main.php#pages/expected_show_all.php";
+                            },
+                            parseExpectedTitle(rawTitle) {
+                                const s = String(rawTitle || '').trim();
+
+                                if (!s.includes('|>')) {
+                                    return {
+                                        role: '',
+                                        title: s
+                                    };
+                                }
+
+                                const parts = s.split('|>');
+                                return {
+                                    role: String(parts[0] || '').trim(),
+                                    title: String(parts.slice(1).join('|>') || '').trim()
+                                };
+                            },
+
+                            buildExpectedTitle(role, title) {
+                                const r = String(role || '').trim();
+                                const t = String(title || '').trim();
+
+                                if (String(this.now_group.ID) !== '1') return t;
+                                if (!r) return t;
+                                return `${r}|>${t}`;
+                            },
+
+                            getExpectedDisplayRole(row) {
+                                const parsed = this.parseExpectedTitle(row?.rd_title || '');
+                                return String(this.now_group.ID) === '1' ? parsed.role : '';
+                            },
+
+                            getExpectedDisplayTitle(row) {
+                                const parsed = this.parseExpectedTitle(row?.rd_title || '');
+                                return String(this.now_group.ID) === '1' ? parsed.title : String(row?.rd_title || '');
+                            },
+
+                            getExpectedDisplayFullTitle(row) {
+                                const parsed = this.parseExpectedTitle(row?.rd_title || '');
+                                if (String(this.now_group.ID) === '1' && parsed.role) {
+                                    return `(${parsed.role})${parsed.title}`;
+                                }
+                                return String(row?.rd_title || '');
+                            },
+
+                            getExpectedDisplayFullTitleByText(rawTitle) {
+                                const parsed = this.parseExpectedTitle(rawTitle || '');
+                                if (String(this.now_group.ID) === '1' && parsed.role) {
+                                    return `(${parsed.role})${parsed.title}`;
+                                }
+                                return parsed.title || String(rawTitle || '');
+                            },
+                            backEditExpected(i) {
+                                $.post("../modules/expected_outcome.php?do=backEditExpected", i)
+                                    .done(() => {
+                                        this.get_requirement()
+                                        toast({
+                                            type: 'success',
+                                            title: '更新成功'
+                                        });
+                                    })
+
                             }
                         },
                         mounted() {
@@ -2095,7 +2194,7 @@
                         <tbody>
                             <tr v-for="e in all_expected" :key="'e_'+e.rd_ID">
                                 <td style="text-align:center;">{{ Number(get_expectedDone(e)) === 3 ? '是' : '' }}</td>
-                                <td>{{ e.rd_title }}</td>
+                                <td>{{ getExpectedDisplayFullTitle(e) }}</td>
                                 <td>{{ e.rd_content }}</td>
                                 <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                             </tr>
@@ -2164,7 +2263,7 @@
                         <tbody>
                             <tr v-for="e in getExpectedForSide('L')" :key="'DL_e_'+e.rd_ID">
                                 <td style="text-align:center;">{{ Number(e.rd_status) === 3 ? '是' : '' }}</td>
-                                <td>{{ e.rd_title }}</td>
+                                <td>{{ getExpectedDisplayFullTitle(e) }}</td>
                                 <td class="pdf-cell-break">{{ e.rd_content }}</td>
                                 <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                             </tr>
@@ -2231,7 +2330,7 @@
                         <tbody>
                             <tr v-for="e in getExpectedForSide('R')" :key="'DR_e_'+e.rd_ID">
                                 <td style="text-align:center;">{{ Number(e.rd_status) === 3 ? '是' : '' }}</td>
-                                <td>{{ e.rd_title }}</td>
+                                <td>{{ getExpectedDisplayFullTitle(e) }}</td>
                                 <td class="pdf-cell-break">{{ e.rd_content }}</td>
                                 <td style="text-align:center;">{{ e.rd_u_name_a ?? '未定' }}</td>
                             </tr>
