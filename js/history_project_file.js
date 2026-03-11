@@ -595,9 +595,33 @@
     /**
      * 渲染檔案項目（用於模態框）
      */
+    function getFileTypeLabel(file) {
+        const name = (file.name || '').toLowerCase();
+        const type = (file.type || '').toLowerCase();
+        let ext = '';
+        const dot = name.lastIndexOf('.');
+        if (dot !== -1) {
+            ext = name.slice(dot + 1);
+        }
+
+        if (['ppt', 'pptx'].includes(ext)) return 'PPT';
+        if (['doc', 'docx'].includes(ext)) return 'Word';
+        if (ext === 'pdf') return 'PDF';
+        if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext)) return '圖片';
+
+        // 退而求其次用 MIME 判斷
+        if (type.includes('presentation')) return 'PPT';
+        if (type.includes('word')) return 'Word';
+        if (type === 'application/pdf') return 'PDF';
+        if (type.startsWith('image/')) return '圖片';
+
+        return '其他檔案';
+    }
+
     function renderFileItem(prosub_ID, file) {
         const uploadDate = file.uploaded_at ? new Date(file.uploaded_at).toLocaleDateString('zh-TW') : '-';
         const isPublic = file.public === true || (file.allow_download === true || file.allowDownload === true); // 兼容舊格式
+        const typeLabel = getFileTypeLabel(file);
 
         return `
             <div class="file-item">
@@ -605,7 +629,7 @@
                     <i class="fa-solid fa-file file-icon"></i>
                     <div class="file-details">
                         <div class="file-name">${escapeHtml(file.name || '未命名檔案')}</div>
-                        <div class="file-meta">${uploadDate}</div>
+                        <div class="file-meta">${escapeHtml(typeLabel)} ・ ${uploadDate}</div>
                     </div>
                 </div>
                 <div class="download-toggle">

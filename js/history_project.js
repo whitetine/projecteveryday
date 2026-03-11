@@ -573,13 +573,9 @@
             }
             
             const formData = new FormData(form);
-            // 收集可上傳檔案類型（checkbox）並轉成 JSON 字串（不含海報、其他）
-            const typeValues = [];
-            ['report','ppt','word'].forEach(t => {
-                const el = document.getElementById('fileType_' + t);
-                if (el && el.checked) typeValues.push(t);
-            });
-            formData.set('allow_file_types', JSON.stringify(typeValues));
+            // 歷屆專題檔案類型改為依副檔名自動判斷，後端不再使用固定的 report/ppt/word 類型限制
+            // 這裡一律視為「不限檔案類型」
+            formData.set('allow_file_types', '');
             const action = formData.get('action');
             const submitBtn = document.getElementById('submitBtn');
             const originalBtnText = submitBtn ? submitBtn.textContent : '提交';

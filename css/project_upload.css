@@ -59,6 +59,11 @@
     border: none !important;
 }
 
+/* 不再使用多檔案的類型下拉選單，直接隱藏 */
+.project-upload-page .file-type-select {
+    display: none !important;
+}
+
 /* 確保模態框中的所有按鈕也是長方弧 */
 .project-upload-page .modal .btn,
 .project-upload-page .modal button.btn,
