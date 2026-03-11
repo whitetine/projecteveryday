@@ -51,8 +51,12 @@
                 <h3 style="font-weight:800">
                     分列方式
                 </h3>
+                <label style="display:flex;align-items:center;gap:6px;margin-left:12px;user-select:none;">
+                    <input type="checkbox" v-model="filter.only_unfinished">
+                    僅顯示未完成
+                </label>
                 <button class="btn-gantt" @click="task_modal_show()">
-                    新增待辦事項
+                    新增老師交辦事項
                 </button>
             </div>
             <div class="filter-controls">
@@ -100,7 +104,7 @@
                             # {{ priorityText(task.task_priority) }}
                         </span>
 
-                        
+
 
                         <span class="req-count-tag"
                             :style="task.task_status === 1 ? 'background:#F8BF63' : (task.task_status === 3 ? 'background:#CAFCBB' : '')">
@@ -122,7 +126,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h2 class="mb-0">{{ form.id ? '編輯待辦事項' : '新增待辦事項' }}</h2>
+                        <h2 class="mb-0">{{ form.id ? '編輯老師交辦事項' : '新增老師交辦事項' }}</h2>
                         <button @click="task_modal_close"
                             style="background:none;border:none;font-size:28px;cursor:pointer;color:#999;line-height:1;"
                             class="ms-auto">&times;</button>
@@ -133,19 +137,7 @@
                             <!-- 左邊表單 -->
                             <div class="task-form">
                                 <table class="w-100">
-                                    <tr>
-                                        <td>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><b>對應預期成果</b></span>
-                                                <select class="form-select" v-model="form.req_ID">
-                                                    <option :value="null">不連結</option>
-                                                    <option v-for="i in all_exresultdata" :key="i.rd_ID" :value="i.rd_ID">
-                                                        {{ i.rd_title }}
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </td>
-                                    </tr>
+
 
                                     <tr>
                                         <td>
@@ -187,9 +179,20 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><b>對應預期成果</b></span>
+                                                <select class="form-select" v-model="form.req_ID">
+                                                    <option :value="null">無</option>
+                                                    <option v-for="i in all_exresultdata" :key="i.rd_ID" :value="i.rd_ID">
+                                                        {{ i.rd_title }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                                    
-                                  
                                 </table>
                             </div>
 
@@ -217,7 +220,7 @@
                                             # {{ priorityText(form.priority) }}
                                         </span>
 
-                                        
+
 
                                         <span class="req-count-tag"
                                             :style="form.who_task ? 'background:#F8BF63' : ''">
@@ -292,7 +295,7 @@
                             </p>
                         </div>
 
-                       
+
 
                         <div class="req-detail-section">
                             <label class="req-detail-label">標籤：</label>
@@ -394,7 +397,8 @@
                     filter: {
                         task_filter: "status",
                         task_filter_status: "",
-                        requirement_status: ""
+                        requirement_status: "",
+                        only_unfinished: false
                     },
                     form: {
                         id: null,
@@ -403,7 +407,7 @@
                         desc: null,
                         priority: 5,
                         who_task: null,
-                      
+
                     },
                     all_exresultdata: [],
                     now_task: [],
@@ -543,25 +547,26 @@
                 },
 
                 filtered_task() {
-                    const mineFilter = this.filter.task_filter; // '' or 'mine'
-                    const statusFilter = this.filter.task_filter_status; // '', 'notyet', 'taken', 'done'
-                    const u_ID = this.u_ID;
+                    const statusFilter = this.filter.task_filter_status;
+                    const onlyUnfinished = this.filter.only_unfinished;
+
                     return this.all_task.filter(item => {
-                        // 1️⃣ 先處理「篩選：我的」
-                        if (mineFilter === 'mine') {
-                            const isCreator = item.task_u_ID === u_ID; // 我建立的待辦任務公佈欄
-                            const isTaker = item.task_done_u_ID === u_ID; // 我接下的待辦任務公佈欄
-                            if (!isCreator && !isTaker) return false;
+                        const taskStatus = Number(item.task_status);
+
+                        // 僅顯示未完成：不管現在是狀態 / 標籤 / 組員，都先套用
+                        if (onlyUnfinished && taskStatus === 3) {
+                            return false;
                         }
-                        // 2️⃣ 再處理狀態篩選
+
+                        // 其他狀態篩選
                         switch (statusFilter) {
-                            case 'notyet': // 未屬名
-                                return item.task_status === 0;
-                            case 'taken': // 被接下
-                                return item.task_status === 1;
-                            case 'done': // 已完成
-                                return item.task_status === 3;
-                            default: // '' = ALL
+                            case 'notyet':
+                                return taskStatus === 0;
+                            case 'taken':
+                                return taskStatus === 1;
+                            case 'done':
+                                return taskStatus === 3;
+                            default:
                                 return true;
                         }
                     });
