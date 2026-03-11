@@ -115,7 +115,8 @@ $cohort_ID = $_SESSION['cohort_ID'] ?? 3;
 $showTutorCol   = ((int)$role_ID !== 3);
 $showTeacherCol = ((int)$role_ID !== 4);
 $showClassCol   = ((int)$role_ID !== 3); 
-$baseCols = 5; // 文件名稱、團隊名稱、組員、繳交時間、操作
+// 基本欄位：文件名稱、團隊名稱、組員、狀態、繳交時間、操作
+$baseCols = 6;
 $colCount = $baseCols + ($showTutorCol ? 1 : 0) + ($showTeacherCol ? 1 : 0) + ($showClassCol ? 1 : 0);
 
 // 與 form_manage.php 一致：只列出「啟用」文件（同一張表 document_forms、同一狀態欄位 doc_status=1）
@@ -202,6 +203,7 @@ $docIdInvalidMessage = ($requestDocID > 0 && !$docIdValid) ? '此文件目前未
           <?php if ($showClassCol): ?>
             <th style="width:5%;">班級</th>
           <?php endif; ?>
+          <th style="width:8%;">狀態</th>
           <th style="width:13%;">繳交時間</th>
           <th style="width:6%;">操作</th>
         </tr>
