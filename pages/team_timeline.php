@@ -29,6 +29,7 @@ function enrichTeamsWithDetails($conn, $teams, $cohorts = []) {
   $tmCol = columnExistsLocal('teammember', 'team_u_ID') ? 'team_u_ID' : 'u_ID';
   $urCol = columnExistsLocal('userrolesdata', 'ur_u_ID') ? 'ur_u_ID' : 'u_ID';
   $hasTimeline = (bool)$conn->query("SHOW TABLES LIKE 'team_timeline'")->fetch();
+  $hasAccount = columnExistsLocal('userdata', 'u_account');
   $cohortMap = [];
   foreach ($cohorts as $c) {
     $cohortMap[(int)$c['cohort_ID']] = $c['cohort_name'] ?: ($c['year_label'] ?? '') ?: ('屆別 ' . $c['cohort_ID']);
@@ -36,23 +37,46 @@ function enrichTeamsWithDetails($conn, $teams, $cohorts = []) {
   foreach ($teams as &$t) {
     $tid = (int)$t['team_ID'];
     $members = [];
-    $teacher = '';
-    $stmt = $conn->prepare("
-      SELECT u.u_name, ur.role_ID FROM teammember tm
-      JOIN userdata u ON u.u_ID = tm.{$tmCol}
-      LEFT JOIN userrolesdata ur ON ur.{$urCol} = tm.{$tmCol} AND ur.user_role_status = 1
-      WHERE tm.team_ID = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1)
-    ");
+    $teachers = [];
+    if ($hasAccount) {
+      $stmt = $conn->prepare("
+        SELECT u.u_ID, u.u_name, u.u_account, ur.role_ID
+        FROM teammember tm
+        JOIN userdata u ON u.u_ID = tm.{$tmCol}
+        LEFT JOIN userrolesdata ur ON ur.{$urCol} = tm.{$tmCol} AND ur.user_role_status = 1
+        WHERE tm.team_ID = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1)
+      ");
+    } else {
+      $stmt = $conn->prepare("
+        SELECT u.u_ID, u.u_name, ur.role_ID
+        FROM teammember tm
+        JOIN userdata u ON u.u_ID = tm.{$tmCol}
+        LEFT JOIN userrolesdata ur ON ur.{$urCol} = tm.{$tmCol} AND ur.user_role_status = 1
+        WHERE tm.team_ID = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1)
+      ");
+    }
     $stmt->execute([$tid]);
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $m) {
-      if ((int)($m['role_ID'] ?? 0) === 4) {
-        $teacher = $m['u_name'] ?? '';
-      } else {
-        $members[] = $m['u_name'] ?? '';
+      $isTeacher = ((int)($m['role_ID'] ?? 0) === 4);
+      $name = trim((string)($m['u_name'] ?? ''));
+      if ($isTeacher) {
+        if ($name !== '') {
+          $teachers[] = $name;
+        }
+        continue;
       }
+      if ($name === '') continue;
+      $studentId = '';
+      if ($hasAccount && !empty($m['u_account'])) {
+        $studentId = (string)$m['u_account'];
+      } elseif (!empty($m['u_ID'])) {
+        $studentId = (string)$m['u_ID'];
+      }
+      $display = $studentId !== '' ? "{$name} {$studentId}" : $name;
+      $members[] = $display;
     }
     $t['members_display'] = implode('、', $members) ?: '—';
-    $t['teacher_display'] = $teacher ?: '—';
+    $t['teacher_display'] = $teachers ? implode('、', $teachers) : '—';
     $t['cohort_label'] = $cohortMap[(int)($t['cohort_ID'] ?? 0)] ?? '—';
     $t['event_total'] = 0;
     $t['event_stats_display'] = '0';
@@ -62,8 +86,21 @@ function enrichTeamsWithDetails($conn, $teams, $cohorts = []) {
       $stats = [];
       $total = 0;
       foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $r) {
-        $stats[] = ($r['event_type'] ?? '') . ':' . (int)$r['cnt'];
-        $total += (int)$r['cnt'];
+        $rawType = strtoupper(trim((string)($r['event_type'] ?? '')));
+        if ($rawType === '') continue;
+        $label = match ($rawType) {
+          'TEAM'      => '組別',
+          'MEETING'   => '會議',
+          'MILESTONE' => '里程碑',
+          'FORM'      => '表單',
+          'REVIEW'    => '審核',
+          'DOC'       => '文件',
+          'STATUS'    => '狀態',
+          default     => (string)($r['event_type'] ?? $rawType),
+        };
+        $count = (int)$r['cnt'];
+        $stats[] = $label . '：' . $count;
+        $total += $count;
       }
       $t['event_total'] = $total;
       $t['event_stats_display'] = implode('、', $stats) ?: '0';
@@ -131,6 +168,14 @@ if ($role_ID === 6) {
       $showCohortCol = ($role_ID === 2);
 
       echo '<div class="m-3">';
+      echo '<style>
+        .team-timeline-table{width:100%;border-collapse:collapse;min-width:720px;}
+        .team-timeline-table th,.team-timeline-table td{border-bottom:1px solid #d1d5db;padding:10px 10px;text-align:center;vertical-align:middle;font-size:1.02rem;}
+        .team-timeline-table th{background:#fafafa;color:#6b7280;font-weight:700;}
+        .team-timeline-table tbody tr:hover td{background:#fbfdff;}
+        .team-timeline-table .col-name{text-align:left;font-weight:600;color:#111827;}
+        .team-timeline-table .col-actions{text-align:center;white-space:nowrap;}
+      </style>';
       echo '<div class="d-flex align-items-center gap-3 flex-wrap mb-4">';
       echo '<h4 class="mb-0">組別時間軸 · ' . htmlspecialchars($cohort_label) . '</h4>';
       echo '<div class="d-flex align-items-center gap-2">';
@@ -149,20 +194,20 @@ if ($role_ID === 6) {
         echo '<div class="alert alert-info">此屆別尚無組別</div>';
       } else {
         echo '<p class="text-muted mb-2">請選擇要查看時間線的組別：</p>';
-        echo '<div class="table-responsive"><table class="table table-hover align-middle">';
+        echo '<div class="table-responsive"><table class="team-timeline-table">';
         echo '<thead><tr>';
         if ($showCohortCol) echo '<th>屆別</th>';
-        echo '<th>名稱</th><th>成員</th><th>指導老師</th><th>事件的統計</th><th>總共的事件統計</th><th></th></tr></thead><tbody>';
+        echo '<th>名稱</th><th>組員</th><th>指導老師</th><th>事件統計</th><th>事件總數</th><th></th></tr></thead><tbody>';
         foreach ($teams as $t) {
           $link = 'pages/team_timeline.php?team_ID=' . intval($t['team_ID']);
           echo '<tr>';
           if ($showCohortCol) echo '<td>' . htmlspecialchars($t['cohort_label'] ?? '—') . '</td>';
-          echo '<td>' . htmlspecialchars($t['team_name'] ?: ('Team #' . $t['team_ID'])) . '</td>';
+          echo '<td class="col-name">' . htmlspecialchars($t['team_name'] ?: ('Team #' . $t['team_ID'])) . '</td>';
           echo '<td>' . htmlspecialchars($t['members_display'] ?? '—') . '</td>';
           echo '<td>' . htmlspecialchars($t['teacher_display'] ?? '—') . '</td>';
           echo '<td>' . htmlspecialchars($t['event_stats_display'] ?? '0') . '</td>';
           echo '<td>' . (int)($t['event_total'] ?? 0) . '</td>';
-          echo '<td><a class="btn btn-sm btn-primary ajax-link" href="' . htmlspecialchars($link) . '">進入</a></td>';
+          echo '<td class="col-actions"><a class="btn btn-sm btn-outline-primary ajax-link" href="' . htmlspecialchars($link) . '">進入</a></td>';
           echo '</tr>';
         }
         echo '</tbody></table></div>';
@@ -216,17 +261,17 @@ if ($role_ID === 6) {
 
     echo '<div class="m-3">';
     echo '<h4>請選擇要查看時間線的組別</h4>';
-    echo '<div class="table-responsive"><table class="table table-hover align-middle">';
-    echo '<thead><tr><th>名稱</th><th>成員</th><th>指導老師</th><th>事件的統計</th><th>總共的事件統計</th><th></th></tr></thead><tbody>';
+    echo '<div class="table-responsive"><table class="team-timeline-table">';
+    echo '<thead><tr><th>名稱</th><th>組員</th><th>指導老師</th><th>事件統計</th><th>事件總數</th><th></th></tr></thead><tbody>';
     foreach ($teams as $t) {
       $link = 'pages/team_timeline.php?team_ID=' . intval($t['team_ID']);
       echo '<tr>';
-      echo '<td>' . htmlspecialchars($t['team_name'] ?: ('Team #' . $t['team_ID'])) . '</td>';
+      echo '<td class="col-name">' . htmlspecialchars($t['team_name'] ?: ('Team #' . $t['team_ID'])) . '</td>';
       echo '<td>' . htmlspecialchars($t['members_display'] ?? '—') . '</td>';
       echo '<td>' . htmlspecialchars($t['teacher_display'] ?? '—') . '</td>';
       echo '<td>' . htmlspecialchars($t['event_stats_display'] ?? '0') . '</td>';
       echo '<td>' . (int)($t['event_total'] ?? 0) . '</td>';
-      echo '<td><a class="btn btn-sm btn-primary ajax-link" href="' . htmlspecialchars($link) . '">進入</a></td>';
+      echo '<td class="col-actions"><a class="btn btn-sm btn-outline-primary ajax-link" href="' . htmlspecialchars($link) . '">進入</a></td>';
       echo '</tr>';
     }
     echo '</tbody></table></div>';

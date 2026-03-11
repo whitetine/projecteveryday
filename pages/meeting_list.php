@@ -28,8 +28,10 @@ $cssBase = 'css/meeting.css';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .meeting-list-page { padding: 20px; max-width: 1400px; margin: 0 auto; }
-        .meeting-list-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
-        .meeting-list-title { font-size: 1.75rem; font-weight: 800; margin: 0; }
+        .meeting-list-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; }
+        .meeting-list-title-row { display:flex; align-items: baseline; gap:12px; flex-wrap:wrap; }
+        .meeting-list-title { font-size: 2.1rem; font-weight: 800; margin: 0; color:#0f172a; }
+        .meeting-list-subtitle { font-size: 1rem; color:#6b7280; }
         .btn-create { background: var(--meeting-primary, #2563eb); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 600; border: none; cursor: pointer; }
         .btn-create:hover { background: #1d4ed8; color: white; }
 
@@ -40,8 +42,8 @@ $cssBase = 'css/meeting.css';
         .meeting-stat-sub { font-size: 0.78rem; color: #94a3b8; }
 
         .meeting-list-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-        .meeting-list-table th { padding: 12px 16px; text-align: left; font-size: 0.9rem; font-weight: 700; color: var(--meeting-muted, #64748b); background: #f8fafc; border-bottom: 1px solid var(--meeting-border, #e2e8f0); }
-        .meeting-list-table td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; color: var(--meeting-text, #334155); vertical-align: top; }
+        .meeting-list-table th { padding: 12px 16px; text-align: left; font-size: 1rem; font-weight: 700; color: var(--meeting-muted, #64748b); background: #f8fafc; border-bottom: 1px solid var(--meeting-border, #e2e8f0); }
+        .meeting-list-table td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.98rem; color: var(--meeting-text, #111827); vertical-align: top; }
         .meeting-list-table tr:hover { background: #fafbfc; }
 
         .col-meeting-title { max-width: 260px; }
@@ -57,7 +59,7 @@ $cssBase = 'css/meeting.css';
             overflow: hidden;
         }
 
-        .col-attendance { font-size: 0.85rem; }
+        .col-attendance { font-size: 0.95rem; }
         .attendance-rate-badge {
             display: inline-flex;
             align-items: center;
@@ -73,9 +75,11 @@ $cssBase = 'css/meeting.css';
             color: #4b5563;
             font-weight: 500;
         }
-        .attendance-meta { margin-top: 4px; font-size: 0.78rem; color: #6b7280; display: flex; align-items: center; gap: 6px; }
-
-        .member-tooltip { cursor: default; border-bottom: 1px dotted #9ca3af; }
+        .attendance-meta { margin-top: 6px; font-size: 0.88rem; color: #0f172a; }
+        .attendance-member-line { display:flex; gap:16px; margin-bottom:4px; }
+        .attendance-member { font-size:0.95rem; }
+        .attendance-member strong { font-weight:600; }
+        .attendance-member-rate { margin-left:4px; font-weight:600; }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-box { background: #fff; padding: 24px; border-radius: 12px; width: 400px; border: 1px solid var(--meeting-border, #e2e8f0); }
@@ -97,14 +101,17 @@ $cssBase = 'css/meeting.css';
 
 <div class="meeting-list-page">
     <div class="meeting-list-header">
-        <h3 class="meeting-list-title">會議歷史紀錄</h3>
+        <div class="meeting-list-title-row">
+            <h3 class="meeting-list-title">會議歷史紀錄</h3>
+            <span id="teamInfo" class="meeting-list-subtitle">
+                <?php if ($team_name): ?>組別・<?= htmlspecialchars($team_name) ?><?php else: ?>組別載入中…<?php endif; ?>
+            </span>
+        </div>
         <button class="btn-create" id="btnCreateMeeting" onclick="openCreateModal()">
             <i class="fa-solid fa-plus"></i> 新增會議
         </button>
     </div>
-    <p id="teamInfo" style="color:var(--meeting-muted, #64748b); font-size:15px; margin:0 0 16px 0;">
-        <?php if ($team_name): ?>團隊：<?= htmlspecialchars($team_name) ?><?php else: ?>載入中…<?php endif; ?>
-    </p>
+    
 
     <div id="meetingStats" class="meeting-stat-cards" style="display:none;"></div>
 
@@ -150,7 +157,7 @@ async function loadMeetings() {
         window._meetingListResolvedTeamId = resolvedTeamId;
 
         if (teamInfo && teamName) {
-            teamInfo.textContent = '團隊：' + teamName;
+            teamInfo.textContent = '組別・' + teamName;
         }
 
         // 統計卡片：總會議數、平均出席率、有 AI 摘要次數
@@ -222,19 +229,23 @@ async function loadMeetings() {
                 } else {
                     attendanceHtml = '<span class="attendance-rate-badge none">尚無資料</span>';
                 }
-                let memberCount = 0;
-                let memberNamesOk = [];
+                const memberLines = [];
                 if (m.member_attendance && m.member_attendance.length > 0) {
-                    memberCount = m.member_attendance.length;
-                    memberNamesOk = m.member_attendance
-                        .filter(ma => ma.status === 'ok')
-                        .map(ma => ma.u_name);
+                    for (let i = 0; i < m.member_attendance.length; i += 2) {
+                        const lineMembers = m.member_attendance.slice(i, i + 2);
+                        const lineHtml = lineMembers.map(ma => {
+                            const baseName = ma.u_name || '';
+                            let rateText = '—';
+                            if (ma.status === 'ok') rateText = '100%';
+                            else if (ma.status === 'no') rateText = '0%';
+                            return `<span class="attendance-member"><strong>${escapeHtml(baseName)}</strong><span class="attendance-member-rate">${rateText}</span></span>`;
+                        }).join('');
+                        memberLines.push(`<div class="attendance-member-line">${lineHtml}</div>`);
+                    }
                 }
-                const tooltipNames = memberNamesOk.length ? memberNamesOk.join('、') : '';
-                const memberHint = memberCount
-                    ? `<span class="member-tooltip" title="${escapeHtml(tooltipNames || '尚無出席資料')}">👥 ${memberCount} 人</span>`
-                    : '<span>—</span>';
-                attendanceHtml += `<div class="attendance-meta">${memberHint}</div>`;
+                if (memberLines.length) {
+                    attendanceHtml += `<div class="attendance-meta">${memberLines.join('')}</div>`;
+                }
 
                 html += `
                     <tr>
@@ -249,7 +260,7 @@ async function loadMeetings() {
                         </td>
                         <td style="text-align:right;">
                             <a href="${meetingUrl}" class="btn btn-sm btn-primary ajax-link" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;text-decoration:none;color:#fff;background:var(--meeting-primary,#2563eb);font-weight:600;">
-                                <i class="fa-solid fa-file-lines"></i> 查看紀錄
+                                <i class="fa-solid fa-file-lines"></i> 查看
                             </a>
                         </td>
                     </tr>

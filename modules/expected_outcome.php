@@ -590,4 +590,8 @@ switch ($_GET["do"]) {
             ORDER BY e.sfd_submit_d ASC
         ")), JSON_UNESCAPED_UNICODE);
         break;
+
+    case "backEditExpected":
+        query("UPDATE `exresultddata` SET `rd_status` = '2' WHERE `exresultddata`.`rd_ID` = {$_POST["rd_ID"]};");
+        break;
 }

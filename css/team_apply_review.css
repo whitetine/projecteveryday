@@ -231,26 +231,38 @@
   font-weight: 600;
 }
 #reviewApp .tar-link-inline:hover { text-decoration: underline; }
-/* 精簡 summary：一行四數 */
+/* 統計卡片：四個 KPI */
 #reviewApp .tar-summary-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 12px;
   margin-bottom: 1rem;
-  padding: 0.75rem 0;
-  font-size: 0.95rem;
+}
+#reviewApp .tar-summary-card {
+  flex: 1 1 160px;
+  min-width: 0;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+#reviewApp .tar-summary-label {
+  font-size: 0.9rem;
   color: var(--muted);
 }
-#reviewApp .tar-summary-item {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.35rem;
-}
-#reviewApp .tar-summary-item b {
-  font-size: 1.25rem;
+#reviewApp .tar-summary-value {
+  font-size: 1.6rem;
+  font-weight: 800;
   color: var(--text);
 }
-#reviewApp .tar-summary-item.tar-summary-highlight b {
+#reviewApp .tar-summary-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+#reviewApp .tar-summary-card.tar-summary-highlight .tar-summary-value {
   color: var(--primary);
 }
 /* 老師負載：精簡 chip 列，不佔大空間 */
@@ -268,17 +280,38 @@
 #reviewApp .tar-teacher-load-body {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 #reviewApp .tar-teacher-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.95rem;
   font-weight: 600;
   border: 1px solid var(--border);
+  min-width: 180px;
+}
+#reviewApp .tar-teacher-chip-main {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:6px;
+}
+#reviewApp .tar-teacher-chip-bar {
+  position:relative;
+  height:6px;
+  border-radius:999px;
+  background:#e5e7eb;
+  overflow:hidden;
+}
+#reviewApp .tar-teacher-chip-bar-inner {
+  position:absolute;
+  inset:0;
+  border-radius:999px;
+  background:linear-gradient(90deg,#4f46e5,#22c55e);
+  width:0%;
 }
 #reviewApp .tar-teacher-chip.tar-chip-full {
   background: #1e293b;

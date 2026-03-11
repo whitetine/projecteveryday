@@ -64,6 +64,27 @@ function add_sys_msg($title, $content, $target_uids) {
     }
 }
 
+// 5. 專題申請：寄送 Gmail 通知（使用 Apps Script Webhook）
+function send_team_apply_mail(array $payload) {
+    // 這個 URL 與 forgot_password2.php 相同，由你在 Apps Script 處理 HTML 與按鈕
+    $url = 'https://script.google.com/macros/s/AKfycbwtvjxzfFbuZvDNsPtMIyQpGuvK5Eg24lD5x_DDlLVmpaxLgAdP7sSTRslJu5rmsgE2/exec';
+    if (empty($payload['to'])) return;
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded'],
+        CURLOPT_POSTFIELDS => http_build_query($payload),
+        CURLOPT_TIMEOUT => 8,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS => 3,
+    ]);
+    $resp = curl_exec($ch);
+    curl_close($ch);
+    // 不阻擋主流程，錯誤直接忽略或寫 log 即可
+}
+
 // --- API 邏輯區 ---
 
 try {
@@ -541,6 +562,84 @@ try {
                 }
 
                 $conn->commit();
+
+                // --- 寄送 Gmail 通知給指導老師與提交人 ---
+                try {
+                    // 查指導老師與提交人 email / 姓名
+                    $stmt = $conn->prepare("SELECT u_ID, u_name, u_gmail FROM userdata WHERE u_ID IN (?, ?)");
+                    $stmt->execute([$t_id, $u_ID]);
+                    $teacherEmail = '';
+                    $teacherName = '';
+                    $studentEmail = '';
+                    $studentName = '';
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        if ($row['u_ID'] === $t_id) {
+                            $teacherEmail = $row['u_gmail'] ?? '';
+                            $teacherName = $row['u_name'] ?? $t_id;
+                        } elseif ($row['u_ID'] === $u_ID) {
+                            $studentEmail = $row['u_gmail'] ?? '';
+                            $studentName = $row['u_name'] ?? $u_ID;
+                        }
+                    }
+
+                    // 產生一鍵審核連結（approve/reject）
+                    $host = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? '');
+                    $basePath = rtrim(dirname($_SERVER['REQUEST_URI'] ?? '/'), '/');
+                    $baseUrl = $host . $basePath . '/';
+
+                    $secret = getenv('TEAM_APPLY_MAIL_SECRET') ?: 'change_this_team_apply_secret';
+                    $approveToken = hash_hmac('sha256', "approve|$tap_ID", $secret);
+                    $rejectToken = hash_hmac('sha256', "reject|$tap_ID", $secret);
+
+                    $approveUrl = $baseUrl . "team_apply_mail_action.php?action=approve&tap_ID={$tap_ID}&token={$approveToken}";
+                    $rejectUrl  = $baseUrl . "team_apply_mail_action.php?action=reject&tap_ID={$tap_ID}&token={$rejectToken}";
+
+                    // 組員文字
+                    $memberNames = [];
+                    if (!empty($m_ids)) {
+                        $in = implode(',', array_fill(0, count($m_ids), '?'));
+                        $st2 = $conn->prepare("SELECT u_ID, u_name FROM userdata WHERE u_ID IN ($in)");
+                        $st2->execute($m_ids);
+                        while ($r2 = $st2->fetch(PDO::FETCH_ASSOC)) {
+                            $memberNames[] = ($r2['u_name'] ?? $r2['u_ID']) . '(' . $r2['u_ID'] . ')';
+                        }
+                    }
+                    $memberText = implode('、', $memberNames);
+
+                    // 給指導老師的 email
+                    if (!empty($teacherEmail)) {
+                        send_team_apply_mail([
+                            'type'         => 'TEAM_APPLY_NOTIFY_TEACHER',
+                            'to'           => $teacherEmail,
+                            'teacher_id'   => $t_id,
+                            'teacher_name' => $teacherName,
+                            'student_id'   => $u_ID,
+                            'student_name' => $studentName,
+                            'project_name' => $p_name,
+                            'members'      => $memberText,
+                            'approve_url'  => $approveUrl,
+                            'reject_url'   => $rejectUrl,
+                        ]);
+                    }
+
+                    // 給學生的確認信（可選）
+                    if (!empty($studentEmail)) {
+                        send_team_apply_mail([
+                            'type'         => 'TEAM_APPLY_NOTIFY_STUDENT',
+                            'to'           => $studentEmail,
+                            'student_id'   => $u_ID,
+                            'student_name' => $studentName,
+                            'teacher_id'   => $t_id,
+                            'teacher_name' => $teacherName,
+                            'project_name' => $p_name,
+                            'members'      => $memberText,
+                        ]);
+                    }
+                } catch (Exception $e) {
+                    // 寄信錯誤不影響主流程
+                    error_log('team_apply mail error: ' . $e->getMessage());
+                }
+
                 json_ok(['message' => '提交成功，等待審核中', 'tap_ID' => $tap_ID]);
 
             } catch (Exception $e) {
