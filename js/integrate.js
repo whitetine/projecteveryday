@@ -359,9 +359,8 @@ async function navigateToEditPage(title, cohort_ID, format, id) {
       
       const hashPart = `${targetPage}?${params.toString()}`;
       const basePath = pathname.split('?')[0] || 'main.php';
-      const ts = Date.now();
-      // 透過變更查詢字串強制重新載入 main.php，避免舊的 page-script 狀態殘留
-      window.location.href = `${basePath}?_reload=${ts}#${hashPart}`;
+      // 僅變更 hash 導向時程表/建議表，不加入 _reload 以保持網址簡潔
+      window.location.href = `${basePath}#${hashPart}`;
     } else {
       // 直接訪問，使用 window.location.href 跳轉
       const params = new URLSearchParams();

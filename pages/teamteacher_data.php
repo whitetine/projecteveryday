@@ -38,9 +38,9 @@ try {
     
     $teamUserField = columnExists($conn, 'teammember', 'team_u_ID') ? 'team_u_ID' : 'u_ID';
     $userRoleUidField = columnExists($conn, 'userrolesdata', 'ur_u_ID') ? 'ur_u_ID' : 'u_ID';
+    $hasAdvisorField = columnExists($conn, 'teamdata', 'advisor');
     
-    // 1. 獲取指導老師指導的所有團隊
-    // 先確認當前用戶是否為指導老師
+    // 1. 獲取指導老師指導的所有團隊（兩種來源：teammember 或 teamdata.advisor）
     $stmt = $conn->prepare("
         SELECT COUNT(*) 
         FROM userrolesdata 
@@ -49,7 +49,7 @@ try {
     $stmt->execute([$u_ID]);
     $isTeacher = $stmt->fetchColumn() > 0;
     
-    if (!$isTeacher) {
+    if (!$isTeacher && !$hasAdvisorField) {
         echo json_encode([
             'ok' => true,
             'groups' => [],
@@ -58,9 +58,10 @@ try {
         exit;
     }
     
-    // 查詢指導老師在 teammember 表中的所有團隊
-    // 需要確保該用戶在團隊中確實是指導老師角色（role_ID = 4）
-    // 如果 session 中有 cohort_ID，則只顯示該屆別的團隊
+    $teams = [];
+    $seenTeamIds = [];
+    
+    // 來源一：teammember 中該老師為成員且角色為指導老師
     $sql = "
         SELECT DISTINCT 
             t.team_ID,
@@ -75,19 +76,54 @@ try {
           AND t.team_status = 1
           AND (tm.tm_status IS NULL OR tm.tm_status = 1)
     ";
-    
-    // 如果 session 中有 cohort_ID，添加屆別過濾條件
     $params = [$u_ID];
     if ($cohort_ID !== null && $cohort_ID !== '') {
         $sql .= " AND t.cohort_ID = ?";
         $params[] = (int)$cohort_ID;
     }
-    
     $sql .= " ORDER BY t.team_ID";
-    
     $stmt = $conn->prepare($sql);
     $stmt->execute($params);
-    $teams = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $tid = (int)$row['team_ID'];
+        if (!isset($seenTeamIds[$tid])) {
+            $seenTeamIds[$tid] = true;
+            $teams[] = $row;
+        }
+    }
+    
+    // 來源二：teamdata.advisor 為該老師（與 apply_preview_teacher_list 一致）
+    if ($hasAdvisorField) {
+        $sqlAdvisor = "
+            SELECT DISTINCT 
+                t.team_ID,
+                COALESCE(t.team_project_name, CONCAT('團隊 ', t.team_ID)) AS team_name,
+                t.team_update_d
+            FROM teamdata t
+            WHERE t.advisor = ?
+              AND t.team_status = 1
+        ";
+        $paramsAdvisor = [$u_ID];
+        if ($cohort_ID !== null && $cohort_ID !== '') {
+            $sqlAdvisor .= " AND t.cohort_ID = ?";
+            $paramsAdvisor[] = (int)$cohort_ID;
+        }
+        $sqlAdvisor .= " ORDER BY t.team_ID";
+        $stmtAdvisor = $conn->prepare($sqlAdvisor);
+        $stmtAdvisor->execute($paramsAdvisor);
+        foreach ($stmtAdvisor->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $tid = (int)$row['team_ID'];
+            if (!isset($seenTeamIds[$tid])) {
+                $seenTeamIds[$tid] = true;
+                $teams[] = $row;
+            }
+        }
+    }
+    
+    // 依 team_ID 排序
+    usort($teams, function ($a, $b) {
+        return (int)$a['team_ID'] - (int)$b['team_ID'];
+    });
     
     // 調試：記錄查詢結果
     error_log("Teamteacher Data - User ID: {$u_ID}, Team User Field: {$teamUserField}, User Role UID Field: {$userRoleUidField}, Found Teams: " . count($teams));
