@@ -345,7 +345,8 @@
                 </div>
                 <!-- 按鈕區 -->
                 <div class="modal-footer" v-if="now_task.task_status!==3">
-                    <button class="btn btn-secondary" v-if="u_ID==now_task.task_u_ID && now_task.task_status==0"
+                    <button class="btn btn-secondary"
+                        v-if="now_task.task_priority < 5 && (u_ID==now_task.task_u_ID || (now_task.task_status==1 && u_ID==now_task.task_done_u_ID))"
                         @click="task_modal_show('edit')" style="margin-right: 14px;">
                         編輯
                     </button>
@@ -515,39 +516,47 @@
                     },
                     // ★ 依重要程度分成四列
                     todoColumns() {
-                        const base = [{
-                                key: 1,
-                                label: '一般',
-                                tasks: []
-                            },
-                            {
-                                key: 2,
-                                label: '重要',
-                                tasks: []
-                            },
-                            {
-                                key: 4,
-                                label: '緊急',
-                                tasks: []
-                            },
-                            {
-                                key: 5,
-                                label: '老師交辦',
-                                tasks: []
-                            },
-                            {
-                                key: 6,
-                                label: '審查建議',
-                                tasks: []
-                            },
-                        ];
-                        this.filtered_task.forEach(t => {
-                            const p = Number(t.task_priority) || 1;
-                            const col = base.find(c => c.key === p) || base[0];
-                            col.tasks.push(t);
-                        });
-                        return base;
-                    },
+    const base = [{
+            key: 1,
+            label: '一般',
+            tasks: []
+        },
+        {
+            key: 2,
+            label: '重要',
+            tasks: []
+        },
+        {
+            key: 4,
+            label: '緊急',
+            tasks: []
+        },
+        {
+            key: 5,
+            label: '老師交辦',
+            tasks: []
+        },
+        {
+            key: 6,
+            label: '審查建議',
+            tasks: []
+        },
+    ];
+
+    this.filtered_task.forEach(t => {
+        let p = Number(t.task_priority) || 1;
+
+        // 會議記錄(7) 分列時併到 老師交辦(5)
+        if (p === 7) {
+            p = 5;
+        }
+
+        const col = base.find(c => c.key === p) || base[0];
+        col.tasks.push(t);
+    });
+
+    return base;
+},
                     // ★ 依每個組員分列
                     peopleColumns() {
                         // 先根據 all_teammumber 做出每一欄
@@ -651,33 +660,34 @@
                         }
                     },
                     // task待辦待辦事項功能task待辦待辦事項功能task待辦待辦事項功能task待辦待辦事項功能task待辦待辦事項功能task待辦待辦事項功能task待辦待辦事項功能task待辦待辦事項功能task待辦待辦事項功能task待辦待辦事項功能
-                    priorityNoteColor(p) {
-                        const pr = Number(p) || 1;
-                        if (pr === 1) return '#FFF9C4'; // 一般：淡黃
-                        if (pr === 2) return '#D1EAFE'; // 重要：淡藍（便條底色）
-                        if (pr === 4) return '#ffd9ddff'; // 緊急：淡橘
-                        if (pr === 5) return '#E9D5FF'; // 老師交辦：淡紫
-                        if (pr === 6) return '#E5E7EB'; // 審查建議：淡灰
-                        return '#FFD9DD'; // 其他：淡粉（保底）
-                    },
-                    priorityTagStyle(p) {
-                        const pr = Number(p) || 1;
-                        if (pr === 1) return 'background:#FFE98A;color:#7C5B00;';
-                        if (pr === 2) return 'background:rgba(59,130,246,.15);color:#1D4ED8;'; // 重要：藍
-                        if (pr === 4) return 'background:#FF955C;color:#7C1D10;'; // 緊急
-                        if (pr === 5) return 'background:#C4B5FD;color:#4C1D95;'; // 老師交辦：紫
-                        if (pr === 6) return 'background:#D1D5DB;color:#374151;'; // 審查建議：灰
-                        return 'background:#FF6C6CC2;color:#7C1D10;';
-                    },
-                    priorityText(p) {
-                        const pr = Number(p) || 1;
-                        if (pr === 1) return '一般';
-                        if (pr === 2) return '重要';
-                        if (pr === 4) return '緊急';
-                        if (pr === 5) return '老師交辦';
-                        if (pr === 6) return '審查建議';
-                        return '其他';
-                    },
+priorityNoteColor(p) {
+    const pr = Number(p) || 1;
+    if (pr === 1) return '#FFF9C4'; // 一般：淡黃
+    if (pr === 2) return '#D1EAFE'; // 重要：淡藍（便條底色）
+    if (pr === 4) return '#ffd9ddff'; // 緊急：淡橘
+    if (pr === 5 || pr === 7) return '#E9D5FF'; // 老師交辦 / 會議記錄：淡紫
+    if (pr === 6) return '#E5E7EB'; // 審查建議：淡灰
+    return '#FFD9DD'; // 其他：淡粉（保底）
+},
+priorityTagStyle(p) {
+    const pr = Number(p) || 1;
+    if (pr === 1) return 'background:#FFE98A;color:#7C5B00;';
+    if (pr === 2) return 'background:rgba(59,130,246,.15);color:#1D4ED8;'; // 重要：藍
+    if (pr === 4) return 'background:#FF955C;color:#7C1D10;'; // 緊急
+    if (pr === 5 || pr === 7) return 'background:#C4B5FD;color:#4C1D95;'; // 老師交辦 / 會議記錄：紫
+    if (pr === 6) return 'background:#D1D5DB;color:#374151;'; // 審查建議：灰
+    return 'background:#FF6C6CC2;color:#7C1D10;';
+},
+priorityText(p) {
+    const pr = Number(p) || 1;
+    if (pr === 1) return '一般';
+    if (pr === 2) return '重要';
+    if (pr === 4) return '緊急';
+    if (pr === 5) return '老師交辦';
+    if (pr === 6) return '審查建議';
+    if (pr === 7) return '會議記錄';
+    return '其他';
+},
                     get_task() {
                         $.post("../modules/S_req&task.php?do=get_task", {
                             team_ID: this.now_team_ID
@@ -701,7 +711,7 @@
                                 title: this.now_task.task_title,
                                 desc: this.now_task.task_desc,
                                 priority: this.now_task.task_priority,
-                                who_task: (this.now_task.task_done_ID ?? null),
+                                who_task: (this.now_task.task_done_u_ID ?? null),
                             }
                         }
                         $('#task_modal').modal('show')
