@@ -120,76 +120,76 @@ session_start();
         z-index: 5;
     }
 
-/* 整張表表頭、內容置中 */
-.team-excel-table th,
-.team-excel-table td {
-    text-align: center !important;
-    vertical-align: middle !important;
-}
+    /* 整張表表頭、內容置中 */
+    .team-excel-table th,
+    .team-excel-table td {
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
 
-/* 每個儲存格裡常見容器也一起置中 */
-.team-excel-table td > div,
-.team-excel-table td > span,
-.team-excel-table th > div,
-.team-excel-table th > span {
-    text-align: center !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-}
+    /* 每個儲存格裡常見容器也一起置中 */
+    .team-excel-table td>div,
+    .team-excel-table td>span,
+    .team-excel-table th>div,
+    .team-excel-table th>span {
+        text-align: center !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
 
-/* 第一欄 checkbox + 文字 置中 */
-.team-excel-table .form-check.user-select-checkbox {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    padding-left: 0 !important;
-    margin: 0 auto !important;
-    width: 100% !important;
-}
+    /* 第一欄 checkbox + 文字 置中 */
+    .team-excel-table .form-check.user-select-checkbox {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        padding-left: 0 !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+    }
 
-.team-excel-table .form-check-input {
-    margin: 0 !important;
-    float: none !important;
-}
+    .team-excel-table .form-check-input {
+        margin: 0 !important;
+        float: none !important;
+    }
 
-.team-excel-table .form-check-label {
-    margin: 0 !important;
-    text-align: center !important;
-}
+    .team-excel-table .form-check-label {
+        margin: 0 !important;
+        text-align: center !important;
+    }
 
-/* 達成指標置中 */
-.team-excel-table .count-tags {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    flex-wrap: wrap !important;
-    gap: 6px !important;
-    width: 100% !important;
-    text-align: center !important;
-}
+    /* 達成指標置中 */
+    .team-excel-table .count-tags {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
 
-/* 標題文字區塊置中 */
-.team-excel-table .text-truncate-2 {
-    text-align: center !important;
-    margin: 0 auto !important;
-}
+    /* 標題文字區塊置中 */
+    .team-excel-table .text-truncate-2 {
+        text-align: center !important;
+        margin: 0 auto !important;
+    }
 
-/* badge / pill 置中 */
-.team-excel-table .badge,
-.team-excel-table .pill {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
+    /* badge / pill 置中 */
+    .team-excel-table .badge,
+    .team-excel-table .pill {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
 
-/* 操作按鈕群組置中 */
-.team-excel-table .btn-group {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 100% !important;
-}
+    /* 操作按鈕群組置中 */
+    .team-excel-table .btn-group {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
 </style>
 
 <div id="req_app" class="container my-4">
@@ -198,7 +198,12 @@ session_start();
             <i class="fa-solid fa-layer-group me-2" style="color: #ffc107;"></i>最低專題要求管理
         </h1>
     </div>
-    <button @click="new_requirement_all_show" class="btn btn-primary">新增科上最低專題要求</button>
+    <div class="d-flex gap-2 flex-wrap">
+        <button @click="new_requirement_all_show" class="btn btn-primary">新增科上最低專題要求</button>
+        <button @click="openCopyHistoryModal" class="btn btn-outline-primary">
+            <i class="fa-solid fa-copy me-1"></i>複製歷屆最低要求
+        </button>
+    </div>
     <br><br>
     <!-- 搜尋和篩選區 --><!-- T1114抓整合過的 只改文字 -->
     <div class="card mb-4 shadow-sm filter-card">
@@ -379,6 +384,136 @@ session_start();
     </div>
     <!-- 新增科上最低專題要求 彈跳視窗modal -->
     <teleport to="body">
+        <!-- 複製歷屆最低要求 - 選來源 -->
+        <div class="modal fade" id="copy_history_req_modal" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">
+                            <b>複製歷屆最低要求</b>
+                        </h3>
+                        <i class="fa-solid fa-square-xmark ms-auto" style="font-size: 24px; cursor:pointer;"
+                            @click="closeCopyHistoryModal"></i>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">屆別篩選</label>
+                                <select class="form-select" v-model="copyHistoryFilterCohort">
+                                    <option value="">全部</option>
+                                    <option :value="i.cohort_ID" v-for="i in copyHistoryCohortOptions" :key="'copycohort_'+i.cohort_ID">
+                                        {{ i.cohort_name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-8 d-flex align-items-end">
+                                <div class="text-muted small">
+                                    只會顯示有最低要求資料的屆別，且可多選後一起複製。
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="team-excel-table table-clean">
+                                <thead>
+                                    <tr>
+                                        <th style="width:90px;">
+                                            <div class="form-check user-select-checkbox">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="select_all_copy_source"
+                                                    :checked="isAllCopySourceSelected"
+                                                    @change="toggleSelectAllCopySource($event)">
+                                                <label class="form-check-label" for="select_all_copy_source">全選</label>
+                                            </div>
+                                        </th>
+                                        <th style="width:120px;">屆別</th>
+                                        <th style="width:160px;">類組</th>
+                                        <th>標題</th>
+                                        <th>內容</th>
+                                        <th style="width:160px;">達成指標</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="item in filteredCopyHistoryList" :key="'copy_req_'+item.req_ID"
+                                        @click="rowToggleCopySource(item, $event)">
+                                        <td>
+                                            <div class="form-check user-select-checkbox">
+                                                <input class="form-check-input user-checkbox"
+                                                    type="checkbox"
+                                                    :id="'copy_req_' + item.req_ID"
+                                                    :value="item.req_ID"
+                                                    v-model="selectedCopyReqIDs">
+                                                <label class="form-check-label" :for="'copy_req_' + item.req_ID">
+                                                    選擇
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>{{ item.cohort_name }}</td>
+                                        <td>
+                                            <span class="badge status-badge" :style="groupPillStyle(item.group_name)">
+                                                {{ item.group_name }}
+                                            </span>
+                                        </td>
+                                        <td>{{ item.req_title }}</td>
+                                        <td>
+                                            <div style="white-space: pre-wrap;">{{ item.req_direction || '—' }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="count-tags">
+                                                <template v-for="(t, idx) in safeReqCount(item.req_count)" :key="idx">
+                                                    <span class="tag">{{ t }}</span>
+                                                </template>
+                                                <span v-if="safeReqCount(item.req_count).length===0">—</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="filteredCopyHistoryList.length===0">
+                                        <td colspan="6" class="text-center text-muted py-4">目前沒有可複製的歷屆最低要求</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @click="closeCopyHistoryModal">取消</button>
+                        <button class="btn btn-primary" @click="goSelectCopyTarget">確定複製</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 複製歷屆最低要求 - 選目標屆別 -->
+        <div class="modal fade" id="copy_history_target_modal" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">
+                            <b>選擇複製到哪一屆</b>
+                        </h3>
+                        <i class="fa-solid fa-square-xmark ms-auto" style="font-size: 24px; cursor:pointer;"
+                            @click="closeCopyTargetModal"></i>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">目標屆別</label>
+                            <select class="form-select" v-model="copyTargetCohortID">
+                                <option value="">請選擇</option>
+                                <option :value="i.cohort_ID" v-for="i in copyTargetCohorts" :key="'target_'+i.cohort_ID">
+                                    {{ i.cohort_name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="small text-muted">
+                            這裡只顯示尚未結束的屆別（cohort_end_d 為 NULL 也視為未結束）。
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @click="closeCopyTargetModal">取消</button>
+                        <button class="btn btn-primary" @click="confirmCopyHistoryReq">確定複製</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="modal fade" id="new_requirement_all" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -625,6 +760,14 @@ session_start();
                     tableORcard: true,
                     isPressed: false,
                     selectedReqIDs: [], // 存被勾選的 req_ID
+
+                    copyHistoryList: [],
+                    copyHistoryFilterCohort: "",
+                    copyHistoryCohortOptions: [],
+                    selectedCopyReqIDs: [],
+                    copyTargetCohorts: [],
+                    copyTargetCohortID: "",
+                    autoOpenCopyModal: false,
                 }
             },
             computed: {
@@ -634,6 +777,19 @@ session_start();
                         this.filter_allreq.length > 0 &&
                         this.filter_allreq.every(item => this.selectedReqIDs.includes(item.req_ID))
                     );
+                },
+                isAllCopySourceSelected() {
+                    return (
+                        this.filteredCopyHistoryList.length > 0 &&
+                        this.filteredCopyHistoryList.every(item => this.selectedCopyReqIDs.includes(item.req_ID))
+                    );
+                },
+                filteredCopyHistoryList() {
+                    let list = this.copyHistoryList || [];
+                    if (this.copyHistoryFilterCohort !== "") {
+                        list = list.filter(item => String(item.cohort_ID) === String(this.copyHistoryFilterCohort));
+                    }
+                    return list;
                 },
             },
 
@@ -881,6 +1037,149 @@ session_start();
                     $("#req_look_modal_ID").modal("show")
 
                 },
+                getCopyHistoryReqList(callback = null) {
+                    $.post("../modules/requirement.php?do=get_copy_history_req_list", res => {
+                        const data = JSON.parse(res || "[]");
+                        this.copyHistoryList = data;
+
+                        const map = new Map();
+                        data.forEach(item => {
+                            if (!map.has(String(item.cohort_ID))) {
+                                map.set(String(item.cohort_ID), {
+                                    cohort_ID: item.cohort_ID,
+                                    cohort_name: item.cohort_name
+                                });
+                            }
+                        });
+                        this.copyHistoryCohortOptions = Array.from(map.values());
+
+                        if (typeof callback === "function") callback();
+                    });
+                },
+                getCopyTargetCohorts(callback = null) {
+                    $.post("../modules/requirement.php?do=get_copy_target_cohorts", res => {
+                        this.copyTargetCohorts = JSON.parse(res || "[]");
+                        if (typeof callback === "function") callback();
+                    });
+                },
+                checkAutoOpenCopyModal() {
+                    $.post("../modules/requirement.php?do=check_need_auto_copy_modal", res => {
+                        const data = JSON.parse(res || "{}");
+                        this.autoOpenCopyModal = Number(data.need_auto_open || 0) === 1;
+
+                        if (this.autoOpenCopyModal) {
+                            this.getCopyHistoryReqList(() => {
+                                if (this.copyHistoryList.length > 0) {
+                                    $("#copy_history_req_modal").modal("show");
+                                }
+                            });
+                        }
+                    });
+                },
+                openCopyHistoryModal() {
+                    this.selectedCopyReqIDs = [];
+                    this.copyHistoryFilterCohort = "";
+                    this.copyTargetCohortID = "";
+
+                    this.getCopyHistoryReqList(() => {
+                        $("#copy_history_req_modal").modal("show");
+                    });
+                },
+                closeCopyHistoryModal() {
+                    $("#copy_history_req_modal").modal("hide");
+                },
+                closeCopyTargetModal() {
+                    $("#copy_history_target_modal").modal("hide");
+                },
+                rowToggleCopySource(item, evt) {
+                    const ignoreSelector = 'input, label, button, a, select, textarea, .btn, .form-check, .btn-group';
+                    if (evt && evt.target && evt.target.closest(ignoreSelector)) return;
+
+                    const id = item.req_ID;
+                    const idx = this.selectedCopyReqIDs.indexOf(id);
+                    if (idx === -1) this.selectedCopyReqIDs.push(id);
+                    else this.selectedCopyReqIDs.splice(idx, 1);
+                },
+                toggleSelectAllCopySource(event) {
+                    const checked = event.target.checked;
+                    const idsOnPage = this.filteredCopyHistoryList.map(item => item.req_ID);
+
+                    if (checked) {
+                        this.selectedCopyReqIDs = Array.from(new Set([
+                            ...this.selectedCopyReqIDs,
+                            ...idsOnPage
+                        ]));
+                    } else {
+                        this.selectedCopyReqIDs = this.selectedCopyReqIDs.filter(id => !idsOnPage.includes(id));
+                    }
+                },
+                goSelectCopyTarget() {
+                    if (this.selectedCopyReqIDs.length === 0) {
+                        toast({
+                            type: 'warning',
+                            title: '請先選擇要複製的最低要求'
+                        });
+                        return;
+                    }
+
+                    this.getCopyTargetCohorts(() => {
+                        if (!this.copyTargetCohorts || this.copyTargetCohorts.length === 0) {
+                            toast({
+                                type: 'warning',
+                                title: '目前沒有可複製的目標屆別'
+                            });
+                            return;
+                        }
+
+                        this.copyTargetCohortID = "";
+                        $("#copy_history_req_modal").modal("hide");
+                        $("#copy_history_target_modal").modal("show");
+                    });
+                },
+                confirmCopyHistoryReq() {
+                    if (!this.copyTargetCohortID) {
+                        toast({
+                            type: 'warning',
+                            title: '請選擇目標屆別'
+                        });
+                        return;
+                    }
+
+                    $.post("../modules/requirement.php?do=copy_history_requirements", {
+                        target_cohort_ID: this.copyTargetCohortID,
+                        req_ids: this.selectedCopyReqIDs
+                    }).done((res) => {
+                        let data = {};
+                        try {
+                            data = JSON.parse(res || "{}");
+                        } catch (e) {}
+
+                        if (data.ok) {
+                            this.get_req_ch();
+                            this.selectedCopyReqIDs = [];
+                            this.copyTargetCohortID = "";
+                            $("#copy_history_target_modal").modal("hide");
+
+                            toast({
+                                type: 'success',
+                                title: '複製完成',
+                                text: `已新增 ${data.inserted_count || 0} 筆資料`
+                            });
+                        } else {
+                            toast({
+                                type: 'error',
+                                title: '複製失敗',
+                                text: data.msg || '發生未知錯誤'
+                            });
+                        }
+                    }).fail(() => {
+                        toast({
+                            type: 'error',
+                            title: '複製失敗',
+                            text: '無法連線到伺服器'
+                        });
+                    });
+                },
             },
             mounted() {
                 this.get_req_ch()
@@ -891,6 +1190,9 @@ session_start();
                 } else if (this.role_ID == 4) {
                     this.select_team()
                 }
+
+                // 進入畫面時檢查是否要自動跳出「複製歷屆最低要求」
+                this.checkAutoOpenCopyModal()
             }
         }).mount("#req_app");
     }
