@@ -3089,13 +3089,19 @@ function ensureSuggestTableStructure() {
         container.innerHTML = `
             <div class="suggest-table-wrapper">
                 <div id="sg-batch-toolbar" class="suggest-batch-toolbar" style="display:none;">
-                    <span class="selected-count">已選取 <span id="sg-batch-count">0</span> 筆</span>
-                    <select id="sg-batch-status" class="form-select form-select-sm sg-batch-status-select" style="width:auto;display:inline-block;">
-                        <option value="">選擇審查結果</option>
-                    </select>
-                    <button type="button" id="sg-batch-apply-status" class="btn btn-primary btn-sm" disabled>套用到已選項目</button>
-                    <button type="button" id="sg-batch-delete" class="btn btn-danger btn-sm" disabled>批次刪除</button>
-                    <button type="button" id="sg-batch-clear" class="btn btn-secondary btn-sm" disabled>取消選取</button>
+                    <div class="toolbar-left">
+                        <span class="selected-count">已選取 <span id="sg-batch-count">0</span> 筆</span>
+                    </div>
+                    <div class="toolbar-center">
+                        <select id="sg-batch-status" class="form-select form-select-sm sg-batch-status-select">
+                            <option value="">請選擇審查結果</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-right">
+                        <button type="button" id="sg-batch-apply-status" class="btn btn-primary btn-sm" disabled>套用到已選項目</button>
+                        <button type="button" id="sg-batch-delete" class="btn btn-danger btn-sm" disabled>批次刪除</button>
+                        <button type="button" id="sg-batch-clear" class="btn btn-secondary btn-sm" disabled>取消選取</button>
+                    </div>
                 </div>
                 <table class="sg-suggest-table" id="sg-suggest-table">
                 <colgroup>
@@ -4755,7 +4761,7 @@ async function deleteSuggest(id, teamId) {
         showCancelButton: true,
         confirmButtonText: "確定",
         cancelButtonText: "取消",
-        reverseButtons: true
+        reverseButtons: false
     });
     if (!result.isConfirmed) return;
 
@@ -4801,7 +4807,7 @@ async function deleteTeamFromSuggest(teamId) {
         showCancelButton: true,
         confirmButtonText: "確定",
         cancelButtonText: "取消",
-        reverseButtons: true
+        reverseButtons: false
     });
     
     if (!result.isConfirmed) return;
@@ -5691,16 +5697,38 @@ function bindRowSelectionEvents() {
             const selectedRows = getSelectedTeamRows();
             const count = selectedRows.length;
             if (count === 0) return;
-            const confirmMsg = `確定要刪除已選取的 ${count} 筆團隊嗎？此動作無法復原。`;
-            const ok = window.confirm(confirmMsg);
-            if (!ok) return;
+            
+            const doDelete = () => {
+                selectedRows.forEach(row => {
+                    const teamId = parseInt(row.getAttribute("data-team"));
+                    if (!teamId) return;
+                    // 批次刪除比照下方「刪除」按鈕：直接刪除整個團隊
+                    deleteTeamFromSuggest(teamId);
+                });
+            };
 
-            selectedRows.forEach(row => {
-                const teamId = parseInt(row.getAttribute("data-team"));
-                if (!teamId) return;
-                // 批次刪除比照下方「刪除」按鈕：直接刪除整個團隊
-                deleteTeamFromSuggest(teamId);
-            });
+            // 優先使用 SweetAlert 確認視窗
+            if (window.Swal && typeof Swal.fire === "function") {
+                Swal.fire({
+                    icon: "warning",
+                    title: "確認刪除",
+                    text: `確定要刪除已選取的 ${count} 筆團隊資料嗎？此動作無法復原。`,
+                    showCancelButton: true,
+                    confirmButtonText: "確定刪除",
+                    cancelButtonText: "取消",
+                    // 強制讓「確定刪除」按鈕在左邊
+                    reverseButtons: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        doDelete();
+                    }
+                });
+            } else {
+                const confirmMsg = `確定要刪除已選取的 ${count} 筆團隊資料嗎？此動作無法復原。`;
+                const ok = window.confirm(confirmMsg);
+                if (!ok) return;
+                doDelete();
+            }
         });
     }
 
