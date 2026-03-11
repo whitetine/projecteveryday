@@ -476,11 +476,261 @@
     border-top: none;
 }
 
-@media (max-width: 768px) {
+/* ========== 響應式：平板與手機（留白充足、不擠字） ========== */
+
+/* 小螢幕：團隊列表改為卡片式，字級與間距加大 */
+@media (max-width: 767.98px) {
     .teacher-scoring-page {
-        padding: 15px !important;
+        padding: 16px 20px 28px !important;
+    }
+    .teacher-scoring-page .page-header {
+        padding: 1.25rem 0 !important;
+        margin-bottom: 1.25rem !important;
     }
     .teacher-scoring-page .page-title {
-        font-size: 20px;
+        font-size: 1.25rem;
+        line-height: 1.4;
+    }
+    .teacher-scoring-page .page-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 1.25rem;
+        line-height: 1.5;
+    }
+    .teacher-scoring-page .row.g-4 {
+        --bs-gutter-x: 1.25rem;
+        --bs-gutter-y: 1.5rem;
+    }
+    .teacher-scoring-page .upload-card .card-header {
+        padding: 14px 18px;
+        font-size: 1rem;
+    }
+    .teacher-scoring-page .upload-card .card-header h5 {
+        font-size: 1rem;
+    }
+    .teacher-scoring-page .period-list {
+        max-height: 380px;
+    }
+    .teacher-scoring-page .tos-period-item {
+        padding: 1rem 1.25rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    /* 團隊列表：表格改為卡片式，每列一張卡、字不擠 */
+    .teacher-scoring-page #tosTeamSection .table-responsive {
+        padding: 12px 14px 14px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .teacher-scoring-page .teacher-scoring-table thead {
+        display: none;
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody tr {
+        display: block;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e2e6ea;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody tr:last-child {
+        margin-bottom: 0;
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody tr:nth-child(even) {
+        background: #fff;
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody tr:hover {
+        background: #fafbfc;
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody td {
+        display: block;
+        padding: 0.5rem 0;
+        border: none;
+        font-size: 0.95rem;
+        line-height: 1.55;
+        word-break: break-word;
+        background: transparent !important;
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody td::before {
+        font-weight: 600;
+        color: #495057;
+        margin-right: 0.5rem;
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody td:nth-child(1)::before {
+        content: "序號：";
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody td:nth-child(2)::before {
+        content: "團隊名稱：";
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody td:nth-child(3)::before {
+        content: "類組：";
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody td:nth-child(4)::before {
+        content: "評分狀態：";
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody td:nth-child(5) {
+        padding-top: 0.75rem;
+        margin-top: 0.5rem;
+        border-top: 1px solid #eee;
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody td:nth-child(5)::before {
+        display: none;
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody td:nth-child(5) .tos-btn-score {
+        width: 100%;
+        padding: 10px 16px;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+    .teacher-scoring-page #tosTeamSection .card-header {
+        padding: 14px 18px;
+        gap: 0.75rem;
+    }
+    .teacher-scoring-page #tosEmpty {
+        font-size: 0.95rem;
+        padding: 1rem 1.25rem;
+        line-height: 1.5;
+    }
+}
+
+/* 小螢幕（手機直向）：再略增留白，不縮字 */
+@media (max-width: 575.98px) {
+    .teacher-scoring-page {
+        padding: 14px 18px 24px !important;
+    }
+    .teacher-scoring-page .page-title {
+        font-size: 1.15rem;
+    }
+    .teacher-scoring-page .page-title .me-2 {
+        margin-right: 0.4rem !important;
+    }
+    .teacher-scoring-page .upload-card .card-header {
+        padding: 12px 16px;
+    }
+    .teacher-scoring-page .period-list {
+        max-height: 340px;
+    }
+    .teacher-scoring-page .tos-period-item {
+        padding: 0.9rem 1rem;
+        font-size: 0.95rem;
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody tr {
+        padding: 1rem 1.1rem;
+        margin-bottom: 0.9rem;
+    }
+    .teacher-scoring-page .teacher-scoring-table tbody td {
+        font-size: 0.95rem;
+    }
+    .teacher-scoring-page #tosSubmitScoreBtn {
+        font-size: 0.9rem;
+        padding: 8px 14px;
+    }
+    .teacher-scoring-page #tosEmpty {
+        padding: 0.9rem 1rem;
+    }
+}
+
+/* 平板與小桌面：維持舒適字級與間距 */
+@media (min-width: 576px) and (max-width: 991.98px) {
+    .teacher-scoring-page {
+        padding: 18px 24px 28px !important;
+    }
+    .teacher-scoring-page .page-title {
+        font-size: 1.35rem;
+    }
+    .teacher-scoring-page .period-list {
+        max-height: 480px;
+    }
+    .teacher-scoring-page .teacher-scoring-table thead th,
+    .teacher-scoring-page .teacher-scoring-table tbody td {
+        padding: 12px 14px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+}
+
+/* Modal 響應式：小螢幕改為上下排列，留白與字級舒適 */
+@media (max-width: 767.98px) {
+    #tosScoreModal .modal-dialog {
+        max-width: 100%;
+        margin: 0.75rem;
+    }
+    #tosScoreModal .modal-body.tos-modal-body-two-col {
+        min-height: auto;
+        padding: 1rem 1.25rem;
+    }
+    #tosScoreModal .tos-modal-body-two-col .tos-modal-row {
+        flex-wrap: wrap;
+        min-height: 0;
+        margin: 0;
+    }
+    #tosScoreModal .tos-modal-body-two-col .tos-col-history {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0 0 1.25rem 0;
+        border-right: none;
+        border-bottom: 1px solid #e2e6ea;
+        margin-bottom: 1rem;
+        min-height: 0;
+    }
+    #tosScoreModal .tos-modal-body-two-col .tos-col-form {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0;
+        min-height: 0;
+    }
+    #tosScoreModal .tos-label-block {
+        margin-bottom: 0.75rem;
+    }
+    #tosScoreModal .tos-past-suggest-box {
+        min-height: 180px;
+        padding: 1rem 1.25rem;
+    }
+    #tosScoreModal .tos-suggest-score-table .tos-th-suggest,
+    #tosScoreModal .tos-suggest-score-table .tos-th-score {
+        min-width: 0;
+    }
+    #tosScoreModal .tos-suggest-score-table thead th {
+        padding: 12px 14px;
+        font-size: 1rem;
+    }
+    #tosScoreModal .tos-score-cell .form-control {
+        min-width: 72px;
+        padding: 12px 14px;
+        font-size: 1rem;
+    }
+    #tosScoreModal .tos-suggest-cell {
+        padding: 12px 14px !important;
+        font-size: 1rem;
+        line-height: 1.55;
+    }
+    #tosScoreModal .modal-header .modal-title {
+        font-size: 1.05rem;
+        line-height: 1.4;
+    }
+    #tosScoreModal .modal-footer .btn {
+        font-size: 0.95rem;
+        padding: 10px 18px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    #tosScoreModal .modal-dialog {
+        margin: 0.5rem;
+    }
+    #tosScoreModal .modal-body.tos-modal-body-two-col {
+        padding: 0.75rem 1rem;
+    }
+    #tosScoreModal .tos-suggest-cell {
+        min-height: 88px;
+        padding: 10px 12px !important;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    #tosScoreModal .tos-score-cell {
+        padding: 10px 12px !important;
+    }
+    #tosScoreModal .tos-score-cell .form-control {
+        min-width: 64px;
+        padding: 10px 12px;
     }
 }

@@ -28,7 +28,7 @@ window.TEACHER_COHORT_NAME = "<?= $cohort_name ?>";
 
     <div class="row g-4">
         <!-- 左側：評分時段（列表點選，選後自動載入團隊） -->
-        <div class="col-md-4">
+        <div class="col-12 col-md-4">
             <!-- 評分時段（該屆所有評分時段，列表點選，同 student_review） -->
             <div id="tosSuggestFormCard" class="card upload-card shadow-sm mb-4" style="display: none;">
                 <div class="card-header">
@@ -45,7 +45,7 @@ window.TEACHER_COHORT_NAME = "<?= $cohort_name ?>";
 
         </div>
         <!-- 右側：團隊列表 -->
-        <div class="col-md-8">
+        <div class="col-12 col-md-8">
             <div id="tosTeamSection" class="card upload-card shadow-sm" style="display: none;">
                 <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
                     <h5 class="mb-0"><i class="fa-solid fa-people-group me-2"></i>團隊列表</h5>
@@ -90,9 +90,9 @@ window.TEACHER_COHORT_NAME = "<?= $cohort_name ?>";
             <div class="modal-body tos-modal-body-two-col">
                 <input type="hidden" id="tosModalSfId" value="">
                 <input type="hidden" id="tosModalTeamId" value="">
-                <div class="row g-0 h-100">
+                <div class="row g-0 g-md-0 h-100 tos-modal-row">
                     <!-- 左：歷次建議 -->
-                    <div class="col-md-5 tos-col-history">
+                    <div class="col-12 col-md-5 tos-col-history">
                         <label class="form-label fw-bold tos-label-block">歷次建議</label>
                         <div id="tosModalHistoryBlock" class="tos-past-suggest-box" style="display: none;">
                             <div id="tosModalHistoryList" class="tos-history-list"></div>
@@ -100,7 +100,7 @@ window.TEACHER_COHORT_NAME = "<?= $cohort_name ?>";
                         <div id="tosModalHistoryEmpty" class="tos-past-suggest-box tos-past-suggest-empty">尚無歷次建議</div>
                     </div>
                     <!-- 右：團隊建議 + 評分 -->
-                    <div class="col-md-7 tos-col-form">
+                    <div class="col-12 col-md-7 tos-col-form">
                         <table class="table table-bordered tos-suggest-score-table mb-0">
                             <thead>
                                 <tr>
