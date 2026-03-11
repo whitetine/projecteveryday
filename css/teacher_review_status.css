@@ -1,0 +1,46 @@
+/* 只影響此頁面內容區域，不影響側邊欄 */
+#content h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* 標籤和表單元素 - 只影響此頁面 */
+#content label {
+  font-size: 1.1rem;
+}
+
+#content .form-select {
+  font-size: 1.1rem;
+  padding: .7rem 1rem;
+}
+
+/* 表格樣式 */
+#content table td, 
+#content table th {
+  vertical-align: middle;
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 1rem;
+}
+
+#content table th {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+#content table td {
+  font-size: 1.1rem;
+}
+
+/* 說明文字 - 只影響此頁面 */
+#content .text-muted, 
+#content .small {
+  font-size: 1rem;
+}
+
+/* 按鈕樣式 - 只影響此頁面 */
+#content .btn {
+  font-size: 1rem;
+  padding: .6rem 1.2rem;
+}

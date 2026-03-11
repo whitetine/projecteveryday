@@ -1,0 +1,161 @@
+/**
+ * 審核修改申請樣式 - 科辦端
+ */
+
+.review-modify-container {
+    padding: 20px;
+}
+
+.review-modify-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.review-modify-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.modification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modification-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s;
+}
+
+.modification-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.modification-card.pending {
+    border-left: 4px solid #ffc107;
+}
+
+.modification-card.approved {
+    border-left: 4px solid #28a745;
+}
+
+.modification-card.rejected {
+    border-left: 4px solid #dc3545;
+}
+
+.modification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.modification-info h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.modification-info p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.modification-status {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-approved {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-rejected {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.modification-content {
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.modification-reason {
+    margin-top: 10px;
+    padding: 10px;
+    background: #e9ecef;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.modification-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: flex-end;
+}
+
+.btn-approve {
+    background: #28a745;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-approve:hover {
+    background: #218838;
+}
+
+.btn-reject {
+    background: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-reject:hover {
+    background: #c82333;
+}
+
+.btn-view-detail {
+    background: #17a2b8;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-view-detail:hover {
+    background: #138496;
+}
+
+

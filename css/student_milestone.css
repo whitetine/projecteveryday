@@ -1,0 +1,755 @@
+/* 
+ * 學生端里程碑頁面樣式
+ * 
+ * 修改記錄：
+ * 2025-11-16 - 重新設計美化學生端里程碑頁面
+ *   改動內容：現代簡潔風格，優雅的卡片設計，完整的響應式布局
+ *   相關功能：學生里程碑頁面樣式
+ *   方式：現代 CSS 設計，漸變、陰影、過渡動畫
+ */
+
+.student-milestone-container {
+    padding: 1.5rem;
+    background: transparent;
+    min-height: 100vh;
+    position: relative;
+}
+
+.student-milestone-container > * {
+    position: relative;
+    z-index: 1;
+}
+
+@media (min-width: 768px) {
+    .student-milestone-container {
+        padding: 2rem;
+    }
+}
+
+/* 頁面標題 - 覆蓋 student_milestone.css 中的樣式，使其與指導老師頁面一致 */
+#task_app .page-header {
+    background: transparent !important;
+    padding: 1.5rem 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin-bottom: 2rem !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-bottom: 3px solid #ffc107;
+    text-align: left;
+    position: relative;
+    overflow: visible;
+}
+
+#task_app .page-header::before {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    #task_app .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.5rem 0 !important;
+    }
+}
+
+#task_app .page-title {
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    color: #2c3e50 !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1) !important;
+    margin: 0 !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background-clip: unset !important;
+}
+
+@media (max-width: 768px) {
+    #task_app .page-title {
+        font-size: 1.8rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.5rem;
+    }
+}
+
+.team-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: #64748b;
+}
+
+.team-label {
+    font-weight: 500;
+}
+
+.team-name {
+    font-weight: 600;
+    color: #667eea;
+    padding: 0.375rem 0.875rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 8px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+/* 標題與統整資料同一列 */
+.milestone-header-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.milestone-header-row .page-header {
+    margin-bottom: 0 !important;
+}
+
+.milestone-header-row .progress-section {
+    margin-bottom: 0;
+    flex: 1;
+    min-width: 280px;
+}
+
+@media (max-width: 768px) {
+    .milestone-header-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* 進度總覽 */
+.progress-section {
+    margin-bottom: 2rem;
+}
+
+.progress-card {
+    background: white;
+    padding: 2rem 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.progress-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .progress-card {
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.progress-label {
+    font-size: 0.95rem;
+    color: #64748b;
+    font-weight: 500;
+    margin: 0;
+}
+
+.btn-gantt {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.btn-gantt:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.btn-gantt:active {
+    transform: translateY(0);
+}
+
+.btn-gantt i {
+    font-size: 1rem;
+}
+
+.progress-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .progress-value {
+        font-size: 1.75rem;
+    }
+}
+
+.progress-value .current {
+    color: #10b981;
+    font-size: 2.5rem;
+}
+
+@media (max-width: 768px) {
+    .progress-value .current {
+        font-size: 2rem;
+    }
+}
+
+.progress-value .separator {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.progress-value .total {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.progress-bar-wrapper {
+    width: 100%;
+    height: 14px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981 0%, #059669 50%, #047857 100%);
+    border-radius: 10px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* 里程碑列表 */
+.milestones-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+    .milestones-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .milestones-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 里程碑卡片 */
+.milestone-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+.milestone-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.milestone-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-4px);
+    border-color: #cbd5e1;
+}
+
+.milestone-card:hover::before {
+    transform: scaleX(1);
+}
+
+.milestone-card.status-not-started {
+    border-left: 4px solid #94a3b8;
+}
+
+.milestone-card.status-in-progress {
+    border-left: 4px solid #f59e0b;
+}
+
+.milestone-card.status-rejected {
+    border-left: 4px solid #f97316;
+}
+
+.milestone-card.status-review {
+    border-left: 4px solid #3b82f6;
+}
+
+.milestone-card.status-completed {
+    border-left: 4px solid #10b981;
+    opacity: 0.9;
+}
+
+.milestone-card.status-deleted {
+    border-left: 4px solid #9ca3af;
+    opacity: 0.6;
+}
+
+/* 優先級標示 */
+.priority-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.375rem 0.875rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.priority-badge.priority-normal {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+.priority-badge.priority-important {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
+.priority-badge.priority-urgent {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.priority-badge.priority-super-urgent {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: white;
+    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
+    animation: pulse 2s infinite;
+}
+
+/* 圖釘置頂標示（僅超級緊急顯示） */
+.pin-badge {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.85rem;
+    font-size: 1rem;
+    line-height: 1;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.2));
+    z-index: 3;
+    user-select: none;
+    pointer-events: none;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3); }
+    50% { box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); }
+}
+
+/* 里程碑內容 */
+.milestone-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-right: 0.5rem;
+}
+
+.milestone-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-right: 5rem; /* 為優先級標籤留出空間 */
+}
+
+.milestone-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    flex: 1;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .milestone-title {
+        font-size: 1.1rem;
+    }
+}
+
+.milestone-status {
+    padding: 0.375rem 0.875rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.milestone-status.not-started {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+.milestone-status.in-progress {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+.milestone-status.rejected {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+.milestone-status.review {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border: 1px solid #93c5fd;
+}
+.milestone-status.completed {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #86efac;
+}
+.milestone-status.deleted {
+    background: #e5e7eb;
+    color: #4b5563;
+    border: 1px solid #d1d5db;
+}
+
+.milestone-desc {
+    color: #64748b;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.milestone-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.info-item {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #475569;
+    align-items: flex-start;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #64748b;
+    min-width: 85px;
+    flex-shrink: 0;
+}
+
+.info-value {
+    color: #1e293b;
+    flex: 1;
+}
+
+.completion-info {
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid #e2e8f0;
+}
+
+.completion-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.625rem 1rem;
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid #86efac;
+}
+
+.completion-badge.approved {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+    border: 1px solid #93c5fd;
+}
+
+.completion-date {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    font-weight: 400;
+    margin-left: 0.5rem;
+}
+
+/* 操作按鈕 */
+.milestone-actions {
+    padding-top: 1rem;
+    border-top: 2px solid #e2e8f0;
+    margin-top: auto;
+}
+
+.btn-complete {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-complete::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn-complete:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px -2px rgba(16, 185, 129, 0.4);
+}
+
+.btn-complete:hover::before {
+    left: 100%;
+}
+
+.btn-complete:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.btn-complete.btn-disabled,
+.btn-complete:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-complete.btn-disabled:hover,
+.btn-complete:disabled:hover {
+    background: #94a3b8;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-complete.btn-disabled::before,
+.btn-complete:disabled::before {
+    display: none;
+}
+
+/* 接任務按鈕 */
+.btn-accept {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-accept::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn-accept:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.4);
+}
+
+.btn-accept:hover::before {
+    left: 100%;
+}
+
+.btn-accept:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.btn-accept.btn-disabled,
+.btn-accept:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-accept.btn-disabled:hover,
+.btn-accept:disabled:hover {
+    background: #94a3b8;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-accept.btn-disabled::before,
+.btn-accept:disabled::before {
+    display: none;
+}
+
+/* 空狀態 */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+}
+
+.empty-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.empty-hint {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+/* 響應式設計 */
+@media (max-width: 640px) {
+    .student-milestone-container {
+        padding: 1rem;
+    }
+
+    .milestone-card {
+        padding: 1.25rem;
+    }
+
+    .milestone-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .milestone-status {
+        align-self: flex-start;
+    }
+
+    .info-item {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .info-label {
+        min-width: auto;
+    }
+}
+

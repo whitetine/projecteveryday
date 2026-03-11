@@ -1,0 +1,203 @@
+/* =========================================
+   全域設定 & Vue 防閃爍
+   ========================================= */
+/* 防止 Vue 尚未載入時顯示 {{ 變數 }} */
+[v-cloak] {
+    display: none !important;
+}
+
+:root {
+    --primary-color: #435ebe;
+    --secondary-color: #6c757d;
+    --bg-light: #f3f4f6;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: #2c3e50;
+    font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif;
+}
+
+/* =========================================
+   學生申請頁 (.team-apply-container)
+   ========================================= */
+.team-apply-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* 必填欄位紅星 */
+.required::after {
+    content: " *";
+    color: #dc3545;
+    margin-left: 4px;
+}
+
+/* 圖片預覽區塊 */
+.img-preview-wrapper {
+    position: relative;
+    display: inline-block;
+    border: 1px solid #dee2e6;
+    padding: 5px;
+    border-radius: 8px;
+    background: #fff;
+    margin-top: 10px;
+}
+
+.img-preview {
+    max-height: 250px;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+/* 移除圖片按鈕 */
+.btn-remove-image {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #dc3545;
+    color: white;
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* 成員標籤樣式 (Badge) */
+.badge-member {
+    font-size: 0.95rem;
+    padding: 8px 15px;
+    font-weight: normal;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.badge-member:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* 唯讀狀態下的輸入框 */
+input:disabled, 
+select:disabled, 
+textarea:disabled {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+    opacity: 1;
+    cursor: not-allowed;
+}
+
+/* =========================================
+   已有團隊提示卡片 (Has Team)
+   ========================================= */
+.has-team-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    margin: 2rem auto;
+    max-width: 600px;
+}
+
+/* =========================================
+   審核頁面 (.review-container)
+   ========================================= */
+.review-container {
+    background-color: #fff;
+    min-height: calc(100vh - 60px);
+    padding: 20px;
+}
+
+.review-header { 
+    background:#fff; 
+    border-radius:14px; 
+    padding:18px 18px 12px; 
+    box-shadow:0 6px 18px rgba(0,0,0,.06); 
+    margin-bottom: 20px;
+}
+
+.review-title { 
+    font-size:2rem; 
+    margin:0; 
+    color:#203040; 
+    display:flex; 
+    align-items:center; 
+    gap:10px; 
+}
+
+.review-toolbar { 
+    margin-top:14px; 
+    display:flex; 
+    gap:10px; 
+    align-items:center; 
+    flex-wrap:wrap; 
+}
+
+/* 審核列表卡片 */
+.apply-card {
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    background: #fff;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.apply-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    border-color: var(--primary-color);
+}
+
+.apply-card.readonly {
+    background-color: #f8f9fa;
+    opacity: 0.85;
+}
+
+/* 載入中動畫 (Spinner) */
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(67, 94, 190, 0.2);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin { 
+    to { transform: rotate(360deg); } 
+}
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+    .team-apply-container {
+        padding: 0.5rem;
+    }
+    
+    .badge-member {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .review-title {
+        font-size: 1.5rem;
+    }
+}

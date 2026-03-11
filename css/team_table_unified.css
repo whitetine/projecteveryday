@@ -1,0 +1,48 @@
+.team-unified-table-wrap {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.team-unified-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0;
+}
+
+.team-unified-table thead th {
+  background-color: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #e9ecef;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.team-unified-table tbody tr {
+  background-color: #fff;
+  transition: background-color 0.15s ease;
+}
+
+.team-unified-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.team-unified-table tbody td {
+  padding: 0.875rem 1rem;
+  vertical-align: middle;
+  border-top: 1px solid #f0f0f0;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.team-unified-table tbody tr:first-child td {
+  border-top: none;
+}

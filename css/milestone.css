@@ -1,0 +1,1467 @@
+/* 
+ * 里程碑頁面 - 遊戲風格樣式
+ * 
+ * 修改記錄：
+ * 2025-01-XX XX:XX - 標題置中對齊
+ *   改動內容：將標題文字置中對齊
+ *   相關功能：頁面標題區域
+ *   方式：在 .page-title 中添加 text-align: center
+ * 
+ * 2025-01-XX XX:XX - 調整標題內邊距
+ *   改動內容：增加標題區域的內邊距，讓標題文字與外框保持適當距離
+ *   相關功能：頁面標題區域
+ *   方式：將 padding 從 0.875rem 1rem 調整為 1rem 1.5rem
+ * 
+ * 2025-01-XX XX:XX - 移除圖標、簡化配色、整合新增按鈕到篩選區域
+ *   改動內容：移除所有圖標（除新增按鈕的加號），將背景從漸變紫色改為灰色，新增按鈕整合到篩選區域
+ *   相關功能：頁面整體視覺設計、圖標顯示、配色方案
+ *   方式：移除所有 <i> 標籤，簡化背景為單色，整合按鈕到 filter-header，簡化所有漸變和動畫效果
+ * 
+ * 2025-01-XX XX:XX - 分離標題和新增按鈕，優化間距和篩選尺寸
+ *   改動內容：將新增按鈕從標題區域分離，增加圖標與標題間距，進一步縮小篩選區域
+ *   相關功能：頁面標題區域、新增按鈕區域、篩選區域
+ *   方式：創建獨立的 action-header，調整 gap 和 padding，縮小篩選區域所有尺寸
+ * 
+ * 2025-01-XX XX:XX - 優化標題和篩選區域，提升親和力
+ *   改動內容：簡化標題設計（移除漸變文字、動畫），縮小篩選區域尺寸，優化按鈕樣式
+ *   相關功能：頁面標題區域、篩選區域
+ *   方式：使用簡潔的顏色和字體，減少視覺複雜度，縮小 padding 和字體大小
+ * 
+ * 2025-01-XX XX:XX - 優化排版設計
+ *   改動內容：改善卡片內部排版、資訊層次結構、間距和視覺分組
+ *   相關功能：里程碑卡片內容排版優化
+ *   方式：使用 flexbox 和 grid 布局、優化字體大小和行高、添加資訊分組背景
+ * 
+ * 2025-01-XX XX:XX - 美化版面設計
+ *   改動內容：增強視覺效果，添加漸變背景、陰影、動畫效果
+ *   相關功能：里程碑管理頁面整體美化
+ *   方式：使用 CSS3 漸變、陰影、過渡動畫、響應式設計
+ */
+
+.milestone-container {
+    padding: 2rem 1rem 1rem 1rem;
+    background: #f8f9fa;
+    min-height: 100vh;
+    position: relative;
+}
+
+@media (min-width: 768px) {
+    .milestone-container {
+        padding: 3rem 2rem 2rem 2rem;
+    }
+}
+
+/* 頁面標題 */
+.milestone-container .page-header {
+    margin-bottom: 0.75rem;
+    background: white;
+    padding: 1rem 2rem !important;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .milestone-container .page-header {
+        padding: 1rem 2.5rem !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .milestone-container .page-header {
+        padding: 1rem 3rem !important;
+    }
+}
+
+/* 篩選標題區域 */
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.milestone-container .page-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+    text-align: center !important;
+}
+
+@media (min-width: 768px) {
+    .milestone-container .page-title {
+        font-size: 1.4rem;
+    }
+}
+
+.btn-gantt {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.btn-gantt:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.btn-gantt:active {
+    transform: translateY(0);
+}
+
+.btn-gantt i {
+    font-size: 1rem;
+}
+
+.btn-create-milestone {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
+}
+
+.btn-create-milestone:hover {
+    background: #5568d3;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+}
+
+.btn-create-milestone:active {
+    background: #4a5bc4;
+    box-shadow: 0 1px 2px rgba(102, 126, 234, 0.3);
+}
+
+/* 篩選區域 */
+.filter-section {
+    margin-bottom: 1rem;
+}
+
+.filter-card {
+    background: white;
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.filter-label {
+    font-weight: 500;
+    color: #475569;
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+.filter-controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+}
+
+@media (min-width: 576px) {
+    .filter-controls {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .filter-controls {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+}
+
+.filter-select {
+    width: 100%;
+    padding: 0.4rem 0.75rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    background: white;
+    transition: all 0.2s ease;
+    color: #475569;
+}
+
+.filter-select:hover {
+    border-color: #cbd5e1;
+}
+
+@media (min-width: 768px) {
+    .filter-select {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.875rem;
+    }
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+/* 里程碑列表（長條顯示 - 網格布局） */
+.milestones-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .milestones-list {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.25rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .milestones-list {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+.milestone-bar {
+    background: white;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    min-height: 60px;
+}
+
+.milestone-bar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.bar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.bar-team {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #64748b;
+    flex: 1;
+}
+
+.bar-priority-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.bar-priority-right .priority-badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.bar-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1e293b;
+    flex: 1;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+/* 長條狀態顏色 */
+.milestone-bar.bar-not-started {
+    border-left-color: #94a3b8;
+    background: linear-gradient(to right, #f8fafc 0%, white 100%);
+}
+
+.milestone-bar.bar-in-progress {
+    border-left-color: #f59e0b;
+    background: linear-gradient(to right, #fffbeb 0%, white 100%);
+}
+
+.milestone-bar.bar-rejected {
+    border-left-color: #f97316;
+    background: linear-gradient(to right, #fff7ed 0%, white 100%);
+}
+
+.milestone-bar.bar-completed {
+    border-left-color: #10b981;
+    background: linear-gradient(to right, #f0fdf4 0%, white 100%);
+}
+
+.milestone-bar.bar-review {
+    border-left-color: #3b82f6;
+    background: linear-gradient(to right, #eff6ff 0%, white 100%);
+}
+
+/* 里程碑網格（保留以備不時之需） */
+.milestones-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 576px) {
+    .milestones-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.25rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .milestones-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+/* 里程碑卡片 */
+.milestone-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .milestone-card {
+        border-radius: 20px;
+        padding: 1.5rem;
+    }
+}
+
+
+.milestone-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #cbd5e1;
+}
+
+/* 狀態樣式 */
+.milestone-card.status-not-started {
+    border-left: 5px solid #94a3b8;
+}
+
+.milestone-card.status-in-progress {
+    border-left: 5px solid #f59e0b;
+}
+
+.milestone-card.status-rejected {
+    border-left: 5px solid #f97316;
+}
+
+.milestone-card.status-completed {
+    border-left: 5px solid #10b981;
+}
+
+.milestone-card.status-review {
+    border-left: 5px solid #3b82f6;
+}
+
+/* 卡片頂部 */
+.card-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.status-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.status-badge.not-started {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.status-badge.in-progress {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.rejected {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.status-badge.completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.review {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* 優先級標示 */
+.priority-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.priority-badge.priority-normal {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.priority-badge.priority-important {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.priority-badge.priority-urgent {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.priority-badge.priority-super-urgent {
+    background: #dc2626;
+    color: white;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-icon {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.btn-icon:hover {
+    background: #f1f5f9;
+    color: #334155;
+    border-color: #cbd5e1;
+}
+
+.btn-icon.btn-danger {
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.btn-icon.btn-danger:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+
+/* 卡片內容 */
+.card-content {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.milestone-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    word-break: break-word;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+}
+
+@media (min-width: 768px) {
+    .milestone-title {
+        font-size: 1.35rem;
+    }
+}
+
+.milestone-desc {
+    color: #64748b;
+    margin: 0;
+    line-height: 1.5;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 6px;
+    border-left: 2px solid #667eea;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+}
+
+/* 資訊分組 */
+.info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(248, 250, 252, 0.8);
+    border-radius: 10px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.requirement-link {
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0;
+    margin: 0;
+}
+
+.team-info {
+    color: #1e293b;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0;
+    margin: 0;
+}
+
+.time-info {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+}
+
+@media (min-width: 576px) {
+    .time-info {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.time-item {
+    padding: 0.4rem 0.6rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #475569;
+    border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.completion-info,
+.approval-info {
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #475569;
+    margin-top: 0.5rem;
+    border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+/* 卡片底部 */
+.card-footer {
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(226, 232, 240, 0.5);
+    display: block !important;
+    visibility: visible !important;
+}
+
+.btn-action {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-complete {
+    background: #10b981;
+    color: white;
+}
+
+.btn-complete:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-approve {
+    background: #10b981;
+    color: white;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-approve:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-reject {
+    background: #ef4444;
+    color: white;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-reject:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* 空狀態 */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.empty-icon {
+    font-size: 5rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    color: #334155;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #64748b;
+}
+
+/* Modal - 限制在 milestone-container 內，避免影響全域 */
+/* 註解：改用 Bootstrap modal，不再需要自訂 overlay */
+/*
+.milestone-container .modal-overlay,
+#task_app .milestone-container .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+    overflow-y: auto;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    min-height: 100vh;
+    padding: calc(var(--navbar-height, 56px) + 3rem) 1rem 3rem 1rem;
+}
+*/
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 限制在 milestone-container 內，避免影響 Bootstrap modal */
+/* 註解：改用 Bootstrap modal，不再需要自訂 modal-content 樣式 */
+/*
+.milestone-container .modal-content,
+#task_app .milestone-container .modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 600px;
+    max-height: calc(100vh - var(--navbar-height, 56px) - 4rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s ease;
+    margin: auto;
+    border: 1px solid #e2e8f0;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
+    align-self: center;
+    flex-shrink: 0;
+}
+
+@media (min-width: 576px) {
+    .milestone-container .modal-overlay,
+    #task_app .milestone-container .modal-overlay {
+        padding: calc(var(--navbar-height, 56px) + 4rem) 2rem 4rem 2rem;
+    }
+    
+    .milestone-container .modal-content,
+    #task_app .milestone-container .modal-content {
+        width: 90%;
+        max-width: 600px;
+        max-height: calc(100vh - var(--navbar-height, 56px) - 8rem);
+        border-radius: 20px;
+        margin: auto;
+    }
+}
+
+@media (max-width: 575px) {
+    .milestone-container .modal-overlay,
+    #task_app .milestone-container .modal-overlay {
+        align-items: center;
+        padding: calc(var(--navbar-height, 56px) + 2.5rem) 0.5rem 2.5rem 0.5rem;
+    }
+    
+    .milestone-container .modal-content,
+    #task_app .milestone-container .modal-content {
+        max-height: calc(100vh - var(--navbar-height, 56px) - 5rem);
+        width: calc(100% - 1rem);
+        border-radius: 8px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-height: 600px) {
+    .milestone-container .modal-overlay,
+    #task_app .milestone-container .modal-overlay {
+        align-items: center;
+        padding: calc(var(--navbar-height, 56px) + 1.5rem) 0.5rem 1.5rem 0.5rem;
+    }
+    
+    .milestone-container .modal-content,
+    #task_app .milestone-container .modal-content {
+        max-height: calc(100vh - var(--navbar-height, 56px) - 3rem);
+        border-radius: 8px;
+    }
+    
+    .milestone-container .modal-header,
+    #task_app .milestone-container .modal-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .milestone-container .modal-body,
+    #task_app .milestone-container .modal-body {
+        padding: 1rem;
+    }
+    
+    .milestone-container .form-group,
+    #milestoneEditModal .form-group,
+    #task_app .milestone-container .form-group {
+        margin-bottom: 1rem;
+    }
+}
+*/
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* 限制在 milestone-container 內，避免影響全域 modal */
+/* 註解：改用 Bootstrap modal，不再需要自訂 modal-header 樣式 */
+/*
+.milestone-container .modal-header,
+#task_app .modal-header:not(.modal-header) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 2px solid #e2e8f0;
+    flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .milestone-container .modal-header,
+    #task_app .milestone-container .modal-header {
+        padding: 1.5rem 2rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .milestone-container .modal-header,
+    #task_app .milestone-container .modal-header {
+        padding: 0.875rem 1rem;
+    }
+    
+    .milestone-container .modal-header h3,
+    #task_app .milestone-container .modal-header h3 {
+        font-size: 1.1rem;
+    }
+}
+
+.milestone-container .modal-header h3,
+#task_app .modal-header h3 {
+    margin: 0;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+*/
+
+
+.btn-close-modal {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-close-modal:hover {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+/* 限制在 milestone-container 內，避免影響全域 modal */
+/* 註解：改用 Bootstrap modal，不再需要自訂 modal-body 樣式 */
+/*
+.milestone-container .modal-body,
+#task_app .modal-body:not(#notificationList) {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+@media (min-width: 768px) {
+    .modal-body {
+        padding: 2rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .modal-body {
+        padding: 1rem;
+    }
+}
+*/
+
+/* 限制在 milestone-container 和 modal 內，避免影響全域表單元素 */
+.milestone-container .form-group,
+#milestoneEditModal .form-group,
+#task_app .milestone-container .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.milestone-container .form-group label,
+#milestoneEditModal .form-group label,
+#task_app .milestone-container .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.5rem;
+}
+
+/* 只影響里程碑 modal 內的 form-control，不影響導覽列的搜尋框 */
+#milestoneEditModal .form-control,
+.milestone-container .modal-content .form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+#milestoneEditModal .form-control:focus,
+.milestone-container .modal-content .form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1),
+                inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+}
+
+/* 限制在 milestone-container 和 modal 內 */
+#milestoneEditModal .form-row,
+.milestone-container .modal-content .form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    #milestoneEditModal .form-row,
+    .milestone-container .modal-content .form-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+#milestoneEditModal .form-actions,
+.milestone-container .modal-content .form-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    flex-shrink: 0;
+}
+
+@media (max-width: 575px) {
+    #milestoneEditModal .form-actions,
+    .milestone-container .modal-content .form-actions {
+        flex-direction: column-reverse;
+        gap: 0.5rem;
+    }
+    
+    #milestoneEditModal .form-actions .btn-cancel,
+    #milestoneEditModal .form-actions .btn-submit,
+    .milestone-container .modal-content .form-actions .btn-cancel,
+    .milestone-container .modal-content .form-actions .btn-submit {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* 只影響里程碑 modal 內的按鈕 */
+#milestoneEditModal .btn-cancel,
+#milestoneEditModal .btn-submit,
+.milestone-container .modal-content .btn-cancel,
+.milestone-container .modal-content .btn-submit {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+#milestoneEditModal .btn-cancel,
+.milestone-container .modal-content .btn-cancel {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+#milestoneEditModal .btn-cancel:hover,
+.milestone-container .modal-content .btn-cancel:hover {
+    background: #e2e8f0;
+}
+
+#milestoneEditModal .btn-submit,
+.milestone-container .modal-content .btn-submit {
+    background: #667eea;
+    color: white;
+}
+
+#milestoneEditModal .btn-submit:hover,
+.milestone-container .modal-content .btn-submit:hover {
+    background: #5568d3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
+
+#milestoneEditModal .btn-submit:active,
+.milestone-container .modal-content .btn-submit:active {
+    background: #4a5bc4;
+    transform: translateY(0);
+}
+
+.text-danger {
+    color: #dc2626;
+}
+
+/* 文字顏色輔助 */
+.text-muted {
+    color: #64748b;
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+/* 里程碑詳細資訊 Modal */
+.milestone-detail-modal {
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-w, 200px);
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 1000; /* 降低 z-index，確保不會高於 Bootstrap modal */
+    padding: calc(var(--navbar-height, 56px) + 2rem) 2rem 2rem 2rem;
+    overflow-y: auto;
+    transition: left 0.3s ease;
+}
+
+/* Sidebar 收合時調整 modal 位置 */
+body.sb-sidenav-toggled .milestone-detail-modal {
+    left: var(--sidebar-collapsed, 80px);
+}
+
+.milestone-detail-content {
+    background: white;
+    border-radius: 16px;
+    max-width: 700px;
+    width: 100%;
+    max-height: calc(100vh - var(--navbar-height, 56px) - 4rem);
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-left: 4px solid #10b981;
+    margin-top: 0;
+}
+
+.milestone-detail-header {
+    padding: 2rem 2rem 1.5rem 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.milestone-detail-header .status-badges {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.milestone-detail-body {
+    padding: 2rem;
+}
+
+.milestone-detail-body .team-info {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 1.1rem;
+}
+
+.milestone-detail-body .requirement-link {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.95rem;
+}
+
+.milestone-detail-body .milestone-title {
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+    line-height: 1.3;
+    padding-top: 0.5rem;
+}
+
+.milestone-detail-body .milestone-desc {
+    margin-bottom: 1.75rem;
+    padding: 1.25rem 1.5rem;
+    min-height: auto;
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+.milestone-detail-body .time-info {
+    margin-bottom: 1.75rem;
+    padding: 1.5rem 2rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    gap: 1.25rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.milestone-detail-body .time-item {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: center;
+    flex: 1;
+    min-width: 200px;
+}
+
+.milestone-detail-body .completion-info,
+.milestone-detail-body .approval-info {
+    margin-bottom: 1.75rem;
+    padding: 1.5rem 1.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border-left: 3px solid #667eea;
+}
+
+.milestone-detail-body .completion-info > div,
+.milestone-detail-body .approval-info > div {
+    line-height: 1.9;
+    font-size: 0.95rem;
+}
+
+.milestone-detail-body .completion-info > div > div,
+.milestone-detail-body .approval-info > div > div {
+    margin-bottom: 0.75rem;
+}
+
+.milestone-detail-body .completion-info > div > div:last-child,
+.milestone-detail-body .approval-info > div > div:last-child {
+    margin-bottom: 0;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.milestone-detail-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* 只影響「里程碑詳細資訊」底部 footer 內的關閉按鈕，不動 Bootstrap header 的 X */
+.milestone-detail-footer .btn-close {
+    padding: 0.75rem 2rem;
+    min-width: 100px;
+    white-space: nowrap;
+    background: #64748b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.milestone-detail-footer .btn-close:hover {
+    background: #475569;
+}
+
+/* 確保通知中心的關閉按鈕使用 Bootstrap 默認樣式 */
+#bell_box .btn-close,
+#bell_box.modal .btn-close,
+.modal#bell_box .btn-close {
+    padding: 0.25em 0.25em !important;
+    width: 1em !important;
+    height: 1em !important;
+    min-width: auto !important;
+    /* Bootstrap 預設使用 SVG 背景圖片顯示 X */
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat !important;
+    border: 0 !important;
+    border-radius: 0.375rem !important;
+    opacity: 0.5 !important;
+    cursor: pointer !important;
+    box-sizing: content-box !important;
+    color: #000 !important;
+}
+
+#bell_box .btn-close:hover,
+#bell_box.modal .btn-close:hover,
+.modal#bell_box .btn-close:hover {
+    opacity: 0.75 !important;
+    color: #000 !important;
+    text-decoration: none !important;
+}
+
+#bell_box .btn-close:focus,
+#bell_box.modal .btn-close:focus,
+.modal#bell_box .btn-close:focus {
+    opacity: 1 !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+    outline: 0 !important;
+}
+
+@media (max-width: 768px) {
+    .milestone-detail-modal {
+        left: var(--sidebar-collapsed, 80px);
+        padding: calc(var(--navbar-height, 56px) + 1rem) 1rem 1rem 1rem;
+    }
+    
+    body.sb-sidenav-toggled .milestone-detail-modal {
+        left: var(--sidebar-collapsed, 80px);
+    }
+    
+    .milestone-detail-content {
+        max-height: calc(100vh - var(--navbar-height, 56px) - 2rem);
+        max-width: calc(100vw - var(--sidebar-collapsed, 80px) - 2rem);
+    }
+}
+
+@media (max-width: 576px) {
+    .milestone-detail-modal {
+        left: 0;
+        padding: calc(var(--navbar-height, 56px) + 0.75rem) 0.75rem 0.75rem 0.75rem;
+    }
+    
+    .milestone-detail-content {
+        max-width: calc(100vw - 1.5rem);
+    }
+}
+
+/* 確保 Bootstrap modal 在甘特圖 tooltip 和所有其他元素之上（包括 milestone-detail-modal） */
+/* 註解：移除強制設定，讓 Bootstrap modal 使用預設行為 */
+/*
+#milestoneEditModal.modal,
+#milestoneEditModal.modal.show,
+body #milestoneEditModal.modal,
+body #milestoneEditModal.modal.show,
+body.modal-open #milestoneEditModal.modal {
+    z-index: 100010 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#milestoneEditModal.modal-dialog,
+body #milestoneEditModal .modal-dialog,
+body.modal-open #milestoneEditModal .modal-dialog {
+    z-index: 100011 !important;
+    position: relative !important;
+    margin: 1.75rem auto !important;
+    max-width: 500px !important;
+    pointer-events: auto !important;
+}
+
+#milestoneEditModal .modal-content,
+body #milestoneEditModal .modal-content,
+body.modal-open #milestoneEditModal .modal-content {
+    z-index: 100011 !important;
+    position: relative !important;
+}
+
+body.modal-open .modal-backdrop.show,
+body .modal-backdrop.show {
+    /* 回到 Bootstrap 預設層級，避免覆蓋全站 */
+    z-index: 1050 !important;
+}
+
+body.modal-open .milestone-detail-modal {
+    z-index: 100008 !important;
+}
+*/
+
+/* ===== 里程碑「新增 / 編輯」modal 外觀，只改這個 modal ===== */
+
+/* 寬度 & 置中效果（保留 Bootstrap 的 modal-backdrop 行為） */
+#milestoneEditModal .modal-dialog {
+    max-width: 720px;          /* 比預設大一點，接近你原本那張圖的寬度 */
+    width: 100%;
+    margin: calc(var(--navbar-height, 56px) + 1.5rem) auto 1.5rem auto;
+}
+
+/* 螢幕比較小時，頂部留少一點空間避免塞不下 */
+@media (max-height: 700px) {
+    #milestoneEditModal .modal-dialog {
+        margin: calc(var(--navbar-height, 56px) + 0.75rem) auto 0.75rem auto;
+    }
+}
+
+/* 主要卡片外觀 */
+#milestoneEditModal .modal-content {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25);
+    overflow: hidden;
+}
+
+/* header / body / footer 的 padding 舒服一點 */
+#milestoneEditModal .modal-header {
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#milestoneEditModal .modal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+#milestoneEditModal .btn-close {
+    outline: none;
+}
+
+/* 內容區：限定高度＋滾動，避免爆出螢幕 */
+#milestoneEditModal .modal-body {
+    padding: 1.5rem 1.75rem;
+    max-height: calc(100vh - var(--navbar-height, 56px) - 7rem);
+    overflow-y: auto;
+}
+
+/* footer 按鈕區 */
+#milestoneEditModal .modal-footer {
+    padding: 1rem 1.75rem 1.25rem 1.75rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* 你想要那種大一點、圓角一點的按鈕 */
+#milestoneEditModal .btn {
+    border-radius: 999px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+}
+
+#milestoneEditModal .btn-primary {
+    background: #667eea;
+    border-color: #667eea;
+}
+
+#milestoneEditModal .btn-primary:hover {
+    background: #5568d3;
+    border-color: #5568d3;
+}
+
+#milestoneEditModal .btn-secondary {
+    background: #e2e8f0;
+    border-color: #e2e8f0;
+    color: #475569;
+}
+
+#milestoneEditModal .btn-secondary:hover {
+    background: #cbd5e1;
+    border-color: #cbd5e1;
+}
+
+/* === 當有 Bootstrap modal 開啟時的層級控制（精簡版） === */
+
+/* 1. 壓低 navbar / sidebar，避免壓到 backdrop / modal */
+body.modal-open .sb-topnav,
+body.modal-open .navbar,
+body.modal-open #layoutSidenav_nav,
+body.modal-open .sb-sidenav,
+body.modal-open .sb-sidenav-menu {
+    z-index: 1030 !important;  /* 比 modal-backdrop 低 */
+    pointer-events: none !important; /* 防止攔截點擊事件 */
+}
+
+/* 2. 確保 backdrop 和 modal 都在 navbar/sidebar 之上（必須高於 style.css 的 1074/1075） */
+
+body.modal-open .modal {
+    z-index: 1081 !important;  /* 高於 backdrop，也高於 style.css 的 1075 */
+}
+
+/* 3. 確保里程碑編輯 modal 在最上層 */
+body.modal-open #milestoneEditModal {
+    z-index: 1055 !important;
+}
+
+body.modal-open #milestoneEditModal .modal-dialog {
+    z-index: 1056 !important;
+}
+
+body.modal-open #milestoneEditModal .modal-content {
+    z-index: 1056 !important;
+    pointer-events: auto !important;
+}
+
+/* 4. 只要有任何 modal 開啟，就把「里程碑詳細視窗」關掉，避免它蓋在 modal 上 */
+body.modal-open .milestone-detail-modal {
+    display: none !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    z-index: -1 !important;
+}
+
+/* 5. 當 modal 打開時，確保甘特圖相關元素不會攔截點擊 */
+body.modal-open .gantt-content,
+body.modal-open .gantt-chart,
+body.modal-open .gantt-timeline {
+    pointer-events: none !important;
+}
+
+/* 如果用戶想要背景可以點擊（關掉 backdrop），取消註解下面這段 */
+/*
+*/
+

@@ -1,0 +1,196 @@
+資料夾選project
+權限:<uses-permission android:name="android.permission.INTERNET"/> androidmanifest.xml
+
+在application中打
+android:usesCleartextTraffic="true"
+這個文件只要輸入這兩行讓android studio可以連接API
+
+
+資料夾選android
+Gradle Scripts
+build.gradle.kts
+在最下面新增兩個套件讓API能夠去處理JSON資料
+implementation("com.squareup.okhttp3:okhttp:4.12.0")
+implementation("com.google.code.gson:gson:2.10.1")
+打完後按下上面的sync讓他去載入這兩個套件
+
+資料夾選project
+放activity的資料夾
+創建資料夾叫做models
+在models資料夾中新增兩個java檔案(Java Class)Login、Car
+Login:
+上次的API總共會回傳那三個欄位(應該還有一個)這次先教原理
+public String accountID;
+public String accountType;
+public String accountStatus;
+
+回傳的名稱要跟上面取的一模一樣
+
+
+
+
+
+Car:
+public String lastName;
+public String firstName;
+public String carID;
+public String transferDate;
+public String model;
+public String productionDate;
+public String productionCountry;
+public String chargeCount;
+public String totalChargeKwh;
+
+
+
+回到activity_main.xml
+
+在隨便一個地方新增TextView
+用個錯誤訊息
+<TextView
+android:id="@+id/textError"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text=""
+app:layout_constraintBottom_toBottomOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toTopOf="parent"/>
+
+回到MainActivity.java
+在登入按鈕跳頁中
+Button buttonLogin = findViewById(R.id.buttonLogin);
+buttonLogin.setOnClickListener(new View.OnClickListener(){
+@Override
+public void onClick(View v){
+
+EditText textAccount = findViewById(R.id.textAccount);
+EditText textPassword = findViewById(R.id.textPassword);
+
+
+String account = textAccount.getText().toString();;//抓輸入框的文字轉成字串放到account中
+String password = textPassword..getText().toString();
+
+//先把下面的方法寫下來
+verifyPassword(account,password);//傳進去的值就是正上方轉字串的變數
+
+}
+});
+
+在倒數第二個的括號外面新增一個方法
+private void verifyPassword(String account,String password)
+{
+//上次連API適用localhost
+//在android studio抓本機的連結式10.0.2.2:看你的port是多少，學長這裡是5000
+//後來發現用port好像有問題所以用其他方式
+//如果帳號輸入框打的是aaa的話這裡的account就是aaa
+String url = "http://10.0.2.2:5000/Account/VerifyPassword?account="+account+"&password="+password;
+
+
+//剛有下載套件這邊就是如果有出現RequestBody提示字代表是有下載成功
+//body是post才有如果是用get就不用body了
+RequestBody body = RequestBody.create(new byte[0],null);//意思是說方法是用POST 就要把body傳過去 因為要新增一個值所以新增body傳過去
+//(tab okhttp3)
+//新增一個request內容就是把url就是API端點存進去我們是用post內容是body如果是用get直接把post改成get然後build就是建置
+Request request = new Request().Builder().url(url).post(body).build();
+
+
+//
+OkHttpClient client = new OkHttpClient();
+//呼叫API請求裡面丟進去剛寫的request然後執行
+client.newCall(request).enqueue(new Callback(){
+@Override 
+public void onFailure(@NonNull Call call, @NonNull IOException e){
+//處理錯誤
+}
+
+@Override 
+public void onResponse(@NonNull Call call,@NonNull Response response)throws IOException{
+
+//處理結果
+//要抓對應的值
+//response就是回傳出來的值body就是內容把她轉為字串
+//轉為字串的結果就會長螢幕上這樣
+
+
+String json = response.body().string();
+
+//第二個套件google的專門處理json
+Gson gson = new Gson();
+TextView textError = findViewById(R.id.textError);
+
+
+
+runOnUiThread(() -> {
+//開始處理抓到的字
+
+//如果請求成功的話
+
+if(response.isSuccessful()){
+
+
+//接下來要處理帳號密碼錯誤
+//因為他是回傳文字不是json
+//要寫trycatch 
+//try {
+//判斷他第一個字是不是大擴號
+//if(!response.body().string().trim().startsWith("{"))
+//if(!response.body().string().trim().equals("帳號密碼錯誤")){
+//如果不是200就可能是錯誤
+//這個Login就是剛剛在models裡面創建的
+//格式就是按照當初Login創建的格式
+//使用那個格式去處理然後抓對應的欄位
+Login login = gson.fromJson(json,Login.class);
+
+//做些簡單的判斷 
+
+if(!login.accountType.equals("一般使用者")||!login.accountStatus.equals("0")){
+//提示訊息
+//假設0是正常1是不正常
+textError.setText("登入失敗");
+}
+
+//因為這個Login抓到的值他已經處理好了 就先寫跳頁
+Intent intent = new Intent(MainActivity.this,CarActivity.class);
+//要抓accountID 判斷他是否有車(在caractivity中藥做判斷)
+//這樣他就可以使用前面抓到的accountID
+//這樣就會把抓到的給跳頁裡面PS:ACCOUNT_ID這個可以隨便取只是跳頁的名稱要跟他一樣
+intent.putExtra("ACCOUNT_ID",login.accountID);
+startActivity(intent);
+
+}else{
+
+textError.setText("登入失敗");
+
+
+}
+
+//}catch(Exception ex){
+
+//textError.setText("登入失敗");
+//}
+
+}
+
+});
+
+}
+
+});
+
+
+
+CarActivity.java中
+
+在protected void onCreate中
+super.onCreate下面
+//因為剛剛又傳送accountID過來
+//這個ID就是剛剛在跳頁取的名字她就會存到accountID
+
+String accountId = getIntent().getStringExtra("ACCOUNT_ID");
+
+
+
+//測試 隨便找個TextView做顯示，如果有出現就是對的
+//TextView textView = findViewById(R.id.textView1);
+//textView.setText(accountId);

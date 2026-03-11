@@ -1,0 +1,1990 @@
+/* 團隊管理頁面樣式 - 版面節奏統一 */
+.team-manage-container {
+    --gap-1: 8px;
+    --gap-2: 12px;
+    --gap-3: 16px;
+    --gap-4: 24px;
+    --radius: 4px;
+    padding: 1.5rem;
+    max-width: 100%;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    min-height: 400px;
+    visibility: visible;
+    display: block;
+    position: relative;
+}
+
+/* 頁面標題區域：標題與篩選同一列，金黃色底線 */
+.page-header {
+    margin-bottom: var(--gap-3);
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid #f59e0b;
+}
+.page-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-3);
+    flex-wrap: wrap;
+}
+.page-header-left {
+    flex-shrink: 0;
+}
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.25rem 0;
+}
+.page-subtitle {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #64748b;
+}
+
+/* 篩選工具列：與標題同一列，靠右 */
+.team-filter-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-2);
+    flex-wrap: wrap;
+}
+.team-filter-toolbar .toolbar-search-input,
+.team-filter-toolbar .toolbar-select,
+.team-filter-toolbar .toolbar-btn-reset {
+    height: 38px;
+}
+.toolbar-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.toolbar-search .toolbar-search-clear {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.toolbar-search-icon {
+    position: absolute;
+    left: 0.75rem;
+    color: #94a3b8;
+    pointer-events: none;
+}
+.toolbar-search-input {
+    padding: 0.5rem 2rem 0.5rem 2.25rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    min-width: 200px;
+    transition: border-color 0.2s ease;
+}
+.toolbar-search {
+    position: relative;
+}
+.toolbar-search .toolbar-search-clear {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.toolbar-search-input:focus {
+    outline: none;
+    border-color: #999;
+}
+.toolbar-search-clear {
+    position: absolute;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0.25rem;
+}
+.toolbar-search-clear:hover { color: #64748b; }
+.toolbar-select {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    min-width: 140px;
+    background: #fff;
+    cursor: pointer;
+}
+.toolbar-select:focus {
+    outline: none;
+    border-color: #999;
+}
+.toolbar-btn-reset {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+    color: #64748b;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+.toolbar-btn-reset:hover {
+    background: #f8fafc;
+    color: #475569;
+}
+
+/* 相容舊的 filter-search-input、clearSearch */
+.filter-search-input { padding: 0.75rem 1rem; border: 2px solid #e5e7eb; border-radius: 6px; }
+.search-clear-btn { background: none; border: none; cursor: pointer; }
+
+/* 篩選器區域 */
+.filter-section {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    align-items: end;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.filter-label i {
+    color: #667eea;
+    font-size: 0.875rem;
+}
+
+.filter-select {
+    padding: 0.625rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    color: #1e293b;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #999;
+}
+
+/* ===== 組隊總覽（簡潔表格風格）===== */
+.team-dashboard-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: var(--gap-3);
+}
+
+.team-dashboard-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.team-dashboard-card .team-dashboard-icon {
+    font-size: 1rem;
+    color: #666;
+    flex-shrink: 0;
+}
+.team-dashboard-card .team-dashboard-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+.team-dashboard-card .team-dashboard-value .unit {
+    font-size: 0.8rem;
+    margin-left: 2px;
+    color: #666;
+    font-weight: 400;
+}
+.team-dashboard-card .team-dashboard-label {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 1px;
+}
+.team-dashboard-card .team-dashboard-hint {
+    font-size: 0.7rem;
+    color: #999;
+    margin-top: 1px;
+}
+.team-dashboard-card .kpi-right {
+    flex: 1;
+    min-width: 0;
+    text-align: right;
+}
+.team-dashboard-card-highlight {
+    border-color: #ccc;
+    background: #fafafa;
+}
+.team-dashboard-card-warning {
+    border-color: #ccc;
+    background: #fafafa;
+}
+
+/* ===== 快速篩選（簡潔連結風格）===== */
+.team-quick-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 var(--gap-3);
+    flex-wrap: wrap;
+}
+
+.btn-filter-pill,
+.btn-filter-quick {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    color: #333;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.btn-filter-pill:hover,
+.btn-filter-quick:hover {
+    background: #f5f5f5;
+}
+
+.btn-filter-pill.active,
+.btn-filter-quick.active {
+    background: #e0e0e0;
+    border-color: #999;
+    font-weight: 600;
+}
+
+/* ===== 老師 chip（預設中性，只有超載才警示色）===== */
+.teacher-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+.teacher-chip.danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.team-teacher-cell {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    min-width: 0;
+}
+
+/* 組員數：獨立欄 member-metric */
+.member-metric {
+    min-width: 120px;
+}
+.member-metric .count {
+    font-weight: 900;
+    font-size: 14px;
+    white-space: nowrap;
+}
+.member-metric .sub {
+    font-size: 12px;
+    color: #64748b;
+    white-space: nowrap;
+}
+.member-metric .bar {
+    height: 4px;
+    border-radius: 2px;
+    background: #e0e0e0;
+    overflow: hidden;
+    margin-top: 4px;
+}
+.member-metric .bar > i {
+    display: block;
+    height: 100%;
+    width: var(--w, 0%);
+    background: #999;
+    border-radius: 2px;
+}
+
+/* 相容舊的 teacher-with-load */
+.teacher-with-load.teacher-load-ok { color: #16a34a; }
+.teacher-with-load.teacher-load-warning { color: #ca8a04; }
+.teacher-with-load.teacher-load-full { color: #dc2626; }
+
+/* ===== 狀態標籤 ===== */
+.team-status-badge { font-weight: 600; }
+.team-status-badge.status-normal { color: #16a34a; }
+.team-status-badge.status-under { color: #ca8a04; }
+.team-status-badge.status-over { color: #dc2626; }
+
+/* ===== 詳情 Modal：組隊摘要與警告 ===== */
+.team-detail-summary {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.team-detail-summary-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+
+.team-detail-summary-row:last-child { margin-bottom: 0; }
+
+.summary-label { color: #64748b; font-weight: 500; }
+.summary-value { font-weight: 600; color: #1e293b; }
+
+.team-detail-warnings {
+    border: 2px solid #dc2626;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #fef2f2;
+}
+
+.warnings-title { font-weight: 600; color: #dc2626; margin-bottom: 0.5rem; }
+.warnings-list { margin: 0; padding-left: 1.25rem; color: #991b1b; }
+
+/* ===== 加入成員 Modal：已達上限 ===== */
+.addmember-full-banner {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    color: #dc2626;
+    font-weight: 500;
+}
+
+.student-status { font-size: 0.85rem; color: #16a34a; margin: 0.2rem 0; }
+.btn-add-student-disabled { opacity: 0.6; cursor: not-allowed; }
+.addmember-btn-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.addmember-reason { font-size: 11px; color: #94a3b8; margin: 0; }
+
+/* ===== Excel 風格表格樣式（保留）===== */
+
+.team-excel-table-wrapper {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow-x: auto;
+    overflow-y: visible;
+    margin-bottom: var(--gap-3);
+    width: 100%;
+}
+
+.team-excel-table {
+    width: 100%;
+    min-width: 820px;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 0;
+    table-layout: fixed;
+}
+
+.team-excel-table thead th {
+    font-size: 0.95rem;
+    color: #475569;
+    font-weight: 800;
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.team-excel-table tbody tr {
+    background-color: #fff;
+    transition: background-color 0.15s ease;
+    cursor: pointer;
+}
+
+.team-excel-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.team-excel-table tbody tr:focus,
+.team-excel-table tbody tr:active,
+.team-excel-table tbody td:focus {
+    outline: none;
+}
+
+.team-excel-table tbody td {
+    padding: 14px 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.team-excel-table tbody tr:first-child td {
+    border-top: none;
+}
+
+.team-cohort-cell {
+    color: #64748b;
+    font-size: 13px;
+}
+.team-name-cell {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.team-member-count-cell {
+    vertical-align: middle;
+}
+.member-metric .count { font-weight: 900; font-size: 14px; }
+.member-metric .sub { font-size: 12px; color: #64748b; }
+.team-status-cell,
+.team-action-cell {
+    white-space: nowrap;
+}
+
+.team-action-cell .btn-view-team {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    outline: none;
+}
+
+.team-action-cell .btn-view-team:focus {
+    outline: none;
+}
+
+.team-action-cell .btn-view-team:hover {
+    background: #f5f5f5;
+}
+
+.team-group-cell {
+    text-align: center;
+}
+
+.team-group-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+.group-badge-system {
+    background: #e8e8e8;
+    color: #333;
+}
+
+.group-badge-business {
+    background: #e8e8e8;
+    color: #333;
+}
+
+.group-badge-design {
+    background: #e8e8e8;
+    color: #333;
+}
+
+.group-badge-other {
+    background: #e8e8e8;
+    color: #333;
+}
+
+.team-teacher-cell {
+    color: #475569;
+    font-size: 0.9rem;
+}
+
+.team-members-cell {
+    color: #475569;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.team-action-cell {
+    text-align: center;
+}
+
+.btn-view-team {
+    padding: 0.5rem 1rem;
+    background: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.btn-view-team:hover {
+    background: #f5f5f5;
+}
+
+.team-action-cell .btn-delete-team {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 4px;
+    border: 1px solid #dc3545;
+    background: #fff;
+    color: #dc3545;
+    cursor: pointer;
+    margin-left: 6px;
+}
+.team-action-cell .btn-delete-team:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
+/* 未加入團隊區塊樣式保持不變 */
+.no-team-section {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.no-team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.no-team-title-wrapper {
+    flex: 1;
+    min-width: 200px;
+}
+
+.no-team-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.no-team-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.no-team-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.no-team-filter-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.no-team-filter-select {
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: #1e293b;
+    background: #fff;
+    min-width: 120px;
+    transition: all 0.2s ease;
+}
+
+.no-team-filter-select:focus {
+    outline: none;
+    border-color: #999;
+}
+
+.no-team-filter-summary,
+.no-team-selected-summary {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.select-all-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.select-all-control .form-check-input {
+    margin-top: 0;
+    cursor: pointer;
+}
+
+.select-all-control .form-check-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    cursor: pointer;
+    margin: 0;
+}
+
+.btn-notify-teachers {
+    padding: 0.5rem 1rem;
+    background: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.btn-notify-teachers:hover:not(:disabled) {
+    background: #f5f5f5;
+}
+
+.btn-notify-teachers:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.no-team-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.no-team-member {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.no-team-member:hover {
+    border-color: #bbb;
+}
+
+.no-team-member[data-selected="true"] {
+    border-color: #999;
+    background: #f5f5f5;
+}
+
+.member-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.member-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.member-main-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.member-name {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.9375rem;
+}
+
+.member-id-badge {
+    font-size: 0.75rem;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 0.2em 0.5em;
+    border-radius: 4px;
+}
+
+.member-tag-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.member-tag {
+    font-size: 0.75rem;
+    padding: 0.2em 0.5em;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.member-tag.tag-class {
+    background: #e0f2f7;
+    color: #0369a1;
+}
+
+.member-tag.tag-cohort {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.member-select-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #999;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    opacity: 0;
+    flex-shrink: 0;
+}
+
+.no-team-member[data-selected="true"] .member-select-indicator {
+    opacity: 1;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #64748b;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .team-stats-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .team-excel-table-wrapper {
+        overflow-x: auto;
+    }
+    
+    .team-excel-table {
+        min-width: 600px;
+    }
+    
+    .no-team-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .no-team-controls {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .no-team-filter-group {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .no-team-filter-select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .no-team-header {
+        padding: 1rem;
+        margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    }
+    
+    .no-team-controls {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.75rem;
+    }
+    
+    .btn-notify-teachers {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .member-avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
+    }
+}
+
+
+
+/* 團隊詳情 Modal 遮罩：僅覆蓋主內容區，不覆蓋 sidebar 與 navbar */
+.team-modal-overlay {
+    position: fixed !important;
+    top: var(--navbar-height, 56px) !important;
+    left: var(--sidebar-w, 250px) !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: calc(100vw - var(--sidebar-w, 250px)) !important;
+    z-index: 1050 !important;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+body.sb-sidenav-toggled .team-modal-overlay {
+    left: var(--sidebar-collapsed, 80px) !important;
+    width: calc(100vw - var(--sidebar-collapsed, 80px)) !important;
+}
+.team-modal-overlay.active {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+.team-modal {
+    background: #fff;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 900px;
+    max-height: calc(90vh - 5rem);
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease;
+    margin-top: 0;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.team-modal-header {
+    background: #64748b;
+    color: #fff;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.team-modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.team-modal-close {
+    background: #64748b;
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 1.5rem;
+    font-weight: 300;
+    line-height: 1;
+    padding: 0;
+}
+
+.team-modal-close:hover {
+    background: #475569;
+    transform: scale(1.1);
+}
+
+.team-modal-body {
+    padding: 2rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.form-field {
+    margin-bottom: 1.5rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-field-half {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.form-field label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #334155;
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: #1e293b;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #64748b;
+    box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.1);
+}
+
+.form-input:hover {
+    border-color: #94a3b8;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.btn-cancel,
+.btn-save {
+    padding: 0.75rem 1.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-cancel {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.btn-cancel:hover {
+    background: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.btn-save {
+    background: #64748b;
+    color: #fff;
+}
+
+.btn-save:hover {
+    background: #475569;
+    transform: translateY(-1px);
+}
+
+/* 團隊詳情 Modal 成員列表樣式 */
+.member-section {
+    margin-bottom: 2rem;
+}
+
+.member-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.member-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.team-members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.team-member-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.team-member-item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.team-member-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.team-member-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-width: 48px;
+    max-height: 48px;
+}
+
+.avatar-initial {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.team-member-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.team-member-name {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 1rem;
+    margin: 0 0 0.25rem 0;
+}
+
+.team-member-id {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.btn-remove-member {
+    padding: 0.5rem 1rem;
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-remove-member:hover {
+    background: #c9302c;
+}
+
+.btn-add-member {
+    padding: 0.5rem 1rem;
+    background: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-add-member:hover {
+    background: #f5f5f5;
+}
+
+.no-members-text {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    padding: 2rem;
+    font-style: italic;
+}
+
+/* 未加入組別學生表格樣式 */
+.no-team-list-table {
+    overflow-x: auto;
+    margin-top: 1.5rem;
+}
+
+.no-team-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.no-team-table thead {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.no-team-table th {
+    padding: 1rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.no-team-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+.no-team-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.no-team-table tbody tr.selected {
+    background-color: #f5f5f5;
+    border-left: 3px solid #999;
+}
+
+.no-team-member-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.select-cell {
+    width: 50px;
+    text-align: center;
+}
+
+.select-header {
+    width: 50px;
+    text-align: center;
+}
+
+.name-cell {
+    min-width: 120px;
+    font-weight: 600;
+}
+
+.id-cell {
+    min-width: 120px;
+}
+
+.cohort-cell {
+    min-width: 120px;
+}
+
+.class-cell {
+    min-width: 150px;
+}
+
+.action-cell {
+    min-width: 120px;
+    text-align: center;
+}
+
+.btn-notify-student {
+    padding: 0.5rem 1rem;
+    background: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.btn-notify-student:hover {
+    background: #f5f5f5;
+}
+
+/* 未加入組別學生 Modal 樣式調整 */
+#noTeamModalOverlay .team-modal-body {
+    padding: 1.5rem;
+}
+
+#noTeamModalOverlay .no-team-controls {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.form-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 2rem 0;
+}
+
+.form-section {
+    margin-top: 1.5rem;
+}
+
+.form-section h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 1rem 0;
+}
+
+.loading-text {
+    text-align: center;
+    color: #94a3b8;
+    padding: 1.5rem 0;
+    font-size: 0.9rem;
+}
+
+.empty-list {
+    text-align: center;
+    color: #94a3b8;
+    padding: 2rem 0;
+    font-size: 0.9rem;
+}
+
+.error-text {
+    text-align: center;
+    color: #ef4444;
+    padding: 2rem 0;
+    font-size: 0.9rem;
+}
+
+.limit-table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.limit-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+}
+
+.limit-table .table-clean {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.limit-table thead {
+    background: #f8fafc;
+}
+
+.limit-table th {
+    padding: 0.875rem 1.25rem;
+    text-align: center;
+    font-weight: 600;
+    color: #475569;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.95rem;
+}
+
+.limit-table td {
+    padding: 0.875rem 1.25rem;
+    color: #1e293b;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: center;
+}
+
+.limit-table tbody tr {
+    background-color: #fff;
+}
+
+.limit-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.limit-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.4rem 0.85rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-full {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-available {
+    background: #d4edda;
+    color: #155724;
+}
+
+.btn-set-limit {
+    background: #28a745 !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-set-limit:hover {
+    background: #218838 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+}:root {
+    --tm-bg: #f9fafb;
+    --tm-card-bg: #ffffff;
+    --tm-text-primary: #111827;
+    --tm-text-secondary: #6b7280;
+    --tm-border: #e5e7eb;
+    --tm-accent: #6366f1; /* 淡紫色點綴 */
+    --tm-radius: 8px;
+}
+
+/* 僅套用於內容區，不影響 sidebar/nav（避免字體變粗） */
+#content:has(.team-manage-container) {
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--tm-text-primary);
+    overflow-x: auto; /* 表格較寬時可橫向捲動，避免被壓縮 */
+}
+body:has(#content .team-manage-container) {
+    background-color: var(--tm-bg);
+}
+
+.tm-wrapper {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* =========================================
+   Bootstrap 舊版風格 Modal（偏 BS3/BS4）
+   - 白底 + 灰線 + 小圓角
+   - header 灰底
+   - list-group / media 風格
+========================================= */
+
+/* 遮罩：不要霧面、不要漸層 */
+.team-modal-overlay{
+  background: rgba(0,0,0,.45);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Modal 外框：小圓角、灰邊、輕陰影 */
+.team-modal{
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  width: min(900px, calc(100vw - 24px));
+  max-height: 86vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header：灰底像 panel-heading */
+.team-modal-header{
+  background: #f5f5f5;
+  color: #333;
+  padding: 12px 15px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 標題：不要太大，不要太粗 */
+.team-modal-title{
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+  color: #333;
+}
+
+/* 關閉按鈕：像 BS 的 close */
+.team-modal-close{
+  background: transparent;
+  border: 0;
+  color: #666;
+  width: auto;
+  height: auto;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.team-modal-close:hover{ color: #000; }
+
+/* Body：白底、標準間距 */
+.team-modal-body{
+  padding: 15px;
+  background: #fff;
+  overflow: auto;              /* 只留一條滾動 */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 區塊：像 panel */
+.member-section{
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  background: #fff;
+  margin-bottom: 15px;
+}
+
+/* 區塊標題列：像 panel-heading */
+.member-section-title{
+  padding: 10px 12px;
+  background: #f7f7f7;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+/* 如果你用 member-section-header（成員 + 加入按鈕） */
+.member-section-header{
+  padding: 10px 12px;
+  background: #f7f7f7;
+  border-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* 列表：像 list-group */
+.team-members-list{
+  padding: 0;
+  margin: 0;
+  display: block;
+  max-height: none !important;     /* ✅ 移除內部第二條滾動 */
+  overflow: visible !important;
+}
+
+/* item：像 list-group-item + media */
+.team-member-item{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  border-radius: 0;
+  margin: 0;
+}
+.team-member-item:last-child{ border-bottom: 0; }
+
+/* 頭像：偏舊版：圓形即可 */
+.team-member-avatar{
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ddd;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: 0 0 40px;
+}
+.team-member-avatar-img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team-member-info{ flex: 1; min-width: 0; }
+.team-member-name{
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+.team-member-id{
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  color: #777;
+}
+
+/* 按鈕：像舊版 btn */
+.btn-remove-member,
+.btn-add-member{
+  border-radius: 4px;
+  font-size: 13px;
+  padding: 6px 10px;
+  font-weight: 600;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* 移除：btn-danger（但不要太現代） */
+.btn-remove-member{
+  background: #d9534f;
+  border: 1px solid #d43f3a;
+  color: #fff;
+}
+.btn-remove-member:hover{
+  background: #c9302c;
+  border-color: #ac2925;
+}
+
+/* 加入：btn-primary */
+.btn-add-member{
+  background: #337ab7;
+  border: 1px solid #2e6da4;
+  color: #fff;
+}
+.btn-add-member:hover{
+  background: #286090;
+  border-color: #204d74;
+}
+
+/* 空狀態：像 well */
+.no-members-text{
+  padding: 12px;
+  margin: 10px 12px;
+  background: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+  color: #777;
+  text-align: center;
+  font-style: normal;
+}
+
+/* RWD：小螢幕按鈕不擠 */
+@media (max-width: 575.98px){
+  .team-modal{ max-height: 92vh; }
+  .team-member-item{ align-items: flex-start; }
+  .btn-remove-member{ margin-left: auto; }
+  .member-section-header{ flex-direction: column; align-items: stretch; }
+  .btn-add-member{ width: 100%; }
+}
+/* ================================
+   加入成員 Modal（Bootstrap 舊版風格）
+   - list-group + media object
+================================ */
+
+/* 這個容器就是 #availableStudentsList */
+.available-students-list{
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  background: #fff;
+  overflow: hidden; /* 讓 list item 邊框貼齊 */
+}
+
+/* 每一列學生：像 list-group-item */
+.available-student-item{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+}
+.available-student-item:last-child{
+  border-bottom: 0;
+}
+
+/* 左邊頭像：舊系統常見小圓頭像 */
+.available-student-item .student-avatar{
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  background: #ddd;
+  flex: 0 0 40px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-weight: 700;
+}
+
+.available-student-item .student-avatar-img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: 40px;
+  max-height: 40px;
+}
+
+/* 中間文字區 */
+.available-student-item .student-info{
+  flex: 1;
+  min-width: 0;
+}
+
+.available-student-item .student-name{
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.2;
+}
+
+.available-student-item .student-id{
+  margin: 3px 0 0 0;
+  font-size: 12px;
+  color: #777;
+}
+
+.available-student-item .student-class{
+  margin: 3px 0 0 0;
+  font-size: 12px;
+  color: #777;
+}
+
+/* 右邊加入按鈕：像 btn-primary（舊版） */
+.available-student-item .btn-add-student{
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 4px;
+  border: 1px solid #2e6da4;
+  background: #337ab7;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.available-student-item .btn-add-student:hover{
+  background: #286090;
+  border-color: #204d74;
+}
+.available-student-item .btn-add-student-disabled{
+  background: #94a3b8;
+  border-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Modal 內：固定高度、列表滾動，降低壓迫感 */
+#addMemberModalOverlay .team-modal-body {
+  padding: 12px 15px;
+  max-height: calc(80vh - 140px);
+  overflow: auto;
+}
+#addMemberModalOverlay .addmember-full-banner {
+  margin-bottom: 10px;
+}
+.addmember-toolbar .addmember-input,
+.addmember-toolbar .addmember-select,
+.addmember-toolbar .addmember-btn {
+  height: 38px;
+}
+
+/* 小螢幕：按鈕換到下一行避免擠爆 */
+@media (max-width: 575.98px){
+  .available-student-item{
+    align-items: flex-start;
+  }
+  .available-student-item .btn-add-student{
+    margin-left: auto;
+  }
+}
+/* 加入成員：工具列（舊版 Bootstrap 느낌） */
+.addmember-toolbar{
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #e5e5e5;
+  background: #f7f7f7;
+  border-radius: 4px;
+}
+
+.addmember-row{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.addmember-row-2{
+  margin-top: 8px;
+}
+
+.addmember-input,
+.addmember-select{
+  height: 34px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #fff;
+}
+
+.addmember-input{
+  width: 100%;
+}
+
+.addmember-select{
+  min-width: 160px;
+}
+
+.addmember-btn{
+  height: 34px;
+  padding: 6px 12px;
+  border: 1px solid #adadad;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.addmember-btn:hover{
+  background: #e6e6e6;
+}
+
+/* 團隊詳情：成員資訊顯示字級放大 */
+.team-member-line{
+  margin: 0;
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+/* 彈窗字級統一放大，且標題明顯大於內文 */
+.team-modal-title{
+  font-size: 1.55rem !important;
+  font-weight: 800 !important;
+}
+
+.member-section-title,
+.member-section-header .member-section-title{
+  font-size: 1.28rem !important;
+  font-weight: 800 !important;
+}
+
+.team-member-item{
+  padding: 12px 14px !important;
+}
+
+.btn-remove-member,
+.btn-add-member{
+  font-size: 0.96rem !important;
+}
+
+/* 無結果提示 */
+.addmember-empty{
+  padding: 12px;
+  color: #777;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* 手機：下拉改成直排 */
+@media (max-width: 575.98px){
+  .addmember-row-2{
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .addmember-select{
+    width: 100%;
+    min-width: 0;
+  }
+  .addmember-btn{
+    width: 100%;
+  }
+}
+
+
+/* 標題區塊 */
+.tm-header {
+    margin-bottom: 2rem;
+}
+
+.tm-header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.tm-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.025em;
+}
+
+.tm-title small {
+    font-size: 1rem;
+    color: var(--tm-text-secondary);
+    font-weight: 400;
+    margin-left: 0.5rem;
+    background: #f3f4f6;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+}
+
+/* 控制列導航 */
+.tm-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* 搜尋框優化 */
+.tm-search-bar {
+    position: relative;
+    background: var(--tm-card-bg);
+    border: 1px solid var(--tm-border);
+    border-radius: var(--tm-radius);
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 280px;
+    transition: border-color 0.2s;
+}
+
+.tm-search-bar:focus-within {
+    border-color: #999;
+}
+
+.tm-search-bar input {
+    border: none;
+    outline: none;
+    font-size: 0.875rem;
+    width: 100%;
+}
+
+.tm-search-bar i { color: var(--tm-text-secondary); }
+
+/* 篩選下拉選單 */
+.tm-select {
+    background: var(--tm-card-bg);
+    border: 1px solid var(--tm-border);
+    border-radius: var(--tm-radius);
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,..."); /* 可加入自訂箭頭 */
+}
+
+.tm-btn-icon {
+    background: var(--tm-card-bg);
+    border: 1px solid var(--tm-border);
+    padding: 0.5rem;
+    border-radius: var(--tm-radius);
+    cursor: pointer;
+    color: var(--tm-text-secondary);
+    transition: all 0.2s;
+}
+
+.tm-btn-icon:hover {
+    color: #333;
+    background: #f5f5f5;
+}
+
+/* 內容網格 */
+.tm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+/* 讀取動畫 */
+.tm-loading {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5rem;
+    color: var(--tm-text-secondary);
+}
+
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #e0e0e0;
+    border-top: 3px solid #999;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* RWD 處理 */
+@media (max-width: 768px) {
+    .tm-header-main { flex-direction: column; align-items: flex-start; }
+    .tm-controls { width: 100%; flex-direction: column; align-items: stretch; }
+    .tm-search-bar { width: auto; }
+}

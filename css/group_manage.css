@@ -1,0 +1,262 @@
+/* 類組管理頁面專用樣式 */
+/* 注意：通用樣式已移至 style.css，只保留此頁面特有的樣式 */
+
+.group-management-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.add-group-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    border: none;
+}
+
+.add-group-card .card-header {
+    background: transparent;
+    border: none;
+    padding: 0 0 1rem 0;
+}
+
+.add-group-card .card-header h5 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.add-group-card .card-header h5 i {
+    color: #ffc107;
+}
+
+.add-group-card .card-body {
+    padding: 0;
+}
+
+.add-group-form {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.add-group-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.95);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.add-group-input:focus {
+    outline: none;
+    border-color: #ffc107;
+    background: white;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.add-group-input::placeholder {
+    color: #6c757d;
+}
+
+.btn-add-group {
+    padding: 1rem 2.5rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: white;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+}
+
+.btn-add-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
+    color: white;
+}
+
+.btn-add-group:active {
+    transform: translateY(0);
+}
+
+.groups-list-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.groups-list-card:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+.groups-list-card .card-header {
+    background: transparent;
+    border: none;
+    padding: 0 0 1.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.groups-list-card .card-header h5 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.groups-list-card .card-header h5 i {
+    color: #ffc107;
+}
+
+.groups-list-card .card-header .badge-count {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* 使用統一的 table-clean 樣式，只保留必要的自定義樣式 */
+.groups-table {
+    width: 100%;
+}
+
+.table-responsive {
+    overflow-x: hidden; /* 关闭横向滚动 */
+    overflow-y: hidden; /* 关闭纵向滚动 */
+}
+
+/* 覆蓋 table-clean 的樣式以符合此頁面需求（如果需要） */
+.groups-table tbody td:first-child {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.groups-table tbody td:first-child {
+    font-weight: 600;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.groups-table tbody td:nth-child(2) {
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 1.1rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    min-width: 90px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.status-badge.active {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
+}
+
+.status-badge.inactive {
+    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(235, 51, 73, 0.3);
+}
+
+.btn-toggle-group {
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    min-width: 100px;
+}
+
+.btn-toggle-group.btn-enable {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.btn-toggle-group.btn-enable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+    color: white;
+}
+
+.btn-toggle-group.btn-disable {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.btn-toggle-group.btn-disable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+    color: white;
+}
+
+.empty-state-group {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state-group i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-state-group h4 {
+    color: #6c757d;
+    margin: 1rem 0 0.5rem 0;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .group-management-container {
+        padding: 1rem;
+    }
+    
+    .add-group-form {
+        flex-direction: column;
+    }
+    
+    .btn-add-group {
+        width: 100%;
+    }
+    
+    .groups-table {
+        font-size: 0.9rem;
+    }
+    
+    .groups-table thead th,
+    .groups-table tbody td {
+        padding: 0.75rem 0.5rem;
+    }
+}
+

@@ -1,0 +1,414 @@
+/* ======================
+   integrate.css（簡潔版）
+   ====================== */
+
+/* ===== 基本 ===== */
+/* 限定作用域：只影響 integrate 頁面 */
+/* body.page-integrate {
+  margin: 0;
+  font-family: "Microsoft JhengHei", Arial, sans-serif;
+  background: #f2f2f2;
+} */
+
+/* 限定作用域：只影響 integrate 頁面的 .wrap */
+.page-integrate .wrap {
+  width: 100%;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* ===== 工具列 ===== */
+.toolbar {
+  margin-bottom: 1.5rem;
+}
+
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.toolbar-row-1 {
+  margin-bottom: 1rem;
+  justify-content: flex-start;
+}
+
+.toolbar-row-2 {
+  align-items: center;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: nowrap;   /* 屆別 / 標題 / 格式 同一行 */
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+/* 上方文字（你要的 20px） */
+.field label {
+  font-size: 20px;
+  font-weight: 700;
+  color: #243041;
+  margin: 0;
+}
+
+/* 下拉 / 輸入框（扁小） */
+.field input,
+.field select {
+  height: 44px;
+  padding: 6px 12px;
+  font-size: 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #1e293b;
+  min-width: 200px;
+  box-sizing: border-box;
+}
+
+/* 標題輸入框更寬 */
+.field input#title {
+  min-width: 300px;
+  width: 300px;
+}
+
+.field input::placeholder {
+  color: #9ca3af;
+}
+
+/* ===== 右側按鈕 ===== */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.actions-primary {
+  flex-shrink: 0;
+}
+
+.actions-secondary {
+  flex-shrink: 0;
+}
+
+.btn {
+  height: 44px;
+  padding: 0 18px;
+  font-size: 16px;
+  font-weight: 700;
+  border: 2px solid #111;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #f8f9fa;
+}
+
+/* ===== 表格外框（靠左、滿版） ===== */
+.table-box {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+  /* 抵銷 wrap padding，讓表格貼齊左右 */
+  margin-left: -1.5rem;
+  margin-right: -1.5rem;
+  width: calc(100% + 3rem);
+}
+
+/* ===== 表格 ===== */
+/* 欄位順序：勾選框 | 標題 | 屆別 | 資料類型 | 最後編輯人 | 操作 */
+.page-integrate .table-box .grid {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+/* 欄寬：colgroup 與 th/td 皆設定相同寬度，確保表頭與內容對齊 */
+.page-integrate .table-box .grid .grid-col-check   { width: 50px; }
+.page-integrate .table-box .grid .grid-col-title   { width: 22%; }
+.page-integrate .table-box .grid .grid-col-cohort  { width: 12%; }
+.page-integrate .table-box .grid .grid-col-format  { width: 14%; }
+.page-integrate .table-box .grid .grid-col-editor  { width: 28%; }
+.page-integrate .table-box .grid .grid-col-actions { width: 24%; }
+
+.page-integrate .table-box .grid thead .grid-th-check   { width: 50px; }
+.page-integrate .table-box .grid thead .grid-th-title   { width: 22%; }
+.page-integrate .table-box .grid thead .grid-th-cohort  { width: 12%; }
+.page-integrate .table-box .grid thead .grid-th-format  { width: 14%; }
+.page-integrate .table-box .grid thead .grid-th-editor  { width: 28%; }
+.page-integrate .table-box .grid thead .grid-th-actions { width: 24%; }
+
+.page-integrate .table-box .grid tbody td:nth-child(1) { width: 50px; }
+.page-integrate .table-box .grid tbody td:nth-child(2) { width: 22%; }
+.page-integrate .table-box .grid tbody td:nth-child(3) { width: 12%; }
+.page-integrate .table-box .grid tbody td:nth-child(4) { width: 14%; }
+.page-integrate .table-box .grid tbody td:nth-child(5) { width: 28%; }
+.page-integrate .table-box .grid tbody td:nth-child(6) { width: 24%; }
+
+/* 表頭 th 與內容 td：相同 padding、box-sizing，強制對齊 */
+.page-integrate .table-box .grid thead th,
+.page-integrate .table-box .grid tbody td {
+  padding: 12px 16px;
+  box-sizing: border-box;
+}
+
+.page-integrate .table-box .grid thead th {
+  background: #f8f9fa;
+  font-size: 16px;
+  font-weight: 700;
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* 表頭：文字欄靠左、勾選與操作置中 */
+.page-integrate .table-box .grid thead .grid-th-check,
+.page-integrate .table-box .grid thead .grid-th-actions { text-align: center; }
+.page-integrate .table-box .grid thead .grid-th-title,
+.page-integrate .table-box .grid thead .grid-th-cohort,
+.page-integrate .table-box .grid thead .grid-th-format,
+.page-integrate .table-box .grid thead .grid-th-editor { text-align: left; }
+
+.page-integrate .table-box .grid tbody td {
+  font-size: 15px;
+  text-align: left;
+  border-top: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+/* 內容：勾選欄與操作欄置中，其餘靠左 */
+.page-integrate .table-box .grid tbody td:nth-child(1),
+.page-integrate .table-box .grid tbody td:nth-child(6) { text-align: center; }
+.page-integrate .table-box .grid tbody td:nth-child(2),
+.page-integrate .table-box .grid tbody td:nth-child(3),
+.page-integrate .table-box .grid tbody td:nth-child(4),
+.page-integrate .table-box .grid tbody td:nth-child(5) { text-align: left; }
+
+.page-integrate .table-box .grid tbody tr:first-child td {
+  border-top: none;
+}
+
+.page-integrate .table-box .grid tbody tr:hover {
+  background: #f8f9fa;
+}
+
+/* ===== 操作按鈕 ===== */
+.op-btn {
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.op-btn.btn-edit {
+  background: #6f64ff;
+  color: #fff;
+}
+
+.op-btn.btn-publish {
+  background: #2ecc71;
+  color: #fff;
+}
+
+/* ===== Checkbox 樣式 ===== */
+.page-integrate .table-box .grid thead th input[type="checkbox"],
+.page-integrate .table-box .grid tbody td input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #6f64ff;
+}
+
+/* ===== 导出按钮样式 ===== */
+.btn-export {
+  background: #667eea !important;
+  color: #fff !important;
+  border-color: #667eea !important;
+}
+
+.btn-export:hover {
+  background: #5568d3 !important;
+  border-color: #5568d3 !important;
+}
+
+.btn-export i {
+  margin-right: 4px;
+}
+
+/* 匯出歷次建議：藍色主按鈕 */
+.btn-export-history {
+  background: #667eea !important;
+  color: #fff !important;
+  border-color: #667eea !important;
+}
+
+.btn-export-history:hover {
+  background: #5568d3 !important;
+  border-color: #5568d3 !important;
+}
+
+/* ===== 空資料 ===== */
+.empty {
+  padding: 3rem 1rem;
+  font-size: 15px;
+  color: #6b7280;
+  text-align: left;
+}
+
+/* ===== 編輯 Modal ===== */
+.edit-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  padding-left: 5%;
+  padding-right: 5%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  overflow-y: auto;
+}
+
+.edit-modal-overlay.active {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.edit-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 85vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideIn 0.3s ease;
+  margin: auto;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.edit-modal-header {
+  background: #64748b;
+  color: #fff;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.edit-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.edit-modal-close {
+  background: transparent;
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1;
+  padding: 0;
+}
+
+.edit-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.edit-modal-body {
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-modal-body iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  flex: 1;
+  min-height: 600px;
+}
+
+/* ================================
+   確保側邊欄在 integrate 頁面保持展開狀態
+   使用 .page-integrate class 限定作用域，只影響 integrate 頁面
+================================ */
+/* 當 body 有 .page-integrate class 時，強制側邊欄保持展開寬度 */
+body.page-integrate #layoutSidenav_nav,
+body.page-integrate.sb-sidenav-toggled #layoutSidenav_nav {
+    flex: 0 0 var(--sidebar-w) !important;
+    flex-basis: var(--sidebar-w) !important;
+    flex-shrink: 0 !important;
+    width: var(--sidebar-w) !important;
+    min-width: var(--sidebar-w) !important;
+}
+
+/* 確保主內容區域的 margin-left 也正確 */
+body.page-integrate #content,
+body.page-integrate.sb-sidenav-toggled #content {
+    margin-left: var(--sidebar-w) !important;
+}
+
+/* 確保側邊欄文字和圖標在 integrate 頁面都顯示 */
+body.page-integrate .nav-link span,
+body.page-integrate.sb-sidenav-toggled .nav-link span,
+body.page-integrate .sidebar-user-info,
+body.page-integrate.sb-sidenav-toggled .sidebar-user-info {
+    display: flex !important;
+}
+
+body.page-integrate .nav-link,
+body.page-integrate.sb-sidenav-toggled .nav-link {
+    justify-content: flex-start !important;
+}

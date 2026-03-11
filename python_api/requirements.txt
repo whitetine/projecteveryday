@@ -1,0 +1,10 @@
+# WhisperX + FastAPI 會議錄音轉逐字稿（說話者分離 + 自動標點）
+python-dotenv>=1.0.0
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+whisperx>=3.1.0
+torch>=2.0.0
+torchaudio>=2.0.0
+pydub>=0.25.1
+ffmpeg-python>=0.2.0

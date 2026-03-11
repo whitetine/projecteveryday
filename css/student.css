@@ -1,0 +1,469 @@
+/* 團隊成員頁面樣式 */
+
+/* 團隊成員頁面的容器樣式 - 覆蓋 main.php 的樣式 */
+#content > .container-fluid.student-page {
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 1.5rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+}
+
+/* 如果沒有被 main.php 的樣式覆蓋，使用這個 */
+.container-fluid.student-page {
+  max-width: 100%;
+  margin: 0;
+  padding: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* 頁面標題 */
+.container-fluid > h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+/* 團隊資訊卡片 */
+.team-info-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  padding: 24px 28px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.team-info-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.team-header i {
+  font-size: 2rem;
+  color: #fff;
+  margin-right: 12px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.team-header h4 {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.75rem;
+  margin: 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 專題日總彙標題和成員容器在同一行 */
+.team-group-wrapper {
+  width: 100%;
+  padding: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* 專題日總彙標題區域（左側灰色背景） */
+.project-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  flex-shrink: 0;
+  border-right: 1px solid #e0e0e0;
+}
+
+.project-summary-header i {
+  color: #6c757d;
+  font-size: 1.5rem;
+}
+
+.project-summary-title {
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* 成員容器 - 橫向排列，靠左對齊，不換行 */
+.team-members-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  justify-content: flex-start;
+  flex: 1;
+  padding: 1.5rem;
+  align-items: flex-start;
+  overflow-x: auto;
+}
+
+/* 成員容器（舊的類名，保持兼容） */
+.members-container {
+  margin-top: 0;
+}
+
+.members-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+/* 成員卡片 */
+.member-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.2s;
+  border: 1px solid #e9ecef;
+  position: relative;
+  overflow: hidden;
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  min-height: 280px;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  justify-content: flex-start;
+}
+
+
+.member-card:hover {
+  background: #f0f0f0;
+  border-color: #dee2e6;
+  transform: translateY(-3px);
+}
+
+/* 成員頭貼 */
+.member-avatar {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem auto;
+  border: none;
+  box-shadow: none;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.member-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 成員資訊 */
+.member-info {
+  width: 100%;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.member-name {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid;
+  border-image: linear-gradient(to right, #6f42c1, #007bff) 1;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.member-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #555;
+  background: #ffffff;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  width: 100%;
+}
+
+.detail-item:hover {
+  background: #ffffff;
+  border-color: #dee2e6;
+}
+
+.detail-item i {
+  color: #007bff;
+  margin-right: 0.4rem;
+  font-size: 0.75rem;
+  width: 14px;
+  text-align: center;
+}
+
+.detail-item span {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detail-item .email-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detail-item.profile-item {
+  min-height: auto;
+  align-items: flex-start;
+}
+
+.detail-item .profile-text {
+  color: #555;
+  font-size: 1rem;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detail-item .profile-text.empty-profile {
+  color: #6c757d;
+}
+
+/* 指導老師卡片樣式（與成員同一排） */
+.member-card.teacher-card {
+  position: relative;
+}
+
+.member-card.teacher-card:hover {
+  background: #f0f0f0;
+  border-color: #dee2e6;
+}
+
+.teacher-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.teacher-badge i {
+  font-size: 0.65rem;
+  margin-right: 0.25rem;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1.5rem;
+    overflow-x: hidden;
+  }
+
+  .container-fluid > h3 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .team-group-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .project-summary-header {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1rem;
+  }
+
+  .project-summary-title {
+    font-size: 1rem;
+  }
+
+  .team-members-container {
+    width: 100%;
+    padding: 1rem;
+    justify-content: flex-start;
+  }
+
+  .member-card {
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+    min-height: 240px;
+  }
+
+  .member-avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .member-name {
+    font-size: 0.9rem;
+  }
+
+  .detail-item {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.4rem;
+  }
+}
+
+/* 空狀態樣式 */
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: #6c757d;
+}
+
+/* 載入中動畫 */
+.fa-spinner {
+  animation: fa-spin 1s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 警告框樣式 */
+.alert {
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.alert-danger {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  color: #721c24;
+  border-left: 4px solid #dc3545;
+}
+
+.alert i {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+/* 空狀態美化 */
+.members-container .text-center {
+  padding: 3rem 1rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  margin: 2rem 0;
+}
+
+.members-container .text-center i {
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.members-container .text-center h5 {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.members-container .text-center p {
+  color: #6c757d;
+  margin: 0;
+}
+
+/* 平滑過渡動畫 */
+.member-card,
+.team-info-card,
+.detail-item {
+  will-change: transform;
+}
+
+/* 優化渲染性能 */
+.members-grid {
+  contain: layout style paint;
+}
+

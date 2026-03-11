@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>組別異動紀錄（Demo）</title>
+  <style>
+    :root{
+      --bg:#f6f7f9;
+      --card:#fff;
+      --text:#111;
+      --muted:#5b616a;
+      --line:#e6e8ec;
+      --shadow:0 10px 28px rgba(17,17,17,.06);
+      --radius:16px;
+      --radius2:12px;
+      --sidebar:#1f2937;
+      --sidebar2:#111827;
+      --accent:#1d4ed8;
+      --ok-bg:#ecfdf5; --ok-bd:#a7f3d0; --ok-tx:#065f46;
+      --bad-bg:#fef2f2; --bad-bd:#fecaca; --bad-tx:#7f1d1d;
+      --pend-bg:#f3f4f6; --pend-bd:#e5e7eb; --pend-tx:#374151;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Arial, "Noto Sans TC", sans-serif;
+      color:var(--text);
+      background:var(--bg);
+    }
+
+    /* Layout */
+    .app{
+      display:grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+    aside{
+      background: linear-gradient(180deg,var(--sidebar2),var(--sidebar));
+      color:#fff;
+      padding:18px 14px;
+      position: sticky;
+      top:0;
+      height:100vh;
+    }
+    main{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+
+    /* Sidebar */
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:900; font-size:18px;
+      padding:10px 10px 16px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      margin-bottom:12px;
+    }
+    .nav{
+      display:flex; flex-direction:column; gap:6px;
+      padding:8px 6px;
+    }
+    .nav a{
+      color:rgba(255,255,255,.88);
+      text-decoration:none;
+      padding:12px 12px;
+      border-radius:12px;
+      display:flex; align-items:center; gap:10px;
+      font-size:16px;
+    }
+    .nav a:hover{ background: rgba(255,255,255,.08); }
+    .nav a.active{
+      background: rgba(255,255,255,.14);
+      color:#fff;
+      font-weight:800;
+    }
+    .side-foot{
+      position:absolute;
+      bottom:14px; left:14px; right:14px;
+      border-top:1px solid rgba(255,255,255,.10);
+      padding-top:12px;
+      display:flex; gap:10px; align-items:center;
+      color:rgba(255,255,255,.85);
+      font-size:14px;
+    }
+    .avatar{
+      width:38px;height:38px;border-radius:999px;
+      background:rgba(255,255,255,.18);
+      display:flex; align-items:center; justify-content:center;
+      font-weight:900;
+    }
+
+    /* Top bar */
+    .topbar{
+      background:#fff;
+      border-bottom:1px solid var(--line);
+      padding:16px 22px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      position: sticky;
+      top:0;
+      z-index:10;
+    }
+    .title h1{
+      margin:0;
+      font-size:28px;
+      letter-spacing:.4px;
+    }
+    .title p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:16px;
+    }
+    .top-actions{
+      display:flex; gap:10px; align-items:center;
+    }
+    .pill-select{
+      height:44px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:0 14px;
+      font-size:16px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .iconbtn{
+      width:44px;height:44px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      cursor:pointer;
+      display:grid; place-items:center;
+    }
+
+    /* Content */
+    .wrap{
+      padding:18px 22px 26px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      min-width:0;
+    }
+
+    /* Filter row */
+    .filters{
+      display:grid;
+      grid-template-columns: 220px 220px 1fr 140px;
+      gap:12px;
+      align-items:end;
+    }
+    .field label{
+      display:block;
+      font-size:14px;
+      font-weight:800;
+      color:#2b313a;
+      margin:0 0 6px;
+    }
+    .input, .select{
+      height:46px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:0 12px;
+      font-size:16px;
+      background:#fff;
+      width:100%;
+      outline:none;
+    }
+    .input:focus, .select:focus{ border-color:#111; }
+    .btn{
+      height:46px;
+      border-radius:14px;
+      border:1px solid #111;
+      background:#111;
+      color:#fff;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .btn.ghost{
+      background:#fff;color:#111;border-color:var(--line);
+      font-weight:800;
+    }
+
+    /* Stats cards */
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap:12px;
+    }
+    .stat{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      min-width:0;
+    }
+    .stat .k{
+      font-size:16px;
+      font-weight:900;
+      color:#1f2937;
+      display:flex; align-items:center; gap:10px;
+      white-space:nowrap;
+    }
+    .badgeIcon{
+      width:38px;height:38px;border-radius:14px;
+      display:grid;place-items:center;
+      font-weight:900;
+      border:1px solid var(--line);
+      background:#fafafa;
+    }
+    .stat .v{
+      font-size:34px;
+      font-weight:1000;
+      letter-spacing:.5px;
+    }
+
+    /* Table card + drawer */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 340px;
+      gap:12px;
+      align-items:start;
+      min-width:0;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      min-width:0;
+    }
+    .tableWrap{ overflow:auto; }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      min-width: 860px;
+    }
+    thead th{
+      text-align:left;
+      font-size:14px;
+      color:#374151;
+      background:#fafafa;
+      padding:14px 14px;
+      border-bottom:1px solid var(--line);
+      position: sticky;
+      top:0;
+      z-index:1;
+      white-space:nowrap;
+    }
+    tbody td{
+      padding:14px 14px;
+      border-bottom:1px solid var(--line);
+      font-size:16px;
+      vertical-align:middle;
+      white-space:nowrap;
+    }
+    tbody tr:hover{ background:#fbfbfb; }
+    .typeTag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:900;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:14px;
+    }
+    .dot{width:10px;height:10px;border-radius:999px;background:#111;}
+    .status{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:8px 10px;
+      border-radius:999px;
+      font-weight:900;
+      border:1px solid var(--line);
+      font-size:14px;
+    }
+    .s1{ background:var(--pend-bg); border-color:var(--pend-bd); color:var(--pend-tx); }
+    .s2{ background:var(--ok-bg); border-color:var(--ok-bd); color:var(--ok-tx); }
+    .s3{ background:var(--bad-bg); border-color:var(--bad-bd); color:var(--bad-tx); }
+    .linkbtn{
+      height:38px;
+      padding:0 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:15px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .linkbtn:hover{ border-color:#111; }
+    .mono{ font-variant-numeric: tabular-nums; font-feature-settings:"tnum"; }
+
+    /* Drawer */
+    .drawer{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px;
+      position: sticky;
+      top:92px;
+    }
+    .drawerHead{
+      display:flex; justify-content:space-between; align-items:center;
+      padding-bottom:10px;
+      border-bottom:1px solid var(--line);
+    }
+    .drawerHead h3{
+      margin:0;
+      font-size:18px;
+      font-weight:1000;
+    }
+    .drawerHead .x{
+      width:40px;height:40px;border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;cursor:pointer;font-size:18px;
+    }
+    .kv{
+      display:grid;
+      grid-template-columns: 88px 1fr;
+      gap:10px 12px;
+      padding:12px 0;
+      border-bottom:1px solid var(--line);
+      font-size:16px;
+    }
+    .kv b{ color:#374151; }
+    .section{
+      padding:12px 0;
+    }
+    .section h4{
+      margin:0 0 10px;
+      font-size:16px;
+      font-weight:1000;
+    }
+    .diff{
+      display:grid;
+      gap:8px;
+      font-size:16px;
+      line-height:1.6;
+    }
+    .diff s{ color:#6b7280; }
+    .diff strong{ color:#111; }
+    .note{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+    .timeline{
+      margin-top:10px;
+      display:grid;
+      gap:10px;
+    }
+    .tItem{
+      display:grid;
+      grid-template-columns: 12px 1fr;
+      gap:10px;
+      align-items:start;
+    }
+    .bar{
+      width:12px;height:12px;border-radius:999px;background:var(--accent);
+      margin-top:4px;
+      position:relative;
+    }
+    .bar::after{
+      content:"";
+      position:absolute;
+      left:5px; top:14px;
+      width:2px; height:32px;
+      background:rgba(29,78,216,.35);
+    }
+    .tItem:last-child .bar::after{ display:none; }
+    .tText{
+      font-size:14px;
+      color:#374151;
+      line-height:1.5;
+    }
+    .tText .time{ color:#6b7280; margin-right:8px; }
+    .tText .event{ font-weight:900; color:#111; }
+
+    /* Pagination */
+    .pager{
+      display:flex; justify-content:center; gap:8px;
+      padding:12px 0 0;
+    }
+    .pagebtn{
+      width:44px;height:44px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .pagebtn.active{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:#fff;
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px){
+      .grid{ grid-template-columns: 1fr; }
+      .drawer{ position: relative; top:auto; }
+      table{ min-width: 780px; }
+    }
+    @media (max-width: 860px){
+      .app{ grid-template-columns: 1fr; }
+      aside{ position:relative; height:auto; }
+      .filters{ grid-template-columns: 1fr 1fr; }
+      .stats{ grid-template-columns: 1fr 1fr; }
+      table{ min-width: 680px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">🗂️ 專題管理系統</div>
+      <nav class="nav">
+        <a href="javascript:void(0)">🏠 首頁</a>
+        <a class="active" href="javascript:void(0)">🧾 組別異動紀錄</a>
+        <a href="javascript:void(0)">👥 團隊管理</a>
+        <a href="javascript:void(0)">👨‍🏫 指導老師</a>
+        <a href="javascript:void(0)">✅ 審核作業</a>
+        <a href="javascript:void(0)">⚙️ 系統設定</a>
+      </nav>
+
+      <div class="side-foot">
+        <div class="avatar">你</div>
+        <div>
+          <div style="font-weight:900;">你好，科辦人員</div>
+          <div style="opacity:.85;">role=2</div>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div class="title">
+          <h1>組別異動紀錄</h1>
+          <p>追蹤組名、指導老師、成員異動（Audit Log）</p>
+        </div>
+        <div class="top-actions">
+          <select id="topCohort" class="pill-select">
+            <option value="113">第 113 屆</option>
+            <option value="112">第 112 屆</option>
+            <option value="111">第 111 屆</option>
+          </select>
+          <button class="iconbtn" title="通知">🔔</button>
+          <button class="iconbtn" title="使用者">👤</button>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <!-- Filters -->
+        <div class="filters">
+          <div class="field">
+            <label>屆別</label>
+            <select id="fCohort" class="select">
+              <option value="">全部</option>
+              <option value="113" selected>113</option>
+              <option value="112">112</option>
+              <option value="111">111</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>異動類型</label>
+            <select id="fType" class="select">
+              <option value="">全部</option>
+              <option value="TEAM_RENAME">組名變更</option>
+              <option value="TEACHER_CHANGE">指導老師變更</option>
+              <option value="MEMBER_ADD">成員新增</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>搜尋</label>
+            <input id="fQ" class="input" placeholder="搜尋 團隊ID / 建立者 / 老師 / 組名" />
+          </div>
+
+          <button id="btnSearch" class="btn" type="button">搜尋</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+          <div class="stat">
+            <div class="k"><span class="badgeIcon">🧾</span>組名變更</div>
+            <div class="v mono" id="sRename">0</div>
+          </div>
+          <div class="stat">
+            <div class="k"><span class="badgeIcon">👨‍🏫</span>指導老師變更</div>
+            <div class="v mono" id="sTeacher">0</div>
+          </div>
+          <div class="stat">
+            <div class="k"><span class="badgeIcon">👥</span>成員新增</div>
+            <div class="v mono" id="sMember">0</div>
+          </div>
+          <div class="stat">
+            <div class="k"><span class="badgeIcon">⏳</span>審核中</div>
+            <div class="v mono" id="sPending">0</div>
+          </div>
+        </div>
+
+        <!-- Table + Drawer -->
+        <div class="grid">
+          <div class="card">
+            <div class="tableWrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>類型</th>
+                    <th>團隊 / 內容</th>
+                    <th>建立者</th>
+                    <th>時間</th>
+                    <th>狀態</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+              </table>
+            </div>
+
+            <div class="pager" id="pager"></div>
+          </div>
+
+          <div class="drawer" id="drawer">
+            <div class="drawerHead">
+              <h3 id="dTitle">異動詳細</h3>
+              <button class="x" id="btnCloseDrawer" type="button">✕</button>
+            </div>
+
+            <div class="kv" id="dKV">
+              <b>屆別</b><div>—</div>
+              <b>團隊ID</b><div>—</div>
+              <b>異動類型</b><div>—</div>
+              <b>建立者</b><div>—</div>
+              <b>建立時間</b><div>—</div>
+              <b>狀態</b><div>—</div>
+            </div>
+
+            <div class="section">
+              <h4>變更內容</h4>
+              <div class="diff" id="dDiff">點選左側「查看」以顯示內容。</div>
+            </div>
+
+            <div class="section">
+              <h4>備註</h4>
+              <div class="note" id="dNote">—</div>
+
+              <div class="timeline">
+                <div class="tItem">
+                  <div class="bar"></div>
+                  <div class="tText"><span class="time">—</span><span class="event">送出申請</span></div>
+                </div>
+                <div class="tItem">
+                  <div class="bar"></div>
+                  <div class="tText"><span class="time">—</span><span class="event">科辦審核</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- wrap -->
+    </main>
+  </div>
+
+<script>
+  // ---------- Mock data (對應你的 teamchangelog 欄位) ----------
+  const MOCK = [
+    {
+      tc_ID: 15, tc_cohort: 113, tc_team_ID: 22, change_type: "TEACHER_CHANGE",
+      tc_teacher_old: "王教授", tc_teacher_new: "李教授",
+      tc_team_name_old: null, tc_team_name_new: null,
+      tc_member: null,
+      tc_created_u_ID: "11200123",
+      tc_created_d: "2026-03-03 14:20",
+      tc_status: 1,
+      note: "學生中途更換指導教授。理由：研究方向調整。"
+    },
+    {
+      tc_ID: 14, tc_cohort: 113, tc_team_ID: 22, change_type: "TEAM_RENAME",
+      tc_team_name_old: "AI研究小組", tc_team_name_new: "智慧決策小組",
+      tc_teacher_old: null, tc_teacher_new: null,
+      tc_member: null,
+      tc_created_u_ID: "11200123",
+      tc_created_d: "2026-03-03 13:10",
+      tc_status: 2,
+      note: "組名更新以符合題目方向。"
+    },
+    {
+      tc_ID: 13, tc_cohort: 113, tc_team_ID: 15, change_type: "MEMBER_ADD",
+      tc_member: "新增成員：11204567",
+      tc_teacher_old: null, tc_teacher_new: null,
+      tc_team_name_old: null, tc_team_name_new: null,
+      tc_created_u_ID: "11203011",
+      tc_created_d: "2026-03-02 10:12",
+      tc_status: 1,
+      note: "成員名單新增（補齊最低人數）。"
+    },
+    {
+      tc_ID: 12, tc_cohort: 113, tc_team_ID: 7, change_type: "TEAM_RENAME",
+      tc_team_name_old: "深度學習組", tc_team_name_new: "資料探勘組",
+      tc_created_u_ID: "11201009",
+      tc_created_d: "2026-03-01 09:30",
+      tc_status: 3,
+      note: "退件：組名不符合規範，請重新命名。"
+    },
+    {
+      tc_ID: 11, tc_cohort: 112, tc_team_ID: 15, change_type: "TEACHER_CHANGE",
+      tc_teacher_old: "陳老師", tc_teacher_new: "張老師",
+      tc_created_u_ID: "11203011",
+      tc_created_d: "2026-02-28 18:40",
+      tc_status: 2,
+      note: "已通過。"
+    },
+    {
+      tc_ID: 10, tc_cohort: 112, tc_team_ID: 3, change_type: "MEMBER_ADD",
+      tc_member: "新增成員：11209999",
+      tc_created_u_ID: "11204777",
+      tc_created_d: "2026-02-20 09:05",
+      tc_status: 2,
+      note: "已通過。"
+    },
+  ];
+
+  const mapType = (t) => ({
+    TEAM_RENAME:"組名變更",
+    TEACHER_CHANGE:"指導老師變更",
+    MEMBER_ADD:"成員新增"
+  }[t] || t);
+
+  const mapStatus = (s) => ({
+    1:"審核中",
+    2:"已通過",
+    3:"退件"
+  }[Number(s)] || "—");
+
+  const statusClass = (s) => `status s${Number(s) || 0}`;
+
+  function buildSummary(r){
+    if (r.change_type === "TEAM_RENAME"){
+      return `${r.tc_team_name_old || "—"} → ${r.tc_team_name_new || "—"}`;
+    }
+    if (r.change_type === "TEACHER_CHANGE"){
+      return `${r.tc_teacher_old || "—"} → ${r.tc_teacher_new || "—"}`;
+    }
+    if (r.change_type === "MEMBER_ADD"){
+      return r.tc_member || "—";
+    }
+    return "—";
+  }
+
+  function typeDotColor(t){
+    if (t === "TEAM_RENAME") return "#1d4ed8";
+    if (t === "TEACHER_CHANGE") return "#0f766e";
+    if (t === "MEMBER_ADD") return "#7c3aed";
+    return "#111";
+  }
+
+  async function mockFetch({cohort, type, q, page, pageSize}){
+    let rows = [...MOCK];
+
+    if (cohort){
+      rows = rows.filter(r => String(r.tc_cohort) === String(cohort));
+    }
+    if (type){
+      rows = rows.filter(r => r.change_type === type);
+    }
+    if (q){
+      const kw = q.trim();
+      rows = rows.filter(r => {
+        const blob = [
+          r.tc_team_ID, r.tc_created_u_ID,
+          r.tc_teacher_old, r.tc_teacher_new,
+          r.tc_team_name_old, r.tc_team_name_new,
+          r.tc_member
+        ].join(" ");
+        return blob.includes(kw);
+      });
+    }
+
+    rows.sort((a,b) => (b.tc_ID - a.tc_ID));
+
+    const stats = {
+      TEAM_RENAME: rows.filter(r=>r.change_type==="TEAM_RENAME").length,
+      TEACHER_CHANGE: rows.filter(r=>r.change_type==="TEACHER_CHANGE").length,
+      MEMBER_ADD: rows.filter(r=>r.change_type==="MEMBER_ADD").length,
+      PENDING: rows.filter(r=>Number(r.tc_status)===1).length
+    };
+
+    const total = rows.length;
+    const start = (page-1)*pageSize;
+    const pageRows = rows.slice(start, start+pageSize);
+
+    return { ok:true, rows: pageRows, total, stats };
+  }
+
+  const state = {
+    cohort: "113",
+    type: "",
+    q: "",
+    page: 1,
+    pageSize: 5
+  };
+
+  const els = {
+    topCohort: document.getElementById("topCohort"),
+    fCohort: document.getElementById("fCohort"),
+    fType: document.getElementById("fType"),
+    fQ: document.getElementById("fQ"),
+    btnSearch: document.getElementById("btnSearch"),
+    tbody: document.getElementById("tbody"),
+    pager: document.getElementById("pager"),
+    sRename: document.getElementById("sRename"),
+    sTeacher: document.getElementById("sTeacher"),
+    sMember: document.getElementById("sMember"),
+    sPending: document.getElementById("sPending"),
+
+    drawer: document.getElementById("drawer"),
+    dTitle: document.getElementById("dTitle"),
+    dKV: document.getElementById("dKV"),
+    dDiff: document.getElementById("dDiff"),
+    dNote: document.getElementById("dNote"),
+    btnCloseDrawer: document.getElementById("btnCloseDrawer"),
+  };
+
+  function setStats(stats){
+    els.sRename.textContent = stats.TEAM_RENAME ?? 0;
+    els.sTeacher.textContent = stats.TEACHER_CHANGE ?? 0;
+    els.sMember.textContent = stats.MEMBER_ADD ?? 0;
+    els.sPending.textContent = stats.PENDING ?? 0;
+  }
+
+  function renderRows(rows){
+    els.tbody.innerHTML = "";
+    for (const r of rows){
+      const tr = document.createElement("tr");
+
+      const typeTd = document.createElement("td");
+      typeTd.innerHTML = `
+        <span class="typeTag">
+          <span class="dot" style="background:${typeDotColor(r.change_type)}"></span>
+          ${mapType(r.change_type)}
+        </span>
+      `;
+
+      const contentTd = document.createElement("td");
+      contentTd.innerHTML = `<span class="mono">#${r.tc_team_ID}</span>：${escapeHtml(buildSummary(r))}`;
+
+      const creatorTd = document.createElement("td");
+      creatorTd.textContent = r.tc_created_u_ID;
+
+      const timeTd = document.createElement("td");
+      timeTd.textContent = r.tc_created_d;
+
+      const statusTd = document.createElement("td");
+      statusTd.innerHTML = `<span class="${statusClass(r.tc_status)}">${mapStatus(r.tc_status)}</span>`;
+
+      const actTd = document.createElement("td");
+      const btn = document.createElement("button");
+      btn.className = "linkbtn";
+      btn.textContent = "查看";
+      btn.addEventListener("click", ()=>openDetail(r));
+      actTd.appendChild(btn);
+
+      tr.appendChild(typeTd);
+      tr.appendChild(contentTd);
+      tr.appendChild(creatorTd);
+      tr.appendChild(timeTd);
+      tr.appendChild(statusTd);
+      tr.appendChild(actTd);
+
+      els.tbody.appendChild(tr);
+    }
+
+    if (!rows.length){
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 6;
+      td.style.padding = "18px";
+      td.style.color = "#6b7280";
+      td.textContent = "沒有符合條件的紀錄。";
+      tr.appendChild(td);
+      els.tbody.appendChild(tr);
+    }
+  }
+
+  function renderPager(total){
+    const pages = Math.max(1, Math.ceil(total / state.pageSize));
+    els.pager.innerHTML = "";
+
+    const makeBtn = (label, page, isActive=false) => {
+      const b = document.createElement("button");
+      b.className = "pagebtn" + (isActive ? " active" : "");
+      b.textContent = label;
+      b.disabled = page === state.page;
+      b.addEventListener("click", ()=>{
+        state.page = page;
+        refresh();
+      });
+      return b;
+    };
+
+    const start = Math.max(1, state.page - 2);
+    const end = Math.min(pages, start + 4);
+
+    if (state.page > 1){
+      els.pager.appendChild(makeBtn("‹", state.page - 1));
+    }
+    for (let p = start; p <= end; p++){
+      els.pager.appendChild(makeBtn(String(p), p, p === state.page));
+    }
+    if (state.page < pages){
+      els.pager.appendChild(makeBtn("›", state.page + 1));
+    }
+  }
+
+  function openDetail(r){
+    els.dTitle.textContent = `異動詳細  #${r.tc_ID}`;
+
+    els.dKV.innerHTML = `
+      <b>屆別</b><div>${r.tc_cohort}</div>
+      <b>團隊ID</b><div class="mono">#${r.tc_team_ID}</div>
+      <b>異動類型</b><div>${mapType(r.change_type)}</div>
+      <b>建立者</b><div>${r.tc_created_u_ID}</div>
+      <b>建立時間</b><div>${r.tc_created_d}</div>
+      <b>狀態</b><div><span class="${statusClass(r.tc_status)}">${mapStatus(r.tc_status)}</span></div>
+    `;
+
+    if (r.change_type === "TEAM_RENAME"){
+      els.dDiff.innerHTML = `
+        <div>原組名：<s>${escapeHtml(r.tc_team_name_old || "—")}</s></div>
+        <div>新組名：<strong>${escapeHtml(r.tc_team_name_new || "—")}</strong></div>
+      `;
+    } else if (r.change_type === "TEACHER_CHANGE"){
+      els.dDiff.innerHTML = `
+        <div>原指導老師：<s>${escapeHtml(r.tc_teacher_old || "—")}</s></div>
+        <div>新指導老師：<strong>${escapeHtml(r.tc_teacher_new || "—")}</strong></div>
+      `;
+    } else if (r.change_type === "MEMBER_ADD"){
+      els.dDiff.innerHTML = `<div>成員異動：<strong>${escapeHtml(r.tc_member || "—")}</strong></div>`;
+    } else {
+      els.dDiff.textContent = "—";
+    }
+
+    els.dNote.textContent = r.note || "—";
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+
+  async function refresh(){
+    const res = await mockFetch(state);
+    setStats(res.stats);
+    renderRows(res.rows);
+    renderPager(res.total);
+  }
+
+  function bind(){
+    els.topCohort.addEventListener("change", ()=>{
+      state.cohort = els.topCohort.value;
+      els.fCohort.value = state.cohort;
+      state.page = 1;
+      refresh();
+    });
+
+    els.fCohort.addEventListener("change", ()=>{
+      state.cohort = els.fCohort.value;
+      els.topCohort.value = state.cohort || "113";
+      state.page = 1;
+      refresh();
+    });
+
+    els.fType.addEventListener("change", ()=>{
+      state.type = els.fType.value;
+      state.page = 1;
+      refresh();
+    });
+
+    els.btnSearch.addEventListener("click", ()=>{
+      state.q = els.fQ.value.trim();
+      state.page = 1;
+      refresh();
+    });
+
+    els.fQ.addEventListener("keydown", (e)=>{
+      if (e.key === "Enter"){
+        e.preventDefault();
+        state.q = els.fQ.value.trim();
+        state.page = 1;
+        refresh();
+      }
+    });
+
+    els.btnCloseDrawer.addEventListener("click", ()=>{
+      els.dTitle.textContent = "異動詳細";
+      els.dKV.innerHTML = `
+        <b>屆別</b><div>—</div>
+        <b>團隊ID</b><div>—</div>
+        <b>異動類型</b><div>—</div>
+        <b>建立者</b><div>—</div>
+        <b>建立時間</b><div>—</div>
+        <b>狀態</b><div>—</div>
+      `;
+      els.dDiff.textContent = "點選左側「查看」以顯示內容。";
+      els.dNote.textContent = "—";
+    });
+  }
+
+  bind();
+  refresh();
+</script>
+</body>
+</html>

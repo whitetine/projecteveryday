@@ -1,0 +1,42 @@
+# Composer vendor folder
+/vendor/
+
+# PHPMailer (如果你有手動放)
+PHPMailer/
+
+# Ignore any library folders
+/vendor/smalot/
+/vendor/symfony/
+
+# Optional — ignore IDE settings
+/.vscode/
+/.idea/
+
+# Optional — ignore OS files
+.DS_Store
+Thumbs.db
+
+# 環境變數和敏感配置檔案（不要 commit 到 GitHub）
+.env
+.env.local
+.env.*.local
+
+# AI 配置檔案（包含 API Key，不要 commit）
+/includes/ai_config.php
+
+# Python virtual env
+python_api/.venv/
+python_api/venv/
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+debug*.log
+
+# Env
+.env

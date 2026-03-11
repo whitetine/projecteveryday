@@ -1,0 +1,875 @@
+/**
+ * 專題提交審核樣式 - 科辦端
+ * 與歷屆專題審核上架頁面有明顯差異
+ */
+
+.project-submission-review-container {
+    padding: 20px;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.review-title {
+    font-size: 40px;
+    font-weight: bold;
+    color: #333;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.review-title i {
+    color: #667eea;
+}
+
+/* 搜尋與篩選區域 - 使用系統色系但稍作調整 */
+.search-filter-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.search-filter-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.search-filter-header i {
+    margin-right: 8px;
+}
+
+.search-filter-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.search-filter-header i {
+    margin-right: 8px;
+    transition: transform 0.3s;
+}
+
+.search-filter-content {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.search-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.search-input-group {
+    position: relative;
+}
+
+.search-input-group i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    z-index: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 10px 10px 35px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.filter-select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    min-width: 150px;
+    background: white;
+    box-sizing: border-box;
+}
+
+.search-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-search,
+.btn-clear {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-search {
+    background: #ffc107;
+    color: #333;
+}
+
+.btn-search:hover {
+    background: #e0a800;
+}
+
+.btn-clear {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-clear:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 專題列表區域 */
+.project-list-section {
+    background: white;
+    border-radius: 8px;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.project-list-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.project-list-title {
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.projects-container {
+    width: 100%;
+}
+
+/* Word 風格表格 */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background: white;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+}
+
+.submission-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+    background: white;
+}
+
+.submission-table thead {
+    background: #4472c4;
+    color: white;
+}
+
+.submission-table th {
+    padding: 14px 16px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    border: 1px solid #2f5597;
+    white-space: nowrap;
+}
+
+.submission-table th:nth-child(2) {
+    text-align: center; /* 屆別 */
+}
+
+.submission-table th:nth-child(3) {
+    text-align: left; /* 專題名稱靠左 */
+}
+
+.submission-table th:nth-child(4) {
+    text-align: left; /* 成員靠左 */
+}
+
+.submission-table tbody tr {
+    border-bottom: 1px solid #d0d0d0;
+    transition: background-color 0.2s;
+}
+
+.submission-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.submission-table tbody tr:nth-child(odd) {
+    background-color: white;
+}
+
+.submission-table tbody tr:hover {
+    background-color: #e7f3ff !important;
+}
+
+.submission-table td {
+    padding: 14px 16px;
+    border: 1px solid #d0d0d0;
+    vertical-align: middle;
+    font-size: 15px;
+    text-align: center;
+}
+
+.submission-table td:first-child {
+    font-weight: 500;
+}
+
+.submission-table td:nth-child(2) {
+    text-align: center; /* 屆別 */
+}
+
+.submission-table td:nth-child(3) {
+    text-align: left; /* 專題名稱靠左 */
+}
+
+.submission-table td:nth-child(4) {
+    text-align: left; /* 成員靠左 */
+}
+
+/* 成員欄：姓名 + 共 N 人 */
+.submission-table .member-names-cell {
+    font-size: 15px;
+    color: #1f2937;
+    line-height: 1.5;
+    word-break: break-word;
+}
+.submission-table .member-hint-cell {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* 狀態標籤 */
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-badge.status-pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+}
+
+.status-badge.status-approved {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #28a745;
+}
+
+.status-badge.status-rejected {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #dc3545;
+}
+
+.status-badge.status-unknown {
+    background: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #6c757d;
+}
+
+.status-badge.status-not-submitted {
+    background: #f0f0f0;
+    color: #6c757d;
+    border: 1px solid #adb5bd;
+}
+
+/* 表格操作按鈕 */
+.btn-table-action {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.btn-table-action:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #653a91 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-table-action i {
+    font-size: 13px;
+}
+
+/* 類組分組樣式 */
+.group-section {
+    margin-bottom: 30px;
+}
+
+.group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px 8px 0 0;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.group-header .group-count {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.group-projects {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 20px;
+}
+
+.project-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+.project-item:last-child {
+    margin-bottom: 0;
+}
+
+.project-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.project-item-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+}
+
+.project-icon {
+    font-size: 24px;
+    color: #667eea;
+}
+
+.project-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.project-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.project-grade {
+    font-size: 14px;
+    color: #666;
+}
+
+.project-item-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-view-submission {
+    background: linear-gradient(135deg, #7D5FFF 0%, #5F8BFA 100%);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0px 3px 0px rgba(0, 0, 0, 0.2);
+}
+
+.btn-view-submission:hover {
+    background: linear-gradient(135deg, #6d4fff 0%, #4f7bea 100%);
+    transform: translateY(-1px);
+    box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+/* 團隊卡片 */
+.team-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.team-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.team-stats {
+    display: flex;
+    gap: 10px;
+}
+
+.team-stat-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.team-stat-badge.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.team-stat-badge.approved {
+    background: #d4edda;
+    color: #155724;
+}
+
+.team-stat-badge.rejected {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.team-stat-badge.deleted {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+/* 提交記錄網格 - 類似學生端 */
+.submission-records-grid {
+    display: flex;
+    gap: 20px;
+    min-height: 200px;
+}
+
+.submission-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.submission-divider {
+    width: 2px;
+    background: #dee2e6;
+    flex-shrink: 0;
+}
+
+.submission-items-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    flex: 1;
+}
+
+/* 提交項目卡片 - 小尺寸 */
+.submission-item-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 10px;
+    transition: all 0.3s ease;
+    position: relative;
+    max-width: 200px;
+    width: 100%;
+}
+
+.submission-item-card:not(.deleted-item):hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+/* 左上角小標籤 */
+.submission-item-label {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #f97316;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 10;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    white-space: nowrap;
+}
+
+.submission-item-label.status-pending-badge {
+    background: #f97316;
+    color: white;
+}
+
+.submission-item-label.status-approved-badge {
+    background: #28a745;
+    color: white;
+}
+
+.submission-item-label.status-rejected-badge {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: white;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.submission-item-label.status-deleted-badge {
+    background: #9ca3af;
+    color: white;
+}
+
+.submission-item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.submission-item-preview {
+    width: 100%;
+    max-height: 120px;
+    overflow: hidden;
+    border-radius: 4px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.submission-item-preview .preview-image {
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+}
+
+.submission-item-preview .preview-object {
+    width: 100%;
+    height: 120px;
+}
+
+.submission-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.submission-item-info .file-name {
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.submission-item-info .submit-time {
+    color: #6c757d;
+    margin: 0;
+    font-size: 11px;
+}
+
+.submission-item-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.submission-item-actions .btn {
+    flex: 1;
+    font-size: 11px;
+    padding: 4px 8px;
+    min-width: 60px;
+}
+
+/* 已刪除項目的刷淡效果 */
+.submission-item-card.deleted-item {
+    opacity: 0.3;
+    filter: grayscale(50%);
+    background: #f5f5f5;
+}
+
+.submission-item-card.deleted-item .submission-item-content {
+    opacity: 0.5;
+}
+
+.submission-item-card.deleted-item .submission-item-info .file-name,
+.submission-item-card.deleted-item .submission-item-info .submit-time {
+    color: #999;
+}
+
+.no-records {
+    text-align: center;
+    padding: 20px;
+    color: #999;
+    font-size: 14px;
+}
+
+/* 狀態標籤 */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-approved {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-rejected {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-deleted {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+/* 操作按鈕 */
+.action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.action-buttons button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-view {
+    background: #17a2b8;
+    color: white;
+}
+
+.btn-view:hover {
+    background: #138496;
+}
+
+.btn-team-history {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-team-history:hover {
+    background: #5a6268;
+}
+
+.btn-approve {
+    background: #28a745;
+    color: white;
+}
+
+.btn-approve:hover {
+    background: #218838;
+}
+
+.btn-reject {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-reject:hover {
+    background: #c82333;
+}
+
+.btn-cancel {
+    background: #ffc107;
+    color: #333;
+}
+
+.btn-cancel:hover {
+    background: #e0a800;
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+}
+
+.btn-restore {
+    background: #17a2b8;
+    color: white;
+}
+
+.btn-restore:hover {
+    background: #138496;
+}
+
+/* 空狀態 */
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 16px;
+}
+
+/* 提交詳情模態框：限制在視窗內，避免第一次點擊跑版 */
+.submission-detail-modal {
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: auto;
+}
+.submission-detail-modal-dialog {
+    max-width: 900px;
+    width: 100%;
+    margin: auto;
+    flex-shrink: 0;
+}
+@media (max-width: 940px) {
+    .submission-detail-modal-dialog {
+        max-width: calc(100vw - 40px);
+    }
+}
+.submission-detail-modal-content {
+    overflow: hidden;
+}
+.submission-detail-modal-body {
+    overflow-x: auto;
+}
+.submission-detail-modal-row {
+    min-width: 0;
+}
+.submission-detail-preview-col,
+.submission-detail-modal-col {
+    min-width: 0;
+    max-width: 100%;
+}
+.detail-preview img,
+.detail-preview object {
+    max-width: 100%;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .search-filter-content {
+        flex-direction: column;
+    }
+    
+    .search-group {
+        width: 100%;
+    }
+    
+    .submission-table {
+        font-size: 12px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+

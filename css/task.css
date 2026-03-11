@@ -1,0 +1,984 @@
+
+/* pill 樣式 */
+.pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid #e9ecef;
+    /* 會被 :style 覆蓋 borderColor */
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.pill-soft {
+    background: #f8f9fa;
+}
+
+/* 量化目標小標籤 */
+.count-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tag {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    background: #f8f9fa;
+    white-space: nowrap;
+}
+
+/* checkbox 對齊更舒服 */
+.user-select-checkbox .form-check-input {
+    transform: scale(1.05);
+}
+
+th {
+    font-size: 18px;
+    text-align: center;
+}
+
+.big-checkbox {
+    transform: scale(1.6);
+    /* 1.2 ~ 1.6 自己調 */
+    cursor: pointer;
+}   
+
+
+.status-badge {
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 999px;
+    letter-spacing: 1px;
+}
+
+/* 啟用 */
+.status-on {
+    background-color: #659871;   /* Bootstrap 綠 */
+    color: #fff;
+}
+
+/* 停用 */
+.status-off {
+    background-color: #adb5bd;   /* 中灰 */
+    color: #fff;
+}
+
+/* 外層：整個需求牆，左右兩塊 */
+.req-wall {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    /* 左右空隙 */
+}
+
+/* 標題列 */
+.req-board-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.req-board-title {
+    font-size: 22px;
+    margin: 0;
+}
+
+.req-board-sub {
+    font-size: 14px;
+    color: #777;
+}
+
+/* 卡片列表 */
+.req-card-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    padding: 10px;
+    /* ★ 加 padding 讓陰影有空間可以顯示 */
+
+    max-height: 60vh;
+    box-sizing: border-box;
+    /* 避免 padding 讓元素爆版 */
+}
+
+
+
+/* 單張卡片 */
+.req-card {
+    display: flex;
+    border-radius: 10px;
+    width: 370px;
+    border: 1px solid #e3e3e3;
+    background-color: #fafafa;
+}
+
+.req-color-bar {
+    width: 8px;
+}
+
+/* 卡片內容 */
+.req-card-body {
+    padding: 10px 12px;
+    flex: 1;
+    font-size: 14px;
+}
+
+.req-card-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.req-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    word-break: break-all;
+}
+
+/* 狀態 badge */
+.req-status-badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+/* 依照 req_status 調整顏色，可自己再改 */
+.req-status-badge.status-1 {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.req-status-badge.status-2 {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.req-status-badge.status-3 {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.req-direction {
+    margin: 4px 0 6px;
+    color: #555;
+    line-height: 1.4;
+    word-break: break-all;
+}
+
+.req-meta-row,
+.req-date-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.req-count-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.req-count-label {
+    font-size: 12px;
+    color: #555;
+}
+
+.req-count-tag {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background-color: #e0f7fa;
+    color: #006064;
+}
+
+/* 如果你希望小螢幕時改成全寬，可以打開這段 */
+/*
+@media (max-width: 992px) {
+    .req-board {
+        max-width: 100vw;
+    }
+}
+*/
+/* 以下是篩選條件的CSS */
+/* 按鈕群組的外層 */
+.req-filter-group {
+    margin: 10px 0;
+}
+
+/* 篩選按鈕共同樣式 */
+.req-filter-btn {
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+    color: #333;
+    padding: 6px 14px;
+    border-radius: 6px;
+    margin-right: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* 滑過效果 */
+.req-filter-btn:hover {
+    background: #eaeaea;
+}
+
+/* 被選中的按鈕 */
+.req-filter-btn.active {
+    background: #007bff;
+    /* 想換色自己改 */
+    color: white;
+    border-color: #007bff;
+}
+
+.req-filter-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    /* 🔥 禁止換行 */
+    gap: 8px;
+    /* 🔥 按鈕彼此的距離 */
+    margin: 6px 0;
+}
+
+.req-filter-all {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    /* 兩組之間距離 */
+    flex-wrap: nowrap;
+    /* 不允許換行 */
+    margin-bottom: 10px;
+}
+
+/* task表單用的 */
+/* 讓這一排一定撐滿整個格子 */
+.modal-body table {
+    width: 100%;
+}
+
+.modal-body td {
+    width: 100%;
+}
+
+/* input-group 本身也要吃滿 */
+.modal-body .input-group {
+    width: 100%;
+}
+
+/* 每一個 select 在 input-group 裡都要自動撐滿可用空間 */
+.modal-body .input-group .form-select {
+    flex: 1 1 0;
+    width: 100%;
+}
+
+.input-group .form-range {
+    padding: 0 10px;
+    flex: 1;
+}
+
+/* range加框線 */
+.input-group.range-group .form-range {
+    flex: 1;
+    /* 吃滿右邊空間 */
+    padding: 0 10px;
+    border: 2px solid #000;
+    /* 跟其他欄位一樣有邊框 */
+    border-left: 1;
+    /* 左邊跟 label 接起來就好 */
+    border-radius: 0 5px 5px 0;
+    /* 右上右下圓角，可依你其他欄位改 */
+    height: calc(2.5rem + 2px);
+    /* 高度跟 text input 差不多 */
+    background-color: #fff;
+}
+
+/* 單張卡片 */
+.req-card {
+    display: flex;
+    align-items: stretch;
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* hover 效果 */
+.req-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.45);
+}
+
+/* 左側日期區塊 */
+.req-card-date {
+    width: 68px;
+    padding: 10px 0;
+    border-right: 1px solid rgba(148, 163, 184, 0.35);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #f9fafb;
+}
+
+.req-card-date .month {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.req-card-date .day {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+}
+
+/* 右側主體內容 */
+.req-card-main {
+    flex: 1;
+    padding: 12px 16px 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 標題 + 時長 */
+.req-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.req-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.req-duration {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+/* 中間資訊列 */
+.req-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 10px;
+}
+
+.meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.meta-item i {
+    font-size: 0.85rem;
+}
+
+/* 底部按鈕 */
+.req-card-btn {
+    margin-top: auto;
+    width: 100%;
+    border: none;
+    border-top: 1px solid rgba(148, 163, 184, 0.3);
+    background: #ffffff;
+    font-size: 0.85rem;
+    padding: 8px 0 9px;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    border-radius: 0 0 18px 0;
+}
+
+.req-card-btn:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.vertical-text {
+    writing-mode: vertical-rl;
+    /* 文字垂直從右往左排 */
+    text-orientation: upright;
+    /* 讓每個字保持直立(特別是中文) */
+    letter-spacing: 2px;
+    /* 可選，讓字距更美觀 */
+}
+
+/* ----- 詳細資料卡外觀 ----- */
+.req-detail-card {
+    padding: 18px 22px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+/* ----- 標題與狀態 ----- */
+.req-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.req-detail-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* 狀態標籤基底 */
+.req-status-tag {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    border-radius: 12px;
+    background: #e2e8f0;
+    color: #475569;
+    font-weight: 600;
+}
+
+/* 狀態顏色 */
+.status-pending {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.status-wrong {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.status-done {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+/* ----- 小標題 ----- */
+.req-detail-section {
+    margin-bottom: 16px;
+}
+
+.req-detail-label {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #334155;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.req-detail-text {
+    font-size: 0.9rem;
+    color: #475569;
+    padding: 8px 10px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    white-space: pre-line;
+    word-break: break-word;
+    /* ⭐ 連續英文也會斷行 */
+    overflow-wrap: break-word;
+    /* ⭐ 保底，確保不會爆版 */
+}
+
+/* ----- 量化目標 Tag ----- */
+.req-detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.req-count-chip {
+    background: #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+/* 狀態 pill 共用樣式 */
+.req-status-pill {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+/* 依 status 改顏色 */
+.req-status-pill.status-0 {
+    /* 未回報 */
+    background: #e0f7fa;
+    color: #006064;
+}
+
+.req-status-pill.status-1 {
+    /* 審核中 */
+    background: #f8bf63;
+    color: #7c3a00;
+}
+
+.req-status-pill.status-2 {
+    /* 請修正 */
+    background: #ff775c;
+    color: #7c1d10;
+}
+
+.req-status-pill.status-3 {
+    /* 已通過 */
+    background: #cafcbb;
+    color: #166534;
+}
+
+.req-count-row {
+    display: flex;
+    align-items: center;
+    /* 讓文字與輸入框垂直置中 */
+    gap: 6px;
+    /* 左右間距，隨你調 */
+}
+
+.req-count-item {
+    display: flex;
+    align-items: center;
+    /* 讓 chip / input 對齊 */
+}
+
+/* 整個三欄 To-Do 板 */
+.todo-board {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    /* ⭐ 允許欄位自動換行，不會硬撐出螢幕外 */
+    max-width: 100%;
+    /* ⭐ 最多就跟畫面一樣寬 */
+    box-sizing: border-box;
+}
+
+/* 每一欄 */
+/* ===== 公佈欄模式：欄位背景 ===== */
+.todo-column {
+    flex: 1 1 320px;
+
+    /* 🌟 超溫柔奶油漸層往下到 #f8f9fa */
+    background: linear-gradient(180deg,
+            #FFF7E3 0%,
+            /* 上方：淡淡奶油黃，跟待辦事項同色系但更淺 */
+            #FFFDF8 45%,
+            /* 中間：接近白色，過渡很柔 */
+            #f8f9fa 100%
+            /* 底部：你指定的灰白 */
+        );
+
+    border-radius: 18px;
+    padding: 14px 12px 18px;
+
+    /* 邊框 & 陰影走乾淨路線 */
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+/* 欄位標題 */
+.todo-column-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.todo-column-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1e293b;
+}
+
+.todo-column-count {
+    padding: 3px 10px;
+    font-size: 1rem;
+    font-weight: 700;
+
+    background: #557097;
+    /* 深藍灰 */
+    color: #f1f5f9;
+    /* 白字 */
+    border-radius: 12px;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+}
+
+
+/* 欄位裡的內容區（卷軸） */
+.todo-column-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* ✅ 不讓待辦事項橫向跑出去 */
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    max-height: 480px;
+}
+
+
+/* 單張待辦事項 */
+.todo-note {
+    position: relative;
+    background: #fff6ae;
+    border-radius: 10px;
+    padding: 10px 10px 8px;
+    margin: 4px 2px 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, .18);
+    cursor: pointer;
+    transform: rotate(-1.2deg);
+    transition: transform .16s ease, box-shadow .16s ease;
+    max-width: 100%;
+    /* ✅ 實際寬度不會超過灰色欄位 */
+}
+
+
+/* 讓每張待辦事項角度不一樣，看起來比較活 */
+.todo-note:nth-child(even) {
+    transform: rotate(1.1deg);
+}
+
+.todo-note:hover {
+    transform: translateY(-3px) rotate(0deg);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, .22);
+}
+
+/* 待辦事項的小圓釘 */
+.todo-note-pin {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #f97316;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+}
+
+/* 任務標題 */
+.todo-note-title {
+    margin-top: 8px;
+    /* 避開釘子 */
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #1f2933;
+    margin-bottom: 4px;
+}
+
+/* 任務內容摘要 */
+.todo-note-desc {
+    font-size: 0.82rem;
+    color: #4b5563;
+    margin-bottom: 6px;
+
+    white-space: normal;     /* ⭐ 允許換行 */
+    word-break: break-word;  /* ⭐ 英文長字也能斷行 */
+    overflow-wrap: break-word; /* 保底斷行 */
+}
+
+/* 底部：tag + 日期 */
+.todo-note-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.todo-note-tag {
+    background: rgba(59, 130, 246, .1);
+    color: #1d4ed8;
+    padding: 2px 6px;
+    border-radius: 999px;
+}
+
+.todo-note-date {
+    font-size: 0.6rem;
+}
+
+/* 沒任務時的提示 */
+.todo-empty {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    text-align: center;
+    padding: 12px 0;
+}
+
+/* RWD：螢幕窄時改成上下排 */
+@media (max-width: 992px) {
+    .todo-board {
+        flex-direction: column;
+    }
+}
+
+
+
+
+/* 共同：整體卡片稍微好看一點 */
+.pretty-card {
+    border-radius: 18px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* ⭐ 外層：讓 Tabs 浮在中間上面 */
+.floating-tabs-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
+    margin-bottom: 12px;
+}
+
+/* ⭐ 懸浮式 Tabs 本體（膠囊狀） */
+.req-task-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+    border: none;
+    list-style: none;
+}
+
+/* 小小美化 tab 按鈕 */
+.req-task-tabs .nav-link {
+    cursor: pointer;
+    border-radius: 999px;
+    border: none;
+    padding: 10px 26px;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: #6b7280;
+    background: transparent;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.req-task-tabs .nav-link i {
+    font-size: 1.2rem;
+}
+
+.req-task-tabs .nav-link:hover {
+    background: rgba(249, 250, 251, 0.9);
+}
+
+.req-task-tabs .nav-link.active {
+    background: #f59e0b;
+    color: #111827;
+    font-weight: 600;
+    box-shadow: 0 8px 18px rgba(245, 158, 11, 0.5);
+}
+
+.req-task-tabs .nav-link.active i {
+    color: #111827;
+}
+
+
+
+/* 選擇團隊的按鈕 */
+.team-switch-container {
+    margin: 0 auto 20px;
+    text-align: center;
+}
+
+.team-switch-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    align-items: center;
+}
+
+.team-switch-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* 按鈕造型 */
+.team-btn {
+    padding: 10px 22px;
+    border-radius: 999px;
+    border: none;
+    background: #f3f4f6;
+    color: #374151;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.team-btn:hover {
+    background: #e5e7eb;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* 被選中的樣式（主題色） */
+.team-btn.active {
+    background: #f59e0b;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.45);
+}
+
+
+/* 外層容器：可橫向捲動 + 圓角陰影 */
+.req-table-wrap {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 14px;
+    overflow: auto;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+}
+
+/* 表格整體 */
+.req-table {
+    margin: 0;
+    min-width: 980px;
+    /* 避免太擠，過小就讓外層可橫向捲動 */
+}
+
+/* 表頭：固定 + 漸層底色 */
+.req-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 700;
+    color: #343a40;
+    padding: 14px 12px;
+    white-space: nowrap;
+}
+
+/* 內容區 */
+.req-table tbody td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #f1f3f5;
+    vertical-align: middle;
+}
+
+/* 斑馬紋 + hover */
+.req-table tbody tr:nth-child(even) {
+    background: #fcfcfd;
+}
+
+.req-table tbody tr:hover {
+    background: #f3f7ff;
+}
+
+/* 兩行截斷（標題/說明） */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+}
+
+.task-modal-grid{
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 16px;
+}
+@media (max-width: 992px){
+  .task-modal-grid{ grid-template-columns: 1fr; }
+}
+
+.task-preview{
+  position: sticky;
+  top: 0;
+}
+.task-preview-header{
+  margin-bottom: 10px;
+}
+.task-preview-title{
+  font-weight: 700;
+  font-size: 16px;
+}
+.task-preview-hint{
+  color: #888;
+  font-size: 12px;
+}
+
+.preview-note{
+  cursor: default;
+}
+
+.task-preview-meta{
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px dashed #ddd;
+  border-radius: 10px;
+  background: #fff;
+}
+.task-preview-meta .meta-row{
+  display:flex;
+  gap: 8px;
+  font-size: 13px;
+}
+.task-preview-meta .meta-label{
+  color:#666;
+  min-width: 48px;
+}

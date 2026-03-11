@@ -1,0 +1,202 @@
+/* 卡片更漂亮 */
+.card {
+    border-radius: 12px;
+}
+
+/* 最新動態區塊 */
+#latestActions .border {
+    border-color: #ddd !important;
+}
+
+/* 小組卡片間距 */
+#groupCards .card {
+    transition: 0.2s;
+}
+#groupCards .card:hover {
+    transform: translateY(-3px);
+}
+
+/* 團隊卡片樣式 */
+.team-group-card {
+    border: 1px solid #e0e0e0;
+}
+
+/* 團隊卡片垂直排列，每個團隊占一行 */
+#groupCards {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 0;
+}
+
+/* 團隊標題和成員容器在同一行 */
+.team-group-wrapper {
+    width: 100%;
+    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.team-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.team-header i {
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+.team-name {
+    font-size: 1.3rem;
+    color: #333;
+    margin: 0;
+    white-space: nowrap;
+}
+
+/* 成員容器 - 橫向排列，靠右對齊 */
+.team-members-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+/* 成員卡片 - 橫向排列時調整，確保所有卡片大小一致 */
+.team-member-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    min-height: 280px;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    justify-content: flex-start;
+}
+
+.team-member-card:hover {
+    background: #f0f0f0;
+    border-color: #dee2e6;
+}
+
+/* 成員頭像 - 橫向排列時居中 */
+.member-avatar {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.75rem auto;
+}
+
+.member-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 成員資訊 - 橫向排列時居中 */
+.member-info {
+    width: 100%;
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.member-name {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 2px solid;
+    border-image: linear-gradient(to right, #6f42c1, #007bff) 1;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.member-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+.member-detail-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size:1rem;
+    color: #555;
+    background: #ffffff;
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    width: 100%;
+}
+
+.member-detail-item i {
+    color: #007bff;
+    margin-right: 0.4rem;
+    font-size: 0.75rem;
+    width: 14px;
+    text-align: center;
+}
+
+.member-detail-item span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 團隊統計 - 已移除 */
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+    .team-member-card {
+        width: 150px;
+        min-width: 150px;
+        max-width: 150px;
+        min-height: 240px;
+    }
+    
+    .member-avatar {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .member-name {
+        font-size: 0.9rem;
+    }
+    
+    .member-detail-item {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.4rem;
+    }
+}

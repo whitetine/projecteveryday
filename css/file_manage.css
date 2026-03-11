@@ -1,0 +1,330 @@
+/* 文件管理頁面專用樣式 */
+/* 注意：通用樣式已移至 style.css，只保留此頁面特有的樣式 */
+
+/* 版頭與容器對齊，不跑版 */
+#adminFileApp {
+    padding: 0 30px 30px 30px !important;
+    max-width: 100% !important;
+    width: 100%;
+    margin: 0 !important;
+    box-sizing: border-box;
+    min-width: 1200px;
+}
+
+#adminFileApp .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 0 24px 0 !important;
+    padding: 24px 32px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    border-bottom: 3px solid #ffc107;
+}
+
+#adminFileApp .page-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#adminFileApp .page-header-actions {
+    margin-left: auto;
+}
+
+#adminFileApp .page-header i.fa-file-upload {
+    color: #ffc107;
+    font-size: 32px;
+}
+
+/* 篩選卡片特殊樣式 */
+.filter-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border: 1px solid #d0d7de;
+}
+
+.filter-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-bottom: none;
+    font-weight: 600;
+}
+
+.filter-header i {
+    color: #ffc107;
+}
+
+.filter-card .card-body {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* 多選下拉框樣式 */
+select[multiple] {
+    min-height: 95px;
+    padding: 0.4rem;
+}
+
+select[multiple] option {
+    padding: 0.35rem;
+    border-radius: 4px;
+    margin: 2px 0;
+}
+
+select[multiple] option:checked {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: 600;
+}
+
+/* 目標範圍的多選欄位更緊湊 */
+.target-selects .form-label {
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+}
+
+.target-selects select.form-select {
+    min-height: 80px;
+    padding: 0.35rem 0.55rem;
+    font-size: 0.95rem;
+    line-height: 1.35;
+}
+
+.target-selects small {
+    font-size: 0.8rem;
+}
+
+/* Switch 開關樣式 */
+.form-check-input:checked {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.form-check-input:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+}
+
+
+/* 文件管理頁面專用樣式 */
+/* 目標範圍顯示 */
+.target-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+/* 時間顯示 */
+.time-info {
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+/* 必繳文件標記 */
+.required-badge {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* 必繳文件特殊樣式 */
+.required-file-indicator {
+    position: relative;
+}
+
+.required-file-indicator::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 4px 0 0 4px;
+}
+
+/* 表格樣式 - 簡潔風格，類似圖片中的設計 */
+#adminFileApp .file-table-simple {
+    margin-bottom: 0;
+    background-color: #fff;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+/* 表頭樣式 - 淺灰色背景，深色文字 */
+#adminFileApp .file-table-simple thead {
+    background-color: #f8f9fa;
+}
+
+#adminFileApp .file-table-simple thead th {
+    background-color: #f8f9fa;
+    border: none;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+    padding: 0.875rem 1rem;
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* 數據行 - 純白色背景，無交替顏色 */
+#adminFileApp .file-table-simple tbody tr {
+    background-color: #fff;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+#adminFileApp .file-table-simple tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* 移除 hover 效果或使其更微妙 */
+#adminFileApp .file-table-simple tbody tr:hover {
+    background-color: #fafafa;
+}
+
+#adminFileApp .file-table-simple tbody td {
+    padding: 0.875rem 1rem;
+    vertical-align: middle;
+    border: none;
+    background-color: transparent;
+}
+
+/* 狀態徽章樣式 - 圓角矩形，類似圖片 */
+#adminFileApp .file-table-simple .badge {
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+    font-size: 0.875em;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* 必繳徽章 */
+#adminFileApp .file-table-simple .badge.bg-danger {
+    background-color: #dc3545 !important;
+    color: #fff;
+}
+
+#adminFileApp .file-table-simple .badge.bg-secondary {
+    background-color: #6c757d !important;
+    color: #fff;
+}
+
+/* 狀態按鈕改為徽章樣式 */
+#adminFileApp .file-table-simple .btn-success {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 0.4em 0.8em;
+    border-radius: 4px;
+    font-size: 0.875em;
+    font-weight: 500;
+}
+
+#adminFileApp .file-table-simple .btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 0.4em 0.8em;
+    border-radius: 4px;
+    font-size: 0.875em;
+    font-weight: 500;
+}
+
+/* 置頂按鈕簡化 */
+#adminFileApp .file-table-simple .btn-warning {
+    background-color: #ffc107;
+    color: #000;
+    border: none;
+    padding: 0.4em 0.8em;
+    border-radius: 4px;
+    font-size: 0.875em;
+    font-weight: 500;
+}
+
+#adminFileApp .file-table-simple .btn-outline-secondary {
+    background-color: transparent;
+    color: #6c757d;
+    border: 1px solid #6c757d;
+    padding: 0.4em 0.8em;
+    border-radius: 4px;
+    font-size: 0.875em;
+    font-weight: 500;
+}
+
+/* 操作按鈕簡化 */
+#adminFileApp .file-table-simple .btn-outline-primary,
+#adminFileApp .file-table-simple .btn-outline-danger {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.875rem;
+    border-radius: 4px;
+    border-width: 1px;
+}
+
+#adminFileApp .file-table-simple .btn-outline-primary {
+    color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+#adminFileApp .file-table-simple .btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+#adminFileApp .file-table-simple .btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+#adminFileApp .file-table-simple .btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* 查看按鈕 */
+#adminFileApp .file-table-simple .btn-outline-primary:has(.fa-eye) {
+    padding: 0.35rem 0.6rem;
+}
+
+/* 移除表格邊框 */
+#adminFileApp .file-table-simple {
+    border: none;
+}
+
+/* 目標範圍徽章簡化 */
+#adminFileApp .file-table-simple .badge.bg-info {
+    background-color: #0dcaf0 !important;
+    color: #000;
+}
+
+#adminFileApp .file-table-simple .badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000;
+}
+
+#adminFileApp .file-table-simple .badge.bg-secondary {
+    background-color: #6c757d !important;
+    color: #fff;
+}
+
+#adminFileApp .file-table-simple .badge.bg-primary {
+    background-color: #0d6efd !important;
+    color: #fff;
+}
+

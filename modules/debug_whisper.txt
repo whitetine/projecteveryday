@@ -1,0 +1,58 @@
+開始呼叫 Python
+Python回應: 
+開始呼叫 Python
+Python回應: {"success":false,"error":"[WinError 2] 系統找不到指定的檔案。","segments":[],"full_text":"","speakers":0}
+開始呼叫 Python
+Python回應: 
+開始呼叫 Python
+Python回應: {"error":{"message":"Invalid file format. Supported formats: ['flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm']","type":"invalid_request_error","param":null,"code":null},"usage":{"type":"duration","seconds":0}}
+開始呼叫 Python
+Python回應: {"success":false,"error":"[WinError 2] 系統找不到指定的檔案。","segments":[],"full_text":"","speakers":0}
+開始呼叫 Python
+Python回應: {"error":{"message":"Invalid file format. Supported formats: ['flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm']","type":"invalid_request_error","param":null,"code":null},"usage":{"type":"duration","seconds":0}}
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+HTTP Code: 500
+Response: {"success":false,"error":"[WinError 2] 系統找不到指定的檔案。","segments":[],"full_text":"","speakers":0}
+Curl Error: 
+-------------------
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+HTTP Code: 500
+Response: {"success":false,"error":"[WinError 2] 系統找不到指定的檔案。","segments":[],"full_text":"","speakers":0}
+Curl Error: 
+-------------------
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+HTTP Code: 500
+Response: {"success":false,"error":"[WinError 2] 系統找不到指定的檔案。","segments":[],"full_text":"","speakers":0}
+Curl Error: 
+-------------------
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+HTTP Code: 0
+Response: (false)
+Curl Error: Recv failure: Connection was reset
+-------------------
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+開始呼叫 Python transcribe_diarize: http://127.0.0.1:8000/transcribe_diarize
+送出檔案: voice_144943.m4a
+HTTP Code: 200
+Response: {"success":true,"segments":[{"speaker":"SPEAKER_00","start":0.0,"end":5.0,"text":"好 來 那還做了什麼"},{"speaker":"SPEAKER_00","start":5.0,"end":8.0,"text":"我剛剛短影片我講了很多遍"},{"speaker":"SPEAKER_00","start":8.0,"end":11.0,"text":"你就說 譬如說他前兩步"},{"speaker":"SPEAKER_00","start":11.0,"end":14.0,"text":"他這多增加了那個觀看次數"},{"speaker":"SPEAKER_00","start":14.0,"end":16.0,"text":"多增加多少人"},{"speaker":"SPEAKER_00","start":16.0,"end":20.0,"text":"這要素自己起出來 那還是不夠"},{"speaker":"SPEAKER_00","start":20.0,"end":24.0,"text":"那我要解釋我的短影片怎麼改善"},{"speaker":"SPEAKER_00","start":24.0,"end":26.0,"text":"你懂不懂 不是用嘴巴講一句"},{"speaker":"SPEAKER_00","start":26.0,"end":29.0,"text":"我就要實際上看到東西他怎麼改善"},{"speaker":"SPEAKER_00","start":29.0,"end":32.0,"text":"你這樣才能說不別人"},{"speaker":"SPEAKER_00","start":32.0,"end":35.0,"text":"再來 那H那個就是我舉例"},{"speaker":"SPEAKER_00","start":35.0,"end":37.0,"text":"譬如說我這個 本來是怎樣"},{"speaker":"SPEAKER_00","start":37.0,"end":38.0,"text":"我改善怎麼樣"},{"speaker":"SPEAKER_00","start":38.0,"end":39.0,"text":"原本是鐵道部"},{"speaker":"SPEAKER_00","start":39.0,"end":42.0,"text":"好 沒關係 我說你跟我講是你這樣講清楚"},{"speaker":"SPEAKER_00","start":42.0,"end":44.0,"text":"這樣才能說不別人"},{"speaker":"SPEAKER_00","start":44.0,"end":47.0,"text":"好 除了這兩個你還做了什麼"},{"speaker":"SPEAKER_00","start":49.0,"end":51.0,"text":"我們在那個影片的時候"},{"speaker":"SPEAKER_00","start":51.0,"end":53.0,"text":"有家時間走 讓觀眾跟聽除之後"},{"speaker":"SPEAKER_00","start":53.0,"end":55.0,"text":"在哪一部片開始"},{"speaker":"SPEAKER_00","start":55.0,"end":57.0,"text":"每二四零後都有增加"},{"speaker":"SPEAKER_00","start":57.0,"end":60.0,"text":"什麼東�
+Curl Error: 
+-------------------

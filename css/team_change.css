@@ -1,0 +1,505 @@
+/**
+ * 組別異動紀錄頁面樣式
+ * css/team_change.css
+ */
+
+/* 變數限定在 .changelog-page 內，避免 :root 污染全域影響 sidebar */
+/* 標題置頂：保留適當間距避免與 nav 重疊 */
+.changelog-page-title-top {
+  margin-top: 0;
+}
+
+.changelog-page {
+  --changelog-bg: #fff;
+  --changelog-card: #fff;
+  --changelog-text: #333;
+  --changelog-muted: #666;
+  --changelog-line: #ddd;
+  --changelog-accent: #0d6efd;
+  --changelog-ok-bg: #d1e7dd;
+  --changelog-ok-bd: #badbcc;
+  --changelog-ok-tx: #0f5132;
+  --changelog-bad-bg: #f8d7da;
+  --changelog-bad-bd: #f5c2c7;
+  --changelog-bad-tx: #842029;
+  --changelog-pend-bg: #e2e3e5;
+  --changelog-pend-bd: #d3d6d8;
+  --changelog-pend-tx: #41464b;
+  background: var(--changelog-bg);
+  min-height: 100vh;
+}
+
+.changelog-topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--changelog-line);
+  padding: 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: var(--navbar-height, 56px);
+  z-index: 100;
+}
+
+/* 新增申請下拉選單：確保不被右側異動詳細面板覆蓋 */
+.changelog-topbar .dropdown .dropdown-menu {
+  z-index: 1100;
+}
+
+.changelog-topbar .title h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.changelog-topbar .title p {
+  margin: 4px 0 0;
+  color: var(--changelog-muted);
+  font-size: 14px;
+}
+
+.changelog-wrap {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.changelog-filters {
+  display: grid;
+  grid-template-columns: 220px 220px 1fr 100px;
+  gap: 12px;
+  align-items: end;
+}
+
+@media (max-width: 860px) {
+  .changelog-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.changelog-field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 4px;
+}
+
+.changelog-input,
+.changelog-select {
+  height: 36px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0 8px;
+  font-size: 14px;
+  background: #fff;
+  width: 100%;
+  outline: none;
+}
+
+.changelog-input:focus,
+.changelog-select:focus {
+  border-color: #0d6efd;
+}
+
+.changelog-btn {
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid #0d6efd;
+  background: #0d6efd;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 16px;
+}
+
+.changelog-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 860px) {
+  .changelog-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.changelog-stat {
+  background: #fff;
+  border: 1px solid var(--changelog-line);
+  border-radius: 4px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.changelog-stat .k {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.changelog-stat .v {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.changelog-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 12px;
+  align-items: start;
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .changelog-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.changelog-card {
+  background: #fff;
+  border: 1px solid var(--changelog-line);
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.changelog-tableWrap {
+  overflow: auto;
+}
+
+.changelog-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.changelog-table thead th {
+  text-align: left;
+  font-size: 14px;
+  color: #333;
+  background: #f8f9fa;
+  padding: 10px;
+  border: 1px solid var(--changelog-line);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+.changelog-table tbody td {
+  padding: 10px;
+  border: 1px solid var(--changelog-line);
+  font-size: 14px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.changelog-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.changelog-typeTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--changelog-line);
+  background: #fff;
+  font-size: 13px;
+}
+
+.changelog-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+}
+
+.changelog-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  border: 1px solid var(--changelog-line);
+  font-size: 13px;
+}
+
+.changelog-s0 {
+  background: var(--changelog-bad-bg);
+  border-color: var(--changelog-bad-bd);
+  color: var(--changelog-bad-tx);
+}
+
+.changelog-s1 {
+  background: var(--changelog-pend-bg);
+  border-color: var(--changelog-pend-bd);
+  color: var(--changelog-pend-tx);
+}
+
+.changelog-s2 {
+  background: var(--changelog-ok-bg);
+  border-color: var(--changelog-ok-bd);
+  color: var(--changelog-ok-tx);
+}
+
+.changelog-s3 {
+  background: var(--changelog-ok-bg);
+  border-color: var(--changelog-ok-bd);
+  color: var(--changelog-ok-tx);
+}
+
+.changelog-linkbtn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.changelog-linkbtn:hover {
+  border-color: #666;
+  background: #f8f9fa;
+}
+
+.changelog-btn-pass {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 4px;
+  border: 1px solid #198754;
+  background: #fff;
+  color: #198754;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.changelog-btn-pass:hover {
+  background: #f0f9f4;
+  border-color: #157347;
+  color: #157347;
+}
+
+.changelog-btn-reject {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 4px;
+  border: 1px solid #dc3545;
+  background: #fff;
+  color: #dc3545;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.changelog-btn-reject:hover {
+  background: #fff5f5;
+  border-color: #bb2d3b;
+  color: #bb2d3b;
+}
+
+.changelog-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+.changelog-drawer {
+  background: #fff;
+  border: 1px solid var(--changelog-line);
+  border-radius: 4px;
+  padding: 12px;
+  position: sticky;
+  top: 80px;
+  z-index: 1;
+}
+
+@media (max-width: 1100px) {
+  .changelog-drawer {
+    position: relative;
+    top: auto;
+  }
+}
+
+.changelog-drawerHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--changelog-line);
+}
+
+.changelog-drawerHead h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.changelog-drawerHead .x {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.changelog-kv {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 8px 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--changelog-line);
+  font-size: 14px;
+}
+
+.changelog-kv b {
+  color: #333;
+}
+
+.changelog-section {
+  padding: 10px 0;
+}
+
+.changelog-section h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.changelog-diff {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.changelog-diff s {
+  color: #666;
+}
+
+.changelog-diff strong {
+  color: #333;
+}
+
+.changelog-note {
+  color: #333;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.changelog-pager {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 0 0;
+}
+
+.changelog-pagebtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.changelog-pagebtn.active {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+
+.changelog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.changelog-actionbtns {
+  display: flex;
+  gap: 6px;
+}
+
+.changelog-page .changelog-topbar .btn-primary {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 16px;
+}
+
+.changelog-page .changelog-topbar .dropdown-menu {
+  font-size: 14px;
+}
+
+.changelog-page .changelog-topbar .dropdown-menu .dropdown-item {
+  padding: 8px 12px;
+}
+
+.changelog-page .changelog-topbar .form-select {
+  font-size: 14px;
+}
+
+.changelog-page .modal .modal-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.changelog-page .modal .form-label {
+  font-size: 14px;
+}
+
+.changelog-page .modal .form-control,
+.changelog-page .modal .form-select {
+  font-size: 14px;
+}
+
+.changelog-page .modal .btn {
+  font-size: 14px;
+}
+
+.changelog-page .text-muted.small {
+  font-size: 13px;
+}
+
+/* Modal 需高於 navbar(10000) */
+#applyModal.modal,
+#editChangelogModal.modal,
+#reapplyModal.modal,
+#createFormModal.modal {
+  z-index: 10001 !important;
+}
+
+#applyModal.modal .modal-dialog,
+#editChangelogModal.modal .modal-dialog,
+#reapplyModal.modal .modal-dialog,
+#createFormModal.modal .modal-dialog {
+  z-index: 10002 !important;
+}
+
+/* SweetAlert 必須在 Modal 之上，避免被蓋住 */
+.swal2-container {
+  z-index: 10600 !important;
+}

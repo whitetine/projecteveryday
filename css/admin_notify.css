@@ -1,0 +1,462 @@
+/* 公告管理頁面 - 參考 team_manage Excel 風格表格 */
+
+/* 容器 */
+#content:has(.admin-notify-container) {
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.admin-notify-container {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 1.5rem;
+  position: relative;
+}
+
+/* 頁首 - 與 team_manage 一致 */
+.admin-notify-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid #f59e0b;
+}
+
+.admin-notify-header h2 {
+  color: #1e293b;
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.75rem;
+}
+
+.admin-notify-header .btn-success {
+  background: #198754;
+  border: 1px solid #198754;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+}
+
+/* 公告列表區塊 */
+.admin-notify-container #notifyList {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+}
+
+#notifyList .card-header {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+#notifyList .card-header strong {
+  color: #475569;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+#notifyList .card-header .btn-outline-secondary {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+#notifyList .card-header .btn-outline-secondary:hover {
+  background: #f8fafc;
+  color: #475569;
+}
+
+#notifyList .card-body {
+  padding: 0;
+}
+
+/* ===== Excel 風格表格（參考 team_manage）===== */
+.notify-excel-table-wrapper {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow-x: auto;
+  overflow-y: visible;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.notify-excel-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+  margin-bottom: 0;
+}
+
+.notify-excel-table thead th {
+  font-size: 0.95rem;
+  color: #475569;
+  font-weight: 800;
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  text-align: left;
+  vertical-align: middle;
+  background: #fff;
+}
+
+.notify-excel-table thead th:last-child {
+  border-right: none;
+}
+
+.notify-excel-table tbody tr {
+  background-color: #fff;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.notify-excel-table tbody tr.notify-row-alt {
+  background-color: #f8fafc;
+}
+
+.notify-excel-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.notify-excel-table tbody td {
+  padding: 14px 12px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.notify-excel-table tbody td:last-child {
+  border-right: none;
+}
+
+.notify-excel-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.notify-id-cell {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.notify-title-cell {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.notify-type-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 6px;
+  background: #e8e8e8;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.notify-status-badge {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.notify-status-badge.notify-status-normal {
+  color: #16a34a;
+}
+
+.notify-status-badge.notify-status-draft {
+  color: #64748b;
+}
+
+.notify-date-cell,
+.notify-creator-cell {
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.notify-action-cell {
+  white-space: nowrap;
+}
+
+.btn-notify-view {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.btn-notify-view:hover {
+  background: #f5f5f5;
+}
+
+.btn-notify-delete {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #666;
+  cursor: pointer;
+}
+
+.btn-notify-delete:hover {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+/* Modal - 限制 backdrop 僅覆蓋內容區，不覆蓋 sidebar 與 navbar */
+body.modal-open:has(#notifyModal.show) .modal-backdrop {
+  position: fixed !important;
+  top: var(--navbar-height, 56px) !important;
+  left: var(--sidebar-w, 250px) !important;
+  width: calc(100vw - var(--sidebar-w, 250px)) !important;
+  height: calc(100vh - var(--navbar-height, 56px)) !important;
+  z-index: 1089 !important;
+}
+
+body.sb-sidenav-toggled.modal-open:has(#notifyModal.show) .modal-backdrop {
+  left: var(--sidebar-collapsed, 80px) !important;
+  width: calc(100vw - var(--sidebar-collapsed, 80px)) !important;
+}
+
+#notifyModal.modal,
+#notifyModal {
+  z-index: 1090 !important;
+  pointer-events: auto !important;
+}
+
+#notifyModal .modal-dialog,
+#notifyModal .modal-content {
+  pointer-events: auto !important;
+}
+
+#notifyModal.modal.show {
+  display: flex !important;
+  align-items: flex-start !important;
+  padding-top: calc(var(--navbar-height, 56px) + 1rem) !important;
+}
+
+#notifyModal .modal-dialog {
+  z-index: 1091 !important;
+  max-width: 640px;
+  margin: 0 auto 1rem;
+  width: calc(100% - 2rem);
+}
+
+#notifyModal .modal-content {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#notifyModal .modal-header {
+  background: #fff;
+  border-bottom: 1px solid #dee2e6;
+  padding: 0.75rem 1rem;
+}
+
+#notifyModal .modal-header h5 {
+  color: #212529;
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+#notifyModal .modal-body {
+  padding: 1rem;
+  background: #fff;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+#notifyModal .card {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+#notifyModal .card-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+
+#notifyModal .card-body {
+  padding: 1rem;
+  background: #fff;
+}
+
+#notifyModal .form-label {
+  font-weight: 500;
+  color: #212529;
+  font-size: 1rem;
+}
+
+#notifyModal .form-control,
+#notifyModal .form-select {
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  font-size: 1rem;
+}
+
+#notifyModal .form-control:focus,
+#notifyModal .form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+  outline: none;
+}
+
+#notifyModal .input-group-text {
+  background: #e9ecef;
+  color: #495057;
+  border: 1px solid #ced4da;
+  font-size: 0.9375rem;
+}
+
+#notifyModal textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+}
+
+#notifyModal .card.border-0.bg-light {
+  background: #f8f9fa !important;
+  border: 1px solid #dee2e6 !important;
+}
+
+#notifyModal .modal-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  padding: 0.75rem 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+#notifyModal .modal-footer .btn {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+#notifyModal .modal-footer .btn-success {
+  background: #198754 !important;
+  border-color: #198754 !important;
+}
+
+#notifyModal .modal-footer .btn-primary {
+  background: #0d6efd !important;
+  border-color: #0d6efd !important;
+}
+
+#notifyModal .modal-footer .btn-secondary {
+  background: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+#notifyModal .modal-footer .btn:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* 載入、空狀態 */
+#notifyListContent .spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+
+#notifyListContent .text-center {
+  padding: 2rem 1rem;
+}
+
+/* ========== RWD 響應式 ========== */
+@media (max-width: 991px) {
+  .admin-notify-container {
+    padding: 1rem;
+  }
+
+  #notifyModal .modal-dialog {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-notify-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-notify-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .admin-notify-header .btn-success {
+    width: 100%;
+  }
+
+  #notifyList .card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #notifyList .card-header .btn {
+    width: 100%;
+  }
+
+  .notify-excel-table {
+    min-width: 600px;
+  }
+
+  .notify-excel-table thead th,
+  .notify-excel-table tbody td {
+    padding: 10px 8px;
+    font-size: 0.9rem;
+  }
+
+  #notifyModal .modal-dialog {
+    width: calc(100% - 1rem);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    max-width: none;
+  }
+
+  #notifyModal .modal-body {
+    padding: 0.75rem;
+    max-height: 60vh;
+  }
+
+  #notifyModal .modal-footer {
+    flex-direction: column;
+  }
+
+  #notifyModal .modal-footer .btn {
+    width: 100%;
+  }
+
+  #notifyModal .row.g-3 .col-md-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  #notifyModal textarea.form-control {
+    min-height: 100px;
+  }
+}

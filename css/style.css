@@ -1,0 +1,1851 @@
+/* ==== 基本與共用 ==== */
+:root {
+  --sidebar-w: 250px;
+  /* 展開寬度（避免文字被裁切） */
+  --sidebar-collapsed: 80px;
+  /* 收合寬度 */
+}
+
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Noto Sans TC", sans-serif;
+  overflow-x: hidden;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  /* Firefox 隱藏捲軸 */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+}
+
+body::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+/* 鎖定背景滾動 */
+html.modal-open,
+body.modal-open {
+  overflow: hidden !important;
+}
+
+/* Navbar 固定高度，推開內容 */
+body.sb-nav-fixed {
+  padding-top: 0 !important;
+}
+
+/* Navbar 固定於頂部，避免捲動或載入時位移；z-index 高於 team_change 等內容 */
+.navbar {
+  z-index: 1030 !important;
+  /* 確保永遠在內容之上，不被 team_change 等遮擋 */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  transform: translateZ(0);
+  /* 建立獨立圖層，減少捲動時重繪 */
+  backface-visibility: hidden;
+  /* 避免閃爍 */
+  will-change: auto;
+  /* 不預設動畫，保持穩定 */
+}
+
+/* 自動計算 navbar 高度，用於 spacer */
+/* JavaScript 會動態設置這個值，這裡只提供備用值 */
+:root {
+  --navbar-height: 56px;
+  /* 備用值，JavaScript 會覆蓋這個值 */
+}
+
+/* 通知 badge 必須在 navbar 之上 */
+#notificationCount {
+  z-index: 1070 !important;
+  position: relative;
+}
+
+/* Modal 必須在 navbar 之上 */
+.modal {
+  z-index: 1075 !important;
+}
+
+/* 特定 Modal 需要更高的 z-index */
+#notifyModal.modal {
+  z-index: 1090 !important;
+  /* 高於 navbar 的 1060 */
+  padding-top: calc(var(--navbar-height, 56px) + 20px) !important;
+  /* 從 navbar 下方開始 */
+}
+
+/* 通知中心彈跳視窗（bell_box）必須在 navbar 之上 */
+#bell_box.modal {
+  z-index: 10001 !important;
+  /* 高於 navbar 的 10000 */
+}
+
+/* 狀態統計 Modal 需要更高的 z-index */
+#statusCohortModal.modal {
+  z-index: 1080 !important;
+  /* 高於 navbar 的 1060 和 sidebar 的 1042 */
+}
+
+/* 確保 Modal dialog 也在正確位置 */
+#statusCohortModal .modal-dialog {
+  max-width: 800px;
+}
+
+#notifyModal.modal.show {
+  display: flex !important;
+  align-items: flex-start !important;
+}
+
+#notifyModal .modal-dialog {
+  margin-top: 0 !important;
+  /* 移除 margin-top，因為已經在 modal 層級設定 padding-top */
+}
+
+.modal-backdrop {
+  z-index: 1074 !important;
+}
+
+/* notifyModal 的 backdrop 需要更高 */
+body.modal-open #notifyModal+.modal-backdrop,
+body.modal-open #notifyModal~.modal-backdrop.show {
+  z-index: 1089;
+  /* 高於 navbar，低於 modal */
+}
+
+/* statusCohortModal 的 backdrop 需要更高 */
+body.modal-open #statusCohortModal~.modal-backdrop.show,
+body.modal-open #statusCohortModal+.modal-backdrop.show {
+  z-index: 1079 !important;
+  /* 高於 navbar 和 sidebar，低於 modal */
+}
+
+.modal-backdrop {
+  z-index: 1074 !important;
+}
+
+/* 清理 offcanvas backdrop - 當沒有 offcanvas 打開時隱藏 */
+.offcanvas-backdrop:not(.show) {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* 清理 team-modal-overlay（如果沒有 active class） */
+/* 注意：不要使用 !important，因為這會阻止 JavaScript 動態設置樣式 */
+.team-modal-overlay:not(.active) {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* 確保 sidebar 和主內容區域的 z-index；layoutSidenav 低於 navbar(10000) */
+#layoutSidenav {
+  position: relative;
+  z-index: 1;
+}
+
+#layoutSidenav_nav,
+#content {
+  position: relative;
+  z-index: 1;
+}
+
+/* 防止任何模糊效果或覆蓋層影響 sidebar - 提高 z-index */
+#layoutSidenav_nav {
+  z-index: 1041 !important;
+  /* 高於 backdrop 的 1040 */
+  isolation: isolate;
+  /* 創建新的層疊上下文，防止被覆蓋 */
+}
+
+.sb-sidenav,
+.sb-sidenav-menu {
+  position: relative;
+  z-index: 1042 !important;
+  isolation: isolate;
+}
+
+/* 確保 sidebar 不會被任何覆蓋層、偽元素或模糊效果影響 */
+#layoutSidenav_nav::before,
+#layoutSidenav_nav::after,
+.sb-sidenav::before,
+.sb-sidenav::after,
+.sb-sidenav-menu::before,
+.sb-sidenav-menu::after {
+  display: none !important;
+  content: none !important;
+  backdrop-filter: none !important;
+  filter: none !important;
+}
+
+/* 汉堡菜单按钮样式 */
+#sidebarToggle {
+  background: transparent !important;
+  border: none !important;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+#sidebarToggle:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  transform: scale(1.1);
+}
+
+#sidebarToggle:active {
+  transform: scale(0.95);
+}
+
+#sidebarToggle i {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+#sidebarToggle:hover i {
+  transform: rotate(90deg);
+}
+
+/* 后台管理模式的汉堡菜单 */
+.admin-navbar #sidebarToggle {
+  color: #fff !important;
+}
+
+.admin-navbar #sidebarToggle:hover {
+  background: rgba(255, 193, 7, 0.2) !important;
+  color: #ffc107 !important;
+}
+
+/* ==== 版面骨架：左側欄 + 右側主區 ==== */
+/* 在 nav 後面添加 spacer，高度與 navbar 相同，用 nav 遮住 */
+#layoutSidenav {
+  display: flex;
+  min-height: calc(100vh - var(--navbar-height, 56px));
+  margin-top: var(--navbar-height, 56px);
+  /* 從 navbar 下方開始，自動計算高度 */
+  position: relative;
+}
+
+/* 側邊欄 - 從 navbar 下方開始延伸 */
+#layoutSidenav_nav {
+  flex: 0 0 var(--sidebar-w);
+  width: var(--sidebar-w);
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  /* 與主內容區分隔 */
+  transition: width 0.3s ease;
+  overflow: hidden;
+  /* 外層隱藏，內層滾動 */
+  position: fixed;
+  top: var(--navbar-height, 56px);
+  /* 從 navbar 下方開始，自動計算 */
+  left: 0;
+  height: calc(100vh - var(--navbar-height, 56px));
+  /* 高度扣掉 navbar，自動計算 */
+  z-index: 1040 !important;
+  /* 高於內容，但低於 navbar */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 主內容（你在 main.php 的 <main id="content">） */
+/* 確保內容從 navbar 下方開始，不會被遮住 */
+#content {
+  flex: 1 1 auto;
+  background-color: #ffffff !important;
+  /* background-color: #f8f9fa; */
+  padding: 1rem;
+  /* 統一左右留白，讓內容更靠左 */
+  transition: padding 0.2s ease;
+  margin-left: var(--sidebar-w);
+  /* 為 sidebar 留出空間 */
+  margin-top: 0;
+  /* 移除多餘的 margin-top，因為 layoutSidenav 已經有 margin-top */
+  min-height: calc(100vh - var(--navbar-height, 56px));
+  /* 確保內容區域高度正確 */
+  position: relative;
+}
+
+/* 確保 project-browse-container 背景是白色 - 覆蓋所有模式 */
+#content .project-browse-container,
+#content:has(.project-browse-container),
+body #content .project-browse-container,
+body:has(#content .project-browse-container) #content,
+body.sidebar-dark-mode #content .project-browse-container,
+body.sidebar-dark-mode #content:has(.project-browse-container),
+body.sidebar-light-mode #content .project-browse-container,
+body.sidebar-light-mode #content:has(.project-browse-container) {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+
+/* 強制覆蓋 project-browse-container 的所有背景設定 - 覆蓋所有模式 */
+.project-browse-container,
+body.sidebar-dark-mode .project-browse-container,
+body.sidebar-light-mode .project-browse-container {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+
+/* ==== 收合狀態 ==== */
+body.sb-sidenav-toggled #layoutSidenav_nav {
+  flex-basis: var(--sidebar-collapsed);
+  width: var(--sidebar-collapsed);
+}
+
+body.sb-sidenav-toggled #content {
+  margin-left: var(--sidebar-collapsed);
+}
+
+/* 收合時隱藏文字，只留下 icon 置中 */
+body.sb-sidenav-toggled .nav-link span,
+body.sb-sidenav-toggled .sidebar-user-info {
+  display: none !important;
+}
+
+body.sb-sidenav-toggled .nav-link {
+  justify-content: center;
+}
+
+/* 組別異動紀錄頁面：僅修正版面（寬度、margin），不覆蓋 sidebar 主題色與字體，與 team_apply_review 等頁面一致 */
+body.page-team-change #layoutSidenav_nav,
+body.page-team-change.sb-sidenav-toggled #layoutSidenav_nav {
+  flex: 0 0 var(--sidebar-w) !important;
+  flex-basis: var(--sidebar-w) !important;
+  flex-shrink: 0 !important;
+  width: var(--sidebar-w) !important;
+  min-width: var(--sidebar-w) !important;
+}
+
+body.page-team-change #content,
+body.page-team-change.sb-sidenav-toggled #content {
+  margin-left: var(--sidebar-w) !important;
+}
+
+body.page-team-change .nav-link span,
+body.page-team-change.sb-sidenav-toggled .nav-link span,
+body.page-team-change .sidebar-user-info,
+body.page-team-change.sb-sidenav-toggled .sidebar-user-info {
+  display: flex !important;
+}
+
+body.page-team-change .nav-link,
+body.page-team-change.sb-sidenav-toggled .nav-link {
+  justify-content: flex-start !important;
+}
+
+/* team_change 在 #content 內時，min-height 與內容區一致，避免載入時版面位移 */
+#content .changelog-page {
+  min-height: calc(100vh - var(--navbar-height, 56px));
+}
+
+/* team_change：確保 sticky 元素不覆蓋 navbar，避免 nav 無法點選 */
+#content .changelog-topbar {
+  top: var(--navbar-height, 56px) !important;
+}
+
+/* team_change：限制 #content 層級與繪製範圍，確保不遮擋 navbar */
+#content:has(.changelog-page) {
+  isolation: isolate;
+  z-index: 0;
+  overflow: clip;
+  /* 裁剪超出範圍，防止任何子元素覆蓋 navbar */
+}
+
+/* ==== Sidebar Menu 風格 - 美化版 ==== */
+/* 防止頁面專用 CSS（team_manage、requirement、meeting 等）覆蓋 sidebar 字體 */
+#layoutSidenav_nav .nav-link,
+#sidenavAccordion .nav-link,
+.sb-sidenav-menu .nav-link {
+  font-weight: 700 !important;
+  font-size: 1.05rem !important;
+}
+
+.sb-sidenav-menu {
+  padding: 0.75rem;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* 確保可以滾動 */
+  min-height: 0;
+  /* 重要：允許 flex 子元素縮小 */
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.65rem 1rem;
+  color: #333;
+  text-decoration: none;
+  white-space: normal;
+  word-break: keep-all;
+  border-radius: 0;
+  margin: 0;
+  border-left: 3px solid transparent;
+  position: relative;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.nav-link:hover {
+  background-color: #eee;
+  color: #333;
+}
+
+.nav-link i {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.nav-link:hover i {
+  opacity: 1;
+}
+
+/* 管理員側邊欄 - 樸素同色 */
+.admin-sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.admin-sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.admin-sidebar .nav-link i {
+  color: rgba(255, 255, 255, 0.85);
+  opacity: 0.9;
+}
+
+/* 活動狀態 - 左邊線 + 淡底 */
+.nav-link.active {
+  background-color: #e0e0e0;
+  color: #222;
+  font-weight: 600;
+  border-left-color: #666;
+}
+
+.admin-sidebar .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-left-color: rgba(255, 255, 255, 0.6);
+}
+
+/* 側邊欄使用者資訊 */
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sidebar-user img {
+  border-radius: 50%;
+  margin-right: 10px;
+  width: 40px;
+  height: 40px;
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-user-info .user-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.sidebar-user-info .user-role {
+  font-size: 14px;
+  color: #555;
+}
+
+/* ==== 子頁面被 .load() 進來時，移除多餘外距，避免表格偏右 ==== */
+#content>.container,
+#content>.container-fluid {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* 确保子页面内容不会溢出 */
+#content>* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ==== 表格：滿版與橫向卷軸避免裁切 ==== */
+.table {
+  width: 100%;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+a {
+  color: #2980b9;
+  text-decoration: none;
+}
+
+.loading,
+.no-data {
+  padding: .75rem 1rem;
+}
+
+
+
+
+/* 1) 防止容器把下拉選單裁掉 */
+#layoutSidenav>main,
+#layoutSidenav_content,
+#adminFileApp,
+#adminFileApp .card,
+#adminFileApp .card-body {
+  overflow: visible !important;
+}
+
+/* 2) 避免無意建立 stacking context 影響層級 */
+#adminFileApp {
+  position: static !important;
+  transform: none !important;
+  z-index: auto !important;
+}
+
+/* 3) 把帳號選單的層級墊高，蓋過任何卡片/側邊欄陰影 */
+.navbar .dropdown-menu,
+.user-menu .dropdown-menu {
+  z-index: 2005 !important;
+  /* 高於 Bootstrap 的 1000、modal backdrop 的 1050 */
+}
+
+
+/* 移除舊的定位規則，使用新的 fixed 定位 */
+/* 注意：這裡不設置 overflow: visible，因為需要滾動功能 */
+#sidenavAccordion {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* 外層隱藏，讓內層滾動 */
+}
+
+/* 解法 1：限制 sidebar menu 內的 dropdown 範圍 */
+.sb-sidenav-menu {
+  overflow: visible !important;
+  /* 但限制 dropdown 不會外膨脹 */
+  position: relative;
+}
+
+.sb-sidenav-menu .dropdown-submenu {
+  /* 強制限制範圍 */
+  overflow: hidden !important;
+  contain: layout style;
+}
+
+/* 解法 2：鎖住所有 hover 效果的 backdrop/filter */
+.sb-sidenav-menu .nav-link:hover,
+.sb-sidenav-menu .dropdown-submenu:hover,
+.sb-sidenav-menu .dropdown-menu:hover {
+  backdrop-filter: none !important;
+  filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 解法 3：限制 hover 熱區，防止 transition 計算錯誤 */
+.sb-sidenav-menu .dropdown-submenu {
+  /* 限制 hover 區域 */
+  position: relative;
+  /* 防止 hover 區域爆炸 */
+  contain: layout style paint;
+}
+
+.sb-sidenav-menu .dropdown-submenu .dropdown-menu {
+  /* 強制限制位置和大小 */
+  position: relative !important;
+  left: 0 !important;
+  right: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  /* 防止 transition 殘影 */
+  will-change: max-height, opacity;
+  transform: none !important;
+  /* 防止 transition 計算錯誤導致 hover 區域爆炸 */
+  transition: max-height 0.2s ease-out, opacity 0.2s ease-out !important;
+  /* 確保背景不會在 transition 時外洩 */
+  background-clip: padding-box;
+  isolation: isolate;
+}
+
+/* 防止 sidebar toggle 被加兩次 class 時 transition 計算錯誤 */
+body.sb-sidenav-toggled .sb-sidenav-menu .dropdown-submenu .dropdown-menu {
+  display: none !important;
+  max-height: 0 !important;
+  opacity: 0 !important;
+  transition: none !important;
+}
+
+/* 確保 dropdown 在 transition 時不會創建覆蓋層 */
+.sb-sidenav-menu .dropdown-submenu.active .dropdown-menu {
+  /* 限制 transition 範圍 */
+  contain: layout style paint;
+  /* 防止背景色外洩 */
+  background-color: inherit;
+  background-clip: padding-box;
+}
+
+/* 確保 sidebar 在所有情況下都可見，但低於 navbar */
+#layoutSidenav_nav {
+  z-index: 1040 !important;
+}
+
+.sb-sidenav {
+  z-index: 1040 !important;
+  height: 100%;
+  overflow-y: auto !important;
+  /* 確保可以滾動 */
+  overflow-x: hidden !important;
+  display: flex;
+  flex-direction: column;
+  /* 美化滾動條 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.sb-sidenav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sb-sidenav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sb-sidenav::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.sb-sidenav::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* 管理員側邊欄的滾動條樣式 */
+.admin-sidebar.sb-sidenav::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.admin-sidebar.sb-sidenav::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-sidebar.sb-sidenav {
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* 导航栏中的用户菜单下拉样式 */
+.navbar .dropdown-menu {
+  z-index: 2005 !important;
+  margin-top: 0.5rem;
+}
+
+/* 用户菜单按钮样式 */
+.navbar #userMenuBtn {
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+}
+
+.navbar #userMenuBtn:hover {
+  opacity: 0.8;
+}
+
+.navbar #userMenuBtn:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+/* 下拉菜单动画 */
+.navbar .dropdown-menu {
+  animation: dropdownFadeIn 0.15s ease-in-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 側欄容器不要裁切 dropdown */
+/* 注意：不設置 overflow: visible，因為需要滾動功能 */
+#layoutSidenav_nav {
+  overflow: hidden;
+  /* 外層隱藏，內層滾動 */
+}
+
+/* 主內容維持較低層，避免蓋住選單 */
+#layoutSidenav>main {
+  position: relative;
+  z-index: 1;
+}
+
+/* 展開：允許溢出、維持層級（低於 navbar） */
+body:not(.sb-sidenav-toggled) #layoutSidenav_nav {
+  position: fixed;
+  top: var(--navbar-height, 56px);
+  /* 使用自動計算的高度 */
+  left: 0;
+  height: calc(100vh - var(--navbar-height, 56px));
+  /* 使用自動計算的高度 */
+  z-index: 1040 !important;
+}
+
+/* 展開狀態：確保可以滾動 */
+body:not(.sb-sidenav-toggled) #layoutSidenav_nav {
+  overflow: hidden;
+  /* 外層隱藏 */
+}
+
+body:not(.sb-sidenav-toggled) .sb-sidenav {
+  overflow-y: auto !important;
+  /* 內層可以滾動 */
+  overflow-x: hidden !important;
+}
+
+body:not(.sb-sidenav-toggled) .sb-sidenav-menu {
+  overflow-y: auto !important;
+  /* 菜單可以滾動 */
+  overflow-x: hidden !important;
+}
+
+/* 收合：關閉溢出、維持層級 */
+body.sb-sidenav-toggled #layoutSidenav_nav {
+  position: fixed;
+  top: var(--navbar-height, 56px);
+  /* 使用自動計算的高度 */
+  left: 0;
+  height: calc(100vh - var(--navbar-height, 56px));
+  /* 使用自動計算的高度 */
+  z-index: 1040 !important;
+}
+
+/* 收合狀態：也要確保可以滾動 */
+body.sb-sidenav-toggled #layoutSidenav_nav {
+  overflow: hidden;
+  /* 外層隱藏 */
+}
+
+body.sb-sidenav-toggled .sb-sidenav {
+  overflow-y: auto !important;
+  /* 內層可以滾動 */
+  overflow-x: hidden !important;
+}
+
+body.sb-sidenav-toggled .sb-sidenav-menu {
+  overflow-y: auto !important;
+  /* 菜單可以滾動 */
+  overflow-x: hidden !important;
+}
+
+/* 主內容降層，確保不壓住側欄 */
+#content {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* Naughty 按鈕的活動區，不會撞到忘記密碼 */
+.login-actions {
+  margin-top: .75rem;
+  text-align: center;
+}
+
+.naughty-wrap {
+  position: relative;
+  width: 260px;
+  height: 120px;
+  margin: 0 auto .5rem;
+}
+
+.naughty-btn {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: transform .18s cubic-bezier(.2, .8, .2, 1);
+  will-change: transform;
+}
+
+.naughty-btn .btn {
+  min-width: 120px;
+  border-radius: 999px;
+}
+
+/* 滑鼠被「擦」的替代樣式 */
+.rubbing {
+  padding: .5rem 1.25rem;
+  background: #fff;
+  border-radius: 999rem;
+  border: 1px dashed #777;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+
+/* 白底背景如果太淡，可加強一點（可調整或刪除） */
+#techbg-host canvas {
+  filter: saturate(1.25) contrast(1.2) brightness(1.03);
+}
+
+
+
+.table td,
+.table th {
+  vertical-align: middle
+}
+
+.content-preview {
+  max-width: 520px;
+  max-height: 100px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.badge-today {
+  font-weight: 600
+}
+
+.filter-row .form-select,
+.filter-row .form-control {
+  min-width: 180px
+}
+
+.title-preview {
+  max-height: 72px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.pager-bar {
+  background: #f4a46022;
+  border-top: 2px solid #f4a460;
+  padding: 6px 10px;
+  text-align: center;
+}
+
+.pager-bar a,
+.pager-bar span {
+  display: inline-block;
+  padding: 2px 6px;
+  margin: 0 2px;
+  text-decoration: none;
+  color: #444;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.pager-bar a:hover {
+  background: #ffe2c2;
+}
+
+.pager-bar .active {
+  background: #f4a460;
+  color: #fff;
+  font-weight: 700;
+}
+
+.pager-bar .disabled {
+  color: #aaa;
+  pointer-events: none;
+}
+
+/* ===== 后台管理界面样式 (role_ID 1, 2) ===== */
+/* 統一所有頁面的 admin-navbar 樣式 */
+.navbar.admin-navbar,
+.navbar.navbar-dark.admin-navbar {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+  border-bottom: 2px solid rgba(255, 193, 7, 0.3) !important;
+  color: #ffffff !important;
+}
+
+/* 確保 admin-navbar 的文字顏色為白色 */
+.admin-navbar {
+  color: #ffffff !important;
+}
+
+.admin-navbar .navbar-brand,
+.admin-navbar .navbar-brand *,
+.admin-navbar .form-control,
+.admin-navbar .form-control::placeholder,
+.admin-navbar .btn-link {
+  color: #ffffff !important;
+}
+
+/* 排除特定元素，避免影響功能 */
+.admin-navbar .dropdown-menu,
+.navbar .dropdown-menu,
+body.sidebar-dark-mode .navbar .dropdown-menu,
+body.sidebar-light-mode .navbar .dropdown-menu {
+  color: #212529 !important;
+  background: white !important;
+  background-color: white !important;
+}
+
+.admin-navbar .dropdown-menu .dropdown-item,
+.navbar .dropdown-menu .dropdown-item,
+body.sidebar-dark-mode .navbar .dropdown-menu .dropdown-item,
+body.sidebar-light-mode .navbar .dropdown-menu .dropdown-item {
+  color: #212529 !important;
+}
+
+.admin-navbar .dropdown-menu .dropdown-item:hover,
+.navbar .dropdown-menu .dropdown-item:hover,
+body.sidebar-dark-mode .navbar .dropdown-menu .dropdown-item:hover,
+body.sidebar-light-mode .navbar .dropdown-menu .dropdown-item:hover {
+  background-color: #f8f9fa !important;
+  color: #212529 !important;
+}
+
+.admin-navbar .dropdown-menu .dropdown-item.text-danger,
+.navbar .dropdown-menu .dropdown-item.text-danger {
+  color: #dc3545 !important;
+}
+
+.admin-navbar .dropdown-menu .dropdown-item.text-danger:hover,
+.navbar .dropdown-menu .dropdown-item.text-danger:hover {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+.admin-navbar .modal,
+.admin-navbar .modal * {
+  color: inherit !important;
+}
+
+/* 確保按鈕在 admin-navbar 中正確顯示 */
+.admin-navbar .btn-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+  border: none !important;
+  color: #000 !important;
+  font-weight: 600 !important;
+}
+
+.admin-navbar .btn-warning:hover {
+  background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 193, 7, 0.4);
+}
+
+/* 搜尋框在 admin-navbar 中的樣式 */
+.admin-navbar .form-control {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.admin-navbar .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.admin-navbar .form-control:focus {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #ffc107 !important;
+  color: #ffffff !important;
+}
+
+.admin-navbar .navbar-brand {
+  font-weight: 700;
+  font-size: 1.35rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.admin-navbar .badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* 通知圖標、使用者選單容器確保可點擊且不被 team_change 等頁面遮擋 */
+.admin-navbar .position-relative,
+.navbar .dropdown.position-relative {
+  z-index: 1070 !important;
+  position: relative !important;
+}
+
+/* 通知 badge 樣式 */
+#notificationCount {
+  z-index: 1071 !important;
+  position: absolute !important;
+  font-size: 0.75rem !important;
+  padding: 0.25em 0.5em !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+  box-shadow: 0 2px 8px rgba(245, 87, 108, 0.4) !important;
+}
+
+/* 后台管理侧边栏 - 樸素、無漸層無動畫 */
+.admin-sidebar {
+  background: #1e293b !important;
+  color: #fff;
+}
+
+.admin-sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-left: 3px solid transparent;
+  padding: 0.65rem 1rem !important;
+  margin: 0;
+  border-radius: 0;
+  position: relative;
+}
+
+.admin-sidebar .nav-link:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-left-color: rgba(255, 255, 255, 0.3);
+  color: #fff !important;
+}
+
+.admin-sidebar .nav-link.active {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-left-color: rgba(255, 255, 255, 0.6);
+  color: #fff !important;
+}
+
+.admin-sidebar .nav-link i {
+  color: rgba(255, 255, 255, 0.85);
+  width: 24px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.admin-sidebar .nav-link span {
+  font-weight: 700;
+}
+
+.admin-sidebar .sidebar-user-trigger {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.admin-sidebar .sidebar-user-trigger:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* 后台管理侧边栏容器 */
+.admin-sidenav-container {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  height: calc(100vh - 56px);
+  z-index: 1040 !important;
+}
+
+.admin-sidenav-container,
+.admin-sidenav-container .sb-sidenav,
+.admin-sidenav {
+  background: #1e293b !important;
+  position: relative;
+  z-index: 1040 !important;
+  height: 100%;
+}
+
+/* 側邊欄深色/淺色模式切換 - 深色模式 */
+body.sidebar-dark-mode #layoutSidenav_nav,
+body.sidebar-dark-mode #layoutSidenav_nav.admin-sidenav-container,
+body.sidebar-dark-mode #sidenavAccordion,
+body.sidebar-dark-mode #sidenavAccordion.sb-sidenav-dark,
+body.sidebar-dark-mode #sidenavAccordion.admin-sidenav,
+body.sidebar-dark-mode #sidenavAccordion.sb-sidenav-light,
+body.sidebar-dark-mode .admin-sidenav-container,
+body.sidebar-dark-mode .admin-sidenav-container .sb-sidenav,
+body.sidebar-dark-mode .admin-sidenav,
+body.sidebar-dark-mode .sb-sidenav-menu,
+body.sidebar-dark-mode .admin-sidebar,
+body.sidebar-dark-mode .sb-sidenav-light {
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%) !important;
+  color: #fff !important;
+}
+
+body.sidebar-dark-mode #layoutSidenav_nav {
+  border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+/* 深色模式下的導航欄 */
+body.sidebar-dark-mode .navbar.admin-navbar,
+body.sidebar-dark-mode .navbar.navbar-dark.admin-navbar,
+body.sidebar-dark-mode .navbar.navbar-light.bg-light {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid rgba(255, 193, 7, 0.3) !important;
+}
+
+body.sidebar-dark-mode .navbar-light .navbar-brand,
+body.sidebar-dark-mode .navbar-light #sidebarToggle,
+body.sidebar-dark-mode .navbar-light .btn-link,
+body.sidebar-dark-mode .navbar-light .form-control {
+  color: #ffffff !important;
+}
+
+body.sidebar-dark-mode .admin-navbar .navbar-brand,
+body.sidebar-dark-mode .admin-navbar .navbar-brand *,
+body.sidebar-dark-mode .admin-navbar #sidebarToggle,
+body.sidebar-dark-mode .admin-navbar .btn-link,
+body.sidebar-dark-mode .admin-navbar .form-control,
+body.sidebar-dark-mode .admin-navbar .form-control::placeholder {
+  color: #ffffff !important;
+}
+
+body.sidebar-dark-mode .admin-navbar .form-control {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+body.sidebar-dark-mode .admin-navbar .form-control:focus {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #ffc107 !important;
+  color: #ffffff !important;
+}
+
+body.sidebar-dark-mode .admin-navbar #sidebarToggle:hover {
+  background: rgba(255, 193, 7, 0.2) !important;
+  color: #ffc107 !important;
+}
+
+/* 深色模式下的文字顏色（確保是白色） */
+body.sidebar-dark-mode .admin-sidebar .nav-link,
+body.sidebar-dark-mode .admin-sidebar .nav-link span {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+body.sidebar-dark-mode .admin-sidebar .nav-link i,
+body.sidebar-dark-mode .sb-sidenav-menu .nav-link i {
+  color: #ffffff !important;
+}
+
+body.sidebar-dark-mode .navbar i,
+body.sidebar-dark-mode .navbar .fa-solid,
+body.sidebar-dark-mode .navbar .fas {
+  color: #ffffff !important;
+}
+
+body.sidebar-dark-mode lord-icon {
+  --lord-icon-primary: #ffffff !important;
+}
+
+body.sidebar-dark-mode .admin-sidebar .nav-link:hover {
+  color: #fff !important;
+}
+
+body.sidebar-dark-mode .admin-sidebar .nav-link:hover i {
+  color: #ffc107 !important;
+}
+
+body.sidebar-dark-mode .admin-sidebar .nav-link.active {
+  color: white !important;
+}
+
+body.sidebar-dark-mode .admin-sidebar .nav-link.active i {
+  color: white !important;
+}
+
+/* 側邊欄深色/淺色模式切換 - 淺色模式 */
+body.sidebar-light-mode #layoutSidenav_nav,
+body.sidebar-light-mode #layoutSidenav_nav.admin-sidenav-container,
+body.sidebar-light-mode #sidenavAccordion,
+body.sidebar-light-mode #sidenavAccordion.sb-sidenav-dark,
+body.sidebar-light-mode #sidenavAccordion.admin-sidenav,
+body.sidebar-light-mode #sidenavAccordion.sb-sidenav-light,
+body.sidebar-light-mode .admin-sidenav-container,
+body.sidebar-light-mode .admin-sidenav-container .sb-sidenav,
+body.sidebar-light-mode .admin-sidenav,
+body.sidebar-light-mode .sb-sidenav-menu,
+body.sidebar-light-mode .admin-sidebar,
+body.sidebar-light-mode .sb-sidenav-light {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  color: #333 !important;
+}
+
+body.sidebar-light-mode #layoutSidenav_nav {
+  border-right: 1px solid #e5e7eb !important;
+}
+
+/* 淺色模式下的導航欄 */
+body.sidebar-light-mode .navbar.admin-navbar,
+body.sidebar-light-mode .navbar.navbar-dark.admin-navbar,
+body.sidebar-light-mode .navbar.navbar-light.bg-light {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #333 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+body.sidebar-light-mode .navbar-light .navbar-brand,
+body.sidebar-light-mode .navbar-light #sidebarToggle,
+body.sidebar-light-mode .navbar-light .btn-link,
+body.sidebar-light-mode .navbar-light .form-control {
+  color: #333 !important;
+}
+
+body.sidebar-light-mode .admin-navbar .navbar-brand,
+body.sidebar-light-mode .admin-navbar .navbar-brand *,
+body.sidebar-light-mode .admin-navbar #sidebarToggle,
+body.sidebar-light-mode .admin-navbar .btn-link,
+body.sidebar-light-mode .admin-navbar .form-control,
+body.sidebar-light-mode .admin-navbar .form-control::placeholder {
+  color: #333 !important;
+}
+
+body.sidebar-light-mode .admin-navbar .form-control {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+  color: #333 !important;
+}
+
+body.sidebar-light-mode .admin-navbar .form-control:focus {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+  border-color: #007bff !important;
+  color: #333 !important;
+}
+
+body.sidebar-light-mode .admin-navbar #sidebarToggle:hover {
+  background: rgba(0, 123, 255, 0.1) !important;
+  color: #007bff !important;
+}
+
+/* 淺色模式下的文字顏色 */
+body.sidebar-light-mode .admin-sidebar .nav-link,
+body.sidebar-light-mode .admin-sidebar .nav-link span {
+  color: #333 !important;
+}
+
+body.sidebar-light-mode .admin-sidebar .nav-link i,
+body.sidebar-light-mode .sb-sidenav-menu .nav-link i {
+  color: #333 !important;
+}
+
+body.sidebar-light-mode .navbar i,
+body.sidebar-light-mode .navbar .fa-solid,
+body.sidebar-light-mode .navbar .fas {
+  color: #333 !important;
+}
+
+body.sidebar-light-mode lord-icon {
+  --lord-icon-primary: #000000 !important;
+}
+
+/* 下拉菜單中的圖標永遠保持黑色（包括主菜單項和子菜單項） */
+.dropdown-menu i,
+.dropdown-menu .fa-solid,
+.dropdown-menu .fas,
+.dropdown-menu .fa,
+.dropdown-item i,
+.dropdown-item .fa-solid,
+.dropdown-item .fas,
+.dropdown-item .fa,
+.dropdown-submenu .dropdown-item i,
+.dropdown-submenu .dropdown-item .fa-solid,
+.dropdown-submenu .dropdown-item .fas,
+.dropend .dropdown-item i,
+.dropend .dropdown-item .fa-solid,
+.dropend .dropdown-item .fas,
+.dropend .dropdown-toggle i,
+.dropend .dropdown-toggle .fa-solid,
+.dropend .dropdown-toggle .fas,
+body.sidebar-dark-mode .dropdown-menu i,
+body.sidebar-dark-mode .dropdown-menu .fa-solid,
+body.sidebar-dark-mode .dropdown-menu .fas,
+body.sidebar-dark-mode .dropdown-menu .fa,
+body.sidebar-dark-mode .dropdown-item i,
+body.sidebar-dark-mode .dropdown-item .fa-solid,
+body.sidebar-dark-mode .dropdown-item .fas,
+body.sidebar-dark-mode .dropdown-submenu .dropdown-item i,
+body.sidebar-dark-mode .dropend .dropdown-item i,
+body.sidebar-dark-mode .dropend .dropdown-toggle i,
+body.sidebar-light-mode .dropdown-menu i,
+body.sidebar-light-mode .dropdown-menu .fa-solid,
+body.sidebar-light-mode .dropdown-menu .fas,
+body.sidebar-light-mode .dropdown-menu .fa,
+body.sidebar-light-mode .dropdown-item i,
+body.sidebar-light-mode .dropdown-item .fa-solid,
+body.sidebar-light-mode .dropdown-item .fas,
+body.sidebar-light-mode .dropdown-submenu .dropdown-item i,
+body.sidebar-light-mode .dropend .dropdown-item i,
+body.sidebar-light-mode .dropend .dropdown-toggle i {
+  color: #212529 !important;
+}
+
+body.sidebar-light-mode .admin-sidebar .nav-link:hover {
+  color: #007bff !important;
+}
+
+body.sidebar-light-mode .admin-sidebar .nav-link:hover i {
+  color: #007bff !important;
+}
+
+body.sidebar-light-mode .admin-sidebar .nav-link.active {
+  background: #e0e0e0 !important;
+  color: #222 !important;
+  border-left: 3px solid #666 !important;
+}
+
+body.sidebar-light-mode .admin-sidebar .nav-link.active i {
+  color: #222 !important;
+}
+
+/* 后台管理主内容区域 */
+body.admin-mode #content {
+  background: #f8f9fa;
+  padding-left: 1rem;
+}
+
+/* 確保在管理員模式下，project-browse-container 的背景是白色 */
+body.admin-mode #content .project-browse-container,
+body.admin-mode #content:has(.project-browse-container) {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+
+/* 普通用户界面样式（保持原有样式，但可以微调） */
+.navbar-light.bg-light {
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 普通用户侧边栏保持白色背景 */
+.sb-sidenav-light {
+  background-color: #ffffff !important;
+}
+
+/* 導覽列標題（專題系統）- 粗體加大 */
+.navbar .navbar-brand {
+  font-weight: 700;
+  font-size: 1.35rem;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+
+  .admin-navbar .navbar-brand,
+  .navbar .navbar-brand {
+    font-size: 1.15rem;
+  }
+
+  .admin-navbar .badge {
+    font-size: 0.7rem;
+    padding: 0.25em 0.5em;
+  }
+}
+
+/* ===== 統一所有頁面的 Content 區域樣式 ===== */
+/* 只應用到 #content 區域，不影響 nav 和 sidebar */
+
+/* 頁面標題樣式 */
+#content .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 2rem;
+}
+
+#content .page-header h1,
+#content .page-header h2,
+#content .page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0;
+}
+
+#content .page-header-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* 卡片樣式 - 只影響 content 區域 */
+#content .card {
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+#content .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+#content .card-header {
+  font-weight: 600;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 2px solid #e9ecef;
+  font-size: 1.1rem;
+}
+
+#content .card-header.bg-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white;
+  border-bottom: none;
+}
+
+#content .card-header.bg-light {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+  border-bottom: 2px solid #dee2e6;
+  color: #495057;
+}
+
+#content .card-body {
+  padding: 1.5rem;
+  background: white;
+}
+
+/* 表單樣式 */
+#content .form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+#content .form-label i {
+  color: #667eea;
+  margin-right: 0.5rem;
+}
+
+#content .form-control,
+#content .form-select {
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+#content .form-control:focus,
+#content .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  transform: translateY(-1px);
+}
+
+#content .form-control:hover,
+#content .form-select:hover {
+  border-color: #b0b0b0;
+}
+
+/* 表格樣式 */
+/* ===== 簡潔表格樣式（圖二風格）===== */
+.table-clean {
+  margin-bottom: 0;
+  background-color: #fff;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  border: none;
+}
+
+.table-clean thead {
+  background-color: #f8f9fa;
+}
+
+.table-clean thead th {
+  background-color: #f8f9fa;
+  border: none;
+  border-bottom: 1px solid #dee2e6;
+  font-weight: 600;
+  color: #495057;
+  padding: 0.875rem 1rem;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.table-clean tbody tr {
+  background-color: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.table-clean tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table-clean tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.table-clean tbody td {
+  padding: 0.875rem 1rem;
+  vertical-align: middle;
+  border: none;
+  background-color: transparent;
+}
+
+/* 簡潔表格的狀態徽章 - 淺色背景+深色文字 */
+.table-clean .badge {
+  font-weight: 500;
+  padding: 0.4em 0.8em;
+  font-size: 0.875em;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.table-clean .badge.bg-success {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+}
+
+.table-clean .badge.bg-danger {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+.table-clean .badge.bg-warning {
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+}
+
+.table-clean .badge.bg-info {
+  background-color: #d1ecf1 !important;
+  color: #0c5460 !important;
+}
+
+.table-clean .badge.bg-primary {
+  background-color: #cfe2ff !important;
+  color: #084298 !important;
+}
+
+.table-clean .badge.bg-secondary {
+  background-color: #e2e3e5 !important;
+  color: #41464b !important;
+}
+
+/* ===== 原有表格樣式（保留兼容性）===== */
+#content .table {
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+#content .table thead th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+  border: none;
+  vertical-align: middle;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+#content .table thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+#content .table thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+#content .table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #e9ecef;
+}
+
+#content .table tbody tr:hover {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#content .table tbody tr.table-warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+  border-left: 4px solid #ffc107;
+}
+
+#content .table tbody tr.table-warning:hover {
+  background: linear-gradient(135deg, #ffe69c 0%, #ffd700 100%);
+}
+
+#content .table tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+  border: none;
+}
+
+/* Badge 樣式 */
+#content .badge {
+  padding: 0.5em 0.75em;
+  font-weight: 600;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+#content .badge.bg-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+#content .badge.bg-danger {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+}
+
+#content .badge.bg-info {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+}
+
+#content .badge.bg-success {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
+}
+
+#content .badge.bg-warning {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important;
+  color: #000 !important;
+}
+
+#content .badge.bg-secondary {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%) !important;
+  color: #000 !important;
+}
+
+/* 按鈕樣式 */
+#content .btn {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid transparent;
+}
+
+#content .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+#content .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+#content .btn-primary:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  color: white;
+}
+
+#content .btn-outline-secondary {
+  border: 2px solid #6c757d;
+  color: #6c757d;
+}
+
+#content .btn-outline-secondary:hover {
+  background: #6c757d;
+  color: white;
+  border-color: #6c757d;
+}
+
+#content .btn-outline-primary {
+  border: 2px solid #667eea;
+  color: #667eea;
+}
+
+#content .btn-outline-primary:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+#content .btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  border-radius: 12px;
+}
+
+#content .btn-group .btn {
+  border-radius: 0;
+}
+
+#content .btn-group .btn:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+#content .btn-group .btn:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* 載入和無資料狀態 */
+#content .loading,
+#content .no-data {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #6c757d;
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 12px;
+  margin: 1rem 0;
+}
+
+#content .loading i {
+  font-size: 2rem;
+  color: #667eea;
+  animation: spin 1s linear infinite;
+}
+
+#content .no-data i {
+  font-size: 3rem;
+  color: #c3cfe2;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+/* 提示訊息 */
+#content .alert-info {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border: none;
+  border-left: 4px solid #2196f3;
+  border-radius: 8px;
+  color: #0d47a1;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
+  margin-bottom: 1.5rem;
+}
+
+#content .alert-info i {
+  color: #1976d2;
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Switch 開關美化 */
+#content .form-check-input {
+  width: 2.5rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+
+#content .form-check-input:checked {
+  background-color: #ffc107;
+  border-color: #ffc107;
+}
+
+#content .form-check-input:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+}
+
+#content .form-check-label {
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 動畫效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  #content .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #content .page-header h1,
+  #content .page-header h2,
+  #content .page-title {
+    font-size: 1.8rem;
+  }
+
+  #content .page-header-actions {
+    width: 100%;
+  }
+
+  #content .page-header-actions .btn {
+    flex: 1;
+  }
+
+  #content .table-responsive {
+    font-size: 0.875rem;
+  }
+
+  #content .table th,
+  #content .table td {
+    padding: 0.5rem;
+  }
+
+  #content .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}

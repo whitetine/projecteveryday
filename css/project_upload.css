@@ -1,0 +1,1569 @@
+/**
+ * 專題上傳樣式 - 學生端
+ * 完全按照申請文件上傳頁面設計
+ */
+
+/* 通用按鈕樣式 - 確保所有按鈕都是長方弧（rounded rectangle）- 最高優先級 */
+/* 使用最廣泛的選擇器，確保覆蓋所有按鈕 */
+.project-upload-page button,
+.project-upload-page .btn,
+.project-upload-page input[type="button"],
+.project-upload-page input[type="submit"],
+.project-upload-page button.btn,
+.project-upload-page .modal .btn,
+.project-upload-page .modal button,
+.project-upload-page .modal button.btn,
+.project-upload-page .preview-action-buttons .btn,
+.project-upload-page .preview-action-buttons button,
+.project-upload-page .file-upload-row .btn,
+.project-upload-page .file-upload-row button,
+.project-upload-page .record-actions .btn,
+.project-upload-page .record-actions button,
+.project-upload-page .history-header-btn,
+.project-upload-page .total-count-btn,
+.project-upload-page .btn-submission-records,
+.project-upload-page .record-view-btn,
+.project-upload-page .record-edit-btn,
+.project-upload-page .record-delete-btn,
+.project-upload-page .record-reset-btn,
+.project-upload-page .record-actions .edit-btn,
+.project-upload-page .record-actions .delete-btn,
+.project-upload-page .text-center .btn,
+.project-upload-page .text-center button,
+.project-upload-page #selectFileBtn,
+.project-upload-page #noFileBtn,
+.project-upload-page #saveDraftBtn,
+.project-upload-page #resetBtn,
+.project-upload-page #removeBtn,
+.project-upload-page .preview-zoom-controls i,
+.project-upload-page .btn-close:not(.modal-header .btn-close),
+.project-upload-page .btn-primary,
+.project-upload-page .btn-secondary,
+.project-upload-page .btn-success,
+.project-upload-page .btn-danger,
+.project-upload-page .btn-warning,
+.project-upload-page .btn-info,
+.project-upload-page .btn-lg,
+.project-upload-page .btn-sm,
+.project-upload-page .upload-card button,
+.project-upload-page .upload-card .btn,
+.project-upload-page .card-body button,
+.project-upload-page .card-body .btn,
+.project-upload-page .form-group button,
+.project-upload-page .form-group .btn,
+.project-upload-page .mb-4 button,
+.project-upload-page .mb-4 .btn {
+    border-radius: 8px !important;
+    -webkit-border-radius: 8px !important;
+    -moz-border-radius: 8px !important;
+    border: none !important;
+}
+
+/* 確保模態框中的所有按鈕也是長方弧 */
+.project-upload-page .modal .btn,
+.project-upload-page .modal button.btn,
+.project-upload-page .modal-footer .btn,
+.project-upload-page .modal-body .btn,
+.project-upload-page .modal .btn-secondary,
+.project-upload-page .modal .btn-primary {
+    border-radius: 8px !important;
+    border: none !important;
+    padding: 8px 20px;
+    font-weight: 600;
+}
+
+.project-upload-page {
+    padding: 0 30px 30px 30px !important;
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    background: #f5f5f5;
+    min-height: 100vh;
+    box-sizing: border-box;
+    overflow-x: hidden; /* 避免內容撐出視窗造成水平捲動/跑版 */
+}
+
+/* 頁面標題區域 - 響應式，不超出視窗 */
+.page-header {
+    position: relative;
+    margin: 0 0 20px 0 !important;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+    flex-shrink: 0;
+    min-width: 0;
+    word-break: break-word;
+}
+
+/* 回到前一頁按鈕（右上角長方弧） */
+.btn-back-page {
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    z-index: 10;
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.btn-back-page:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-back-page:active {
+    transform: translateY(0);
+}
+
+.btn-back-page i {
+    font-size: 18px;
+}
+
+/* 卡片樣式 - 不超出頁面寬度 */
+.upload-card,
+.preview-card {
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.project-upload-page .upload-card .card-body,
+.project-upload-page .preview-card .card-body {
+    min-width: 0;
+    overflow-wrap: break-word;
+}
+
+.project-upload-page .row {
+    min-width: 0;
+}
+
+.project-upload-page .form-control,
+.project-upload-page input[type="text"],
+.project-upload-page textarea.form-control {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.upload-card .card-header,
+.preview-card .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none;
+    padding: 15px 20px;
+    font-size: 16px;
+}
+
+.upload-card .card-body {
+    padding: 25px;
+}
+
+.preview-card {
+    padding: 0;
+}
+
+/* 表單欄位樣式 */
+.form-label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* 編輯頁面按鈕樣式 - 長方弧（rounded rectangle）- 強制覆蓋所有樣式 */
+.project-upload-page .btn,
+.project-upload-page button.btn,
+.project-upload-page button,
+.project-upload-page .btn-primary,
+.project-upload-page .btn-secondary,
+.project-upload-page .btn-success,
+.project-upload-page .btn-danger,
+.project-upload-page .btn-warning,
+.project-upload-page .btn-info,
+.project-upload-page .upload-card .btn,
+.project-upload-page .upload-card button,
+.project-upload-page .card-body .btn,
+.project-upload-page .card-body button {
+    border-radius: 8px !important;
+    -webkit-border-radius: 8px !important;
+    -moz-border-radius: 8px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+    transition: all 0.3s ease !important;
+    padding: 10px 24px !important;
+    border: none !important;
+    outline: none !important;
+}
+
+.project-upload-page .btn-lg {
+    padding: 12px 32px;
+    font-size: 16px;
+    border-radius: 8px !important;
+}
+
+.project-upload-page .btn-sm {
+    padding: 8px 20px;
+    font-size: 13px;
+    border-radius: 8px !important;
+}
+
+.project-upload-page .btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.project-upload-page .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+}
+
+.project-upload-page .btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.project-upload-page .btn-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    border: none;
+    color: #333;
+}
+
+.project-upload-page .btn-warning:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e0a800 0%, #e68900 100%);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+.project-upload-page .btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    color: white;
+}
+
+.project-upload-page .btn-success:hover:not(:disabled) {
+    background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+.project-upload-page .btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    color: white;
+}
+
+.project-upload-page .btn-danger:hover:not(:disabled) {
+    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+.project-upload-page .btn-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    border: none;
+    color: white;
+}
+
+.project-upload-page .btn-info:hover:not(:disabled) {
+    background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
+}
+
+.project-upload-page .btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    border: none;
+    color: white;
+}
+
+.project-upload-page .btn-secondary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5a6268 0%, #545b62 100%);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+}
+
+.project-upload-page .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* 文件上傳區域 - 貼緊頁面，不移動 */
+.file-upload-section {
+    position: relative;
+    background: white;
+    padding: 15px 12px; /* 左右加一點內距，避免內容貼到邊界 */
+    z-index: 1;         /* 降低層級，避免蓋住其他區塊 */
+    margin: 0;
+    border-bottom: 1px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    min-height: 80px;
+    box-sizing: border-box;
+    transition: none !important;
+    animation: none !important;
+    will-change: auto;
+    transform: none;
+    contain: layout style paint;
+}
+
+/* 🔹 【步驟 5】確保上傳區域可點擊，沒有 overlay 遮擋 */
+.upload-area * {
+    pointer-events: auto !important;
+}
+
+.overlay,
+.mask {
+    pointer-events: none !important;
+}
+
+/* 🔹 確保暫存和提交按鈕可以點擊 */
+#saveDraftBtn,
+#submitBtn {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+    user-select: auto !important;
+    z-index: 10 !important;
+    position: relative !important;
+}
+
+#saveDraftBtn:not(:disabled),
+#submitBtn:not(:disabled) {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+#saveDraftBtn:disabled,
+#submitBtn:disabled {
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+/* 確保 border-bottom 和 box-shadow 不會有任何動畫 */
+.file-upload-section,
+.file-upload-section::before,
+.file-upload-section::after {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* 禁動畫策略：上傳區內所有元素完全禁用動畫效果 */
+.upload-area,
+.upload-area *,
+.upload-area *::before,
+.upload-area *::after {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* 特別針對上傳區內的 input/file 相關元素 */
+.upload-area input[type="file"],
+.upload-area input[type="file"]:focus,
+.upload-area input[type="file"]:hover,
+.upload-area input[type="file"]:active,
+.upload-area input[type="file"]:visited {
+    transition: none !important;
+    animation: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+}
+
+/* 防止檔案上傳區域的 input[type="file"] 在頁面載入時觸發動畫 */
+.file-upload-section input[type="file"] {
+    transition: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.file-upload-section input[type="file"]:focus,
+.file-upload-section input[type="file"]:hover,
+.file-upload-section input[type="file"]:active {
+    transition: none !important;
+    animation: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* 防止檔案上傳區域的按鈕在頁面載入時觸發動畫 */
+.file-upload-section .btn,
+.file-upload-section .btn-secondary,
+.file-upload-section .btn-secondary.has-file {
+    transition: none !important;
+}
+
+/* 🔹 確保選擇檔案按鈕可以點擊 - 最高優先級 */
+#selectFileBtn,
+label[for="posterFileInput"] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+    user-select: auto !important;
+    z-index: 101 !important; /* 高於 .file-upload-section 的 z-index: 100 */
+    position: relative !important;
+    display: inline-block !important;
+    border-radius: 8px !important;
+    -webkit-border-radius: 8px !important;
+    -moz-border-radius: 8px !important;
+    border: none !important;
+}
+
+/* 🔹 確保選擇多個檔案按鈕可以點擊 */
+#selectMultipleFilesBtn,
+label[for="multipleFilesInput"] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+    user-select: auto !important;
+    z-index: 101 !important;
+    position: relative !important;
+    display: inline-block !important;
+    border-radius: 8px !important;
+    -webkit-border-radius: 8px !important;
+    -moz-border-radius: 8px !important;
+    border: none !important;
+}
+
+/* 🔹 確保 file input 沒有被禁止點擊 */
+input[type="file"] {
+    pointer-events: auto !important;
+}
+
+input[type="file"]:not(:disabled) {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* 🔹 確認沒有任何 overlay 蓋在按鈕上 */
+.preview-area,
+.preview-box,
+.preview-content,
+.overlay,
+.mask {
+    pointer-events: none !important;
+}
+
+/* 🔹 確保預覽區塊的 z-index 不高於按鈕 */
+.preview-area,
+.preview-box,
+.preview-content {
+    z-index: 1 !important;
+    position: relative !important;
+}
+
+/* 像三秒膠一樣完全固定 #noFileBtn，禁止任何移動 */
+#noFileBtn {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+    will-change: auto !important;
+    margin: 0 !important;
+    position: relative !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    /* 完全禁用所有可能導致移動的屬性 */
+}
+
+#selectFileBtn:not(:disabled) {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    border-radius: 8px !important;
+    -webkit-border-radius: 8px !important;
+    -moz-border-radius: 8px !important;
+}
+
+#selectFileBtn:disabled {
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+    border-radius: 8px !important;
+    -webkit-border-radius: 8px !important;
+    -moz-border-radius: 8px !important;
+}
+
+/* 確保所有按鈕都是長方弧 - 最終強制規則 */
+.project-upload-page * button,
+.project-upload-page * .btn,
+.project-upload-page * input[type="button"],
+.project-upload-page * input[type="submit"] {
+    border-radius: 8px !important;
+    -webkit-border-radius: 8px !important;
+    -moz-border-radius: 8px !important;
+}
+
+/* 確保 textarea 可以正常輸入 - 最高優先級 */
+#projectIntro,
+textarea.form-control,
+textarea#projectIntro,
+.project-upload-page textarea,
+.upload-card textarea,
+.upload-card #projectIntro,
+.project-upload-page .upload-card textarea,
+.project-upload-page .upload-card #projectIntro {
+    pointer-events: auto !important;
+    user-select: text !important;
+    resize: none;
+    cursor: text !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1 !important;
+    background-color: #fff !important;
+}
+
+/* 確保 textarea 不會被禁用 */
+#projectIntro:disabled,
+#projectIntro[readonly],
+textarea.form-control:disabled,
+textarea.form-control[readonly] {
+    pointer-events: auto !important;
+    user-select: text !important;
+    cursor: text !important;
+    background-color: #f8f9fa !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1 !important;
+    border-color: #e9ecef !important;
+}
+
+/* 查看模式下的表單欄位樣式 */
+.project-upload-page input[readonly],
+.project-upload-page textarea[readonly] {
+    background-color: #f8f9fa !important;
+    cursor: not-allowed !important;
+    border-color: #e9ecef !important;
+}
+
+/* 確保 textarea 的父容器不會阻止輸入 */
+.mb-4,
+.upload-card .mb-4,
+.project-upload-page .mb-4 {
+    position: relative;
+    z-index: 1;
+}
+
+/* 確保檔案上傳區域不會覆蓋 textarea - 合并到上面的定义中 */
+
+.file-upload-row {
+    display: flex;
+    gap: 0; /* 貼緊頁面，無間距 */
+    margin: 0;
+    margin-bottom: 8px;
+    align-items: center;
+    flex-wrap: nowrap;
+    /* 防止刷新時移動 - 完全禁用所有可能導致動畫的屬性 */
+    will-change: auto !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+    /* 固定布局，防止重排 */
+}
+
+.file-upload-row-vertical {
+    flex-direction: column;
+    align-items: stretch;
+    min-height: auto;
+    height: auto; /* 垂直布局时高度自适应 */
+    position: relative;
+}
+
+.file-upload-row .btn,
+.file-upload-row-vertical .btn {
+    flex: 0 0 auto;
+    border-radius: 8px !important;
+    padding: 10px 24px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    border: none;
+}
+
+/* 移除 btn-secondary 的 transition，避免刷新時閃動 */
+.file-upload-row .btn-secondary {
+    transition: none !important;
+    animation: none !important;
+}
+
+.file-upload-row .btn-primary,
+.file-upload-row-vertical .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+}
+
+.file-upload-row .btn-primary:hover,
+.file-upload-row-vertical .btn-primary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.file-upload-row .btn-secondary {
+    flex: 1;
+    min-width: 150px;
+    max-width: 100%;
+    cursor: not-allowed;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+    border-radius: 8px !important;
+    padding: 10px 20px;
+    margin: 0 !important;
+    /* 固定高度，避免刷新時 reflow 導致位移 */
+    min-height: 44px;
+    height: auto;
+    box-sizing: border-box;
+    /* 移除所有動畫和過渡效果，完全禁用 */
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+    will-change: auto !important;
+    /* 防止字體加載導致的高度變化 */
+    line-height: 1.5;
+    font-size: 14px;
+    /* 像三秒膠一樣黏緊頁面，完全固定位置 */
+    position: relative !important;
+    vertical-align: top;
+    /* 移除所有可能導致移動的屬性 */
+    backface-visibility: visible;
+    perspective: none;
+}
+
+.file-upload-row .btn-secondary.has-file {
+    background: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.file-upload-row .btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.form-text {
+    font-size: 13px;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+/* 頂部預覽控制欄 */
+.preview-control-bar {
+    background: #e9ecef;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 預覽縮放控制 */
+.preview-zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+
+.preview-zoom-controls > span:first-child {
+    font-size: 14px;
+    color: #333;
+    margin-right: 2px;
+    white-space: nowrap;
+}
+
+.preview-zoom-controls .fa-magnifying-glass-minus,
+.preview-zoom-controls .fa-magnifying-glass-plus {
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px !important;
+    background: #f0f0f0;
+    padding: 8px;
+    border: none;
+}
+
+.preview-zoom-controls .fa-magnifying-glass-minus:hover,
+.preview-zoom-controls .fa-magnifying-glass-plus:hover {
+    color: #667eea;
+    background: #e0e0e0;
+    transform: scale(1.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-zoom-controls .fa-magnifying-glass-minus:hover,
+.preview-zoom-controls .fa-magnifying-glass-plus:hover {
+    color: #333;
+}
+
+.zoom-slider {
+    width: 80px;
+    height: 4px;
+    border-radius: 2px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+    margin: 0 5px;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #28a745;
+    cursor: pointer;
+}
+
+.zoom-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #28a745;
+    cursor: pointer;
+    border: none;
+}
+
+.zoom-value {
+    font-size: 13px;
+    color: #333;
+    min-width: 45px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+
+/* 預覽容器 */
+.preview-box-wrapper {
+    width: 100%;
+}
+
+.preview-box {
+    background: #f5f5f5;
+    border: none;
+    min-height: 350px;
+    max-height: 450px;
+    position: relative;
+    overflow: auto;
+}
+
+#previewContentContainer {
+    width: 100%;
+    min-height: 350px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 15px;
+    box-sizing: border-box;
+    position: relative;
+    background: #f5f5f5;
+}
+
+.preview-content {
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform-origin: center top;
+    transition: transform 0.3s ease;
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+}
+
+.preview-content img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    background: white;
+    pointer-events: none;
+    user-select: none;
+}
+
+.preview-content object {
+    width: 100%;
+    min-height: 350px;
+    border: none;
+    display: block;
+    background: white;
+    pointer-events: none;
+}
+
+.preview-empty {
+    width: 100%;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    background: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.preview-empty i {
+    font-size: 64px;
+    margin-bottom: 15px;
+    opacity: 0.3;
+    color: #ccc;
+}
+
+.preview-empty p {
+    margin: 0;
+    font-size: 16px;
+    color: #999;
+}
+
+/* 提交記錄按鈕 - 右上角 */
+.btn-submission-records {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px !important;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+.btn-submission-records:hover {
+    opacity: 0.9;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .project-upload-page {
+        padding: 15px;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .btn-submission-records {
+        width: 100%;
+    }
+    
+    .upload-card .card-body,
+    .preview-card .card-body {
+        padding: 20px;
+    }
+    
+    .file-upload-row {
+        flex-direction: column;
+    }
+    
+    .file-upload-row .btn-secondary {
+        width: 100%;
+    }
+    
+    .preview-control-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .preview-action-buttons {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .text-center {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .text-center .btn {
+        width: 100%;
+        border-radius: 8px !important;
+    }
+}
+
+/* 提交記錄卡片 */
+.submission-records-card {
+    margin-top: 20px;
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.submission-records-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.submission-records-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.history-header-btn {
+    background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 8px !important;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(168, 85, 247, 0.3);
+}
+
+/* 歷史修改記錄小視窗（非彈跳視窗） */
+.history-list-container {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.history-list-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-list-title {
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-close-history {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.btn-close-history:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.history-list-content {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.history-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    padding: 15px;
+}
+
+.history-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+}
+
+.history-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.history-action-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.history-time,
+.history-user {
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.history-time span:first-child,
+.history-user span:first-child {
+    font-weight: 600;
+    color: #495057;
+    margin-right: 5px;
+}
+
+.history-time span:last-child,
+.history-user span:last-child {
+    color: #6c757d;
+}
+
+.history-reset-btn {
+    width: 100%;
+    border-radius: 8px !important;
+    font-weight: 600;
+    padding: 8px 16px;
+    margin-top: 10px;
+}
+
+.history-header-btn:hover {
+    background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(168, 85, 247, 0.3);
+}
+
+.history-header-btn i {
+    font-size: 14px;
+}
+
+.submission-records-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.submission-icon {
+    color: #f97316; /* 橙色圖標 */
+    font-size: 20px;
+}
+
+.submission-records-title h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.total-count-btn {
+    background: linear-gradient(45deg, #6366f1 0%, #4f46e5 100%);
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 8px !important;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+}
+
+.submission-records-body {
+    padding: 20px;
+    background: white;
+}
+
+.no-records {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.submission-record-item {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
+    margin-bottom: 12px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    transition: none !important; /* 防止頁面載入時觸發動畫 */
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.submission-record-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    transition: all 0.3s ease !important; /* 只在 hover 時啟用 transition */
+}
+
+.record-main-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 16px 20px;
+    background: linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%);
+    border: none;
+    border-radius: 10px 0 0 10px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: none !important; /* 防止頁面載入時觸發動畫 */
+    text-align: left;
+    min-height: 70px;
+    position: relative;
+}
+
+.record-main-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+}
+
+.record-main-btn:hover {
+    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+    transform: translateX(2px);
+    transition: all 0.3s ease !important; /* 只在 hover 時啟用 transition */
+}
+
+.record-main-btn:active {
+    transform: translateX(0);
+}
+
+.record-main-btn .record-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.record-main-btn .record-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.record-main-btn i {
+    font-size: 20px;
+    flex-shrink: 0;
+    opacity: 0.95;
+}
+
+.record-main-text {
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+}
+
+.record-main-btn .record-bottom {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.record-status-text {
+    padding: 6px 16px;
+    background: rgba(173, 216, 230, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: #1e40af;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.record-time-text {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 歷史修改紀錄按鈕已移至右上角，此樣式保留以備不時之需 */
+.record-history-btn {
+    display: none; /* 隱藏，因為已移至右上角 */
+}
+
+/* 根據狀態顯示不同顏色的左側邊框 */
+.submission-record-item.record-submitted {
+    border-left-color: #3b82f6; /* 已送出：藍色邊框 */
+}
+
+.submission-record-item.record-rejected {
+    border-left-color: #ef4444; /* 退件：紅色邊框 */
+}
+
+.submission-record-item.record-modifying {
+    border-left-color: #fbbf24; /* 申請修改中：黃色邊框 */
+}
+
+.submission-record-item.record-completed {
+    border-left-color: #10b981; /* 修改完成：綠色邊框 */
+}
+
+.submission-record-item.record-unknown {
+    border-left-color: #9ca3af; /* 未知狀態：灰色邊框 */
+}
+
+/* 注意：.submission-record-item:hover 已在上面定義，這裡不再重複 */
+
+.record-status {
+    flex-shrink: 0;
+}
+
+.status-badge {
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    border: none;
+}
+
+.status-badge.status-draft {
+    background: #fbbf24; /* 更亮的黃色 */
+    color: #78350f;
+    border: none;
+}
+
+.status-badge.status-submitted {
+    background: #3b82f6;
+    color: white;
+    border: none;
+}
+
+.status-badge.status-rejected {
+    background: #ef4444;
+    color: white;
+    border: none;
+}
+
+.status-badge.status-modifying {
+    background: #fbbf24;
+    color: #78350f;
+    border: none;
+}
+
+.status-badge.status-completed {
+    background: #10b981;
+    color: white;
+    border: none;
+}
+
+.status-badge.status-unknown {
+    background: #9ca3af;
+    color: white;
+    border: none;
+}
+
+.record-time {
+    flex: 1;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.record-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    flex-shrink: 0;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 0 10px 10px 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.record-view-btn,
+.record-edit-btn,
+.record-delete-btn,
+.record-reset-btn {
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 8px !important;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    white-space: nowrap;
+}
+
+.record-view-btn {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    color: white;
+}
+
+.record-view-btn:hover {
+    background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(6, 182, 212, 0.3);
+}
+
+.record-edit-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.record-edit-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+}
+
+.record-delete-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.record-delete-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+.record-view-btn:disabled,
+.record-edit-btn:disabled,
+.record-delete-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 提交記錄詳細資訊樣式 */
+.submission-detail {
+    padding: 10px 0;
+}
+
+.detail-section {
+    margin-bottom: 20px;
+}
+
+.detail-section h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-section h5 i {
+    color: #667eea;
+}
+
+.detail-content {
+    color: #555;
+    line-height: 1.6;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
+}
+
+.detail-image-container {
+    margin-top: 10px;
+    text-align: center;
+    max-height: 500px;
+    overflow: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 10px;
+    background: #fff;
+}
+
+.detail-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.detail-pdf,
+.detail-pdf iframe {
+    width: 100%;
+    min-height: 500px;
+    border-radius: 4px;
+}
+
+.record-actions .edit-btn {
+    background: linear-gradient(45deg, #6366f1 0%, #4f46e5 100%);
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 8px !important;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+}
+
+.record-actions .edit-btn:hover {
+    background: #4f46e5;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+
+.record-actions .delete-btn {
+    background: linear-gradient(45deg, #ef4444 0%, #dc2626 100%);
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 8px !important;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.record-actions .delete-btn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* 繳交時段列表樣式（類似互評系統） */
+.deadline-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.deadline-item {
+    border: none;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem;
+    transition: none !important; /* 禁用过渡，防止绿色闪烁 */
+    cursor: pointer;
+}
+
+.deadline-item:hover {
+    background-color: #f8f9fa;
+}
+
+.deadline-item.active {
+    background-color: #e7f3ff;
+    border-left: 4px solid #0d6efd;
+}
+
+.deadline-item:last-child {
+    border-bottom: none;
+}
+
+/* 禁用繳交時段區域的 badge 過渡效果，防止綠色閃爍 */
+#deadlineList .badge,
+.deadline-list .badge,
+.deadline-item .badge {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* 滾動條樣式 */
+.deadline-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.deadline-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.deadline-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.deadline-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .project-upload-page .col-md-3 {
+        margin-bottom: 1rem;
+    }
+}

@@ -1,0 +1,251 @@
+/* 角色切換樣式 - 美化版 */
+.role-switch-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+}
+
+.role-switch-select {
+    width: 100%;
+    border: 1px solid #cfd8e3;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    background-image: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); /* 覆蓋 Bootstrap form-select 箭頭，箭頭由 ::after 提供 */
+    color: #1f2937;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.55rem 2.3rem 0.55rem 0.75rem;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+}
+
+.role-switch-select-wrap {
+    position: relative;
+}
+
+.role-switch-select-wrap::after {
+    content: "\f107";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    pointer-events: none;
+    font-size: 0.85rem;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.role-switch-select:hover {
+    border-color: #95a9db;
+    background-color: #f8fafc;
+    transform: translateY(-1px);
+}
+
+.role-switch-select:focus {
+    border-color: #7c8eea;
+    box-shadow: 0 0 0 0.15rem rgba(102, 126, 234, 0.2);
+    background-color: #fff;
+}
+
+.role-switch-select-wrap:focus-within::after {
+    transform: translateY(-50%) rotate(180deg);
+    color: #667eea;
+}
+
+.role-switch-btn {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    color: #1e293b;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.role-switch-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+}
+
+.role-switch-btn:hover::before {
+    left: 100%;
+}
+
+.role-switch-btn:hover {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.role-switch-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+}
+
+.role-switch-btn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+.role-switch-btn.active:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    transform: translateY(-3px);
+}
+
+.role-switch-btn i:first-child {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    color: #667eea;
+}
+
+.role-switch-btn.active i:first-child {
+    color: white;
+    transform: scale(1.1);
+}
+
+.role-switch-btn:hover i:first-child {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.role-switch-btn.active:hover i:first-child {
+    transform: scale(1.2) rotate(5deg);
+}
+
+.role-switch-btn span {
+    flex: 1;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.role-switch-btn.active span {
+    font-weight: 600;
+}
+
+.role-switch-btn i.fa-check {
+    margin-left: auto;
+    font-size: 1rem;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    animation: checkPulse 2s ease-in-out infinite;
+}
+
+@keyframes checkPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.9;
+    }
+}
+
+.role-switch-btn.active:hover i.fa-check {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.15);
+}
+
+/* 下拉選單整體美化（僅限 navbar 使用者選單，不影響 sidebar 子選單） */
+.navbar .dropdown-menu,
+.admin-navbar .dropdown-menu {
+    min-width: 280px;
+    padding: 1rem 0.75rem;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    backdrop-filter: blur(10px);
+}
+
+.navbar .dropdown-menu .small.text-muted,
+.admin-navbar .dropdown-menu .small.text-muted {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b !important;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.navbar .dropdown-item,
+.admin-navbar .dropdown-item {
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    margin: 0.25rem 0.5rem;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.navbar .dropdown-item:hover,
+.admin-navbar .dropdown-item:hover {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    transform: translateX(4px);
+}
+
+.navbar .dropdown-item i,
+.admin-navbar .dropdown-item i {
+    width: 20px;
+    text-align: center;
+    color: #667eea;
+    transition: all 0.2s ease;
+}
+
+.navbar .dropdown-item:hover i,
+.admin-navbar .dropdown-item:hover i {
+    color: #764ba2;
+    transform: scale(1.1);
+}
+
+.navbar .dropdown-menu .dropdown-divider,
+.admin-navbar .dropdown-menu .dropdown-divider {
+    margin: 0.75rem 0.5rem;
+    border-color: #e2e8f0;
+    opacity: 0.5;
+}
+

@@ -1,0 +1,812 @@
+* {
+    box-sizing: border-box;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    @page {
+        margin: 2.5cm 2cm;
+        size: A4;
+    }
+}
+
+body {
+    font-family: "DFKai-SB", "BiauKai", "標楷體", "Microsoft JhengHei", serif;
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+    background: #fff;
+    margin: 0;
+    padding: 3cm;
+    overflow-x: hidden;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* A4 全寬自適應：內容寬度 100%，禁止固定寬度，避免版面被壓縮 */
+.form-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.pdf-actions {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pdf-actions button,
+.pdf-actions .btn-export {
+    padding: 8px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    color: #333;
+    display: inline-flex;
+    align-items: center;
+}
+
+.pdf-actions button:hover,
+.pdf-actions .btn-export:hover {
+    background: #f0f0f0;
+}
+
+/* 導出 PDF 頂部：文件名稱（與表頭區分，供列印/下載時辨識）26 點 */
+.form-doc-name {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 26pt;
+    font-weight: 700;
+    text-align: left;
+    margin-bottom: 16px;
+    color: #1a1a1a;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+/* 表頭：正式表單樣式 */
+.form-header {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #000;
+}
+
+/* 簽名前 PDF 預覽（iframe）：灰底標題列，靠左「簽名前 PDF」，右側下載／列印（參考圖2） */
+/* 強制淺色模式，避免內嵌 PDF 檢視器呈現深色版面 */
+html:has(body.iframe-preview) {
+    color-scheme: light;
+}
+
+body.iframe-preview {
+    color-scheme: light;
+    padding: 0;
+    margin: 0;
+    min-height: 0;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+body.iframe-preview .form-header {
+    border-bottom: none;
+}
+
+/* 簽名前 PDF 在 iframe 預覽中，維持與一般頁面相同的版面，由 JS 控制產生 PDF 後再隱藏，避免 html2canvas 擷取不到內容 */
+body.iframe-preview .signed-pdf-preview-wrap {
+    display: none !important;
+}
+
+body.iframe-preview .pdf-actions {
+    display: flex !important;
+    visibility: visible !important;
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 44px !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 10px 12px !important;
+    background: #f5f5f5 !important;
+    border: none !important;
+    flex-shrink: 0;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+body.iframe-preview .pdf-actions::before {
+    content: "簽名前 PDF";
+    display: inline-block;
+    color: #333;
+    font-size: 15px;
+    font-weight: 600;
+    margin-right: auto;
+}
+
+body.iframe-preview .pdf-actions button,
+body.iframe-preview .pdf-actions .btn-export {
+    background: #fff !important;
+    color: #333 !important;
+    border: 1px solid #adb5bd !important;
+}
+
+body.iframe-preview .qr-test-area {
+    display: none !important;
+}
+
+body.iframe-preview #pdfContent {
+    background: #fff !important;
+}
+
+body.iframe-preview .pdf-generating {
+    background: #fff !important;
+}
+
+/* 內嵌預覽上方標題列：顯示「簽名前的 PDF」 */
+.iframe-preview-title-bar {
+    display: none;
+}
+
+body.iframe-preview .iframe-preview-title-bar {
+    display: flex;
+    align-items: center;
+    padding: 6px 14px;
+    background: #525252;
+    border-bottom: 1px solid #3d3d3d;
+    font-size: 14px;
+    font-weight: 600;
+    color: #e0e0e0;
+}
+
+body.iframe-preview .iframe-preview-title-text::before {
+    content: "簽名前的 PDF";
+}
+
+body.iframe-preview .pdf-preview-wrap {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    background: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+body.iframe-preview .pdf-preview-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+.form-header.form-header-title {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+
+    /* ✅ html2pdf 最穩：用 px，不用 pt */
+    font-size: 32px;
+    /* ≈ 24pt */
+    font-weight: 700;
+    text-align: left;
+    line-height: 0.7;
+    /* ✅ 讓換行「像公文」：不要整行撐滿，限定寬度再置中 */
+    max-width: 720px;
+    /* 可調 680~760 */
+    margin: 0 auto;
+
+    /* ✅ 換行穩定，不會溢出 */
+    white-space: pre-line;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+
+    letter-spacing: 2px;
+    /* 讓抬頭更像正式文件，可刪 */
+}
+
+.form-title {
+    font-size: 18pt;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    letter-spacing: 2px;
+    line-height: 1.4;
+}
+
+.form-meta {
+    font-size: 12pt;
+    margin: 0 0 4px 0;
+    line-height: 1.5;
+}
+
+.form-remark {
+    margin-bottom: 18px;
+    padding: 10px 12px;
+    background: #f9f9f9;
+    border: 1px solid #999;
+    font-size: 11pt;
+    line-height: 1.5;
+}
+
+/* 以題目為單位換頁：剩餘高度不足時整題移到下一頁 */
+.question-block {
+    margin-bottom: 18px;
+    page-break-inside: avoid;
+    border: 1px solid #333;
+    padding: 12px 14px;
+    background: #fefefe;
+    border-radius: 2px;
+    orphans: 2;
+    widows: 2;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* 長內容題（多行文字/表格）也整題換頁：題幹＋答案區不分割，不足時整題移到下一頁 */
+.question-block.question-block-longtext {
+    page-break-inside: avoid;
+}
+
+/* 題幹與答案區不拆開 */
+.question-block .question-title {
+    page-break-after: avoid;
+    break-after: avoid;
+}
+
+.question-title {
+    font-weight: bold;
+    font-size: 12pt;
+    margin: 0 0 8px 0;
+    line-height: 1.5;
+}
+
+.question-line {
+    border: none;
+    border-bottom: 1px solid #000;
+    min-height: 22px;
+    width: 100%;
+    display: block;
+}
+
+.question-line-multi {
+    border: none;
+    border-bottom: 1px solid #000;
+    min-height: 18px;
+    margin: 2px 0;
+    width: 100%;
+    display: block;
+}
+
+/* 專題生名單：表格高度自動撐開，內容完整顯示 */
+.sa-table-fixed-wrap {
+    width: 100%;
+    min-height: 132px;
+    margin-top: 6px;
+    margin-bottom: 10px;
+    overflow: visible;
+    border: 1px solid #000;
+}
+
+.sa-table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    box-sizing: border-box;
+}
+
+.sa-table th,
+.sa-table td {
+    border: 1px solid #000;
+    padding: 6px 10px;
+    font-size: 12pt;
+    line-height: 1.4;
+    height: 22px;
+}
+
+.sa-table th {
+    background: #f0f0f0;
+    font-weight: bold;
+    text-align: center;
+}
+
+.sa-table td {
+    vertical-align: middle;
+}
+
+/* 指導老師欄位：固定簽名線區塊（1 行高度） */
+.advisor-field-fixed {
+    min-height: 32px;
+    height: 32px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.advisor-field-fixed .question-line {
+    flex: 1;
+    min-height: 22px;
+}
+
+/* 指導老師評分與簽名：固定 1～2 行高度 */
+.question-block-signature .question-block-signature-inner {
+    min-height: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.question-block-signature .question-line {
+    flex: 1;
+    min-height: 22px;
+}
+
+/* 專題審查小組評分：固定 1 行高度 */
+.question-block-review-score .question-block-review-inner {
+    min-height: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.question-block-review-score .question-line {
+    flex: 1;
+    min-height: 22px;
+}
+
+.signature-block {
+    margin-top: 0;
+    padding-top: 0;
+    min-height: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.signature-line {
+    border: none;
+    border-bottom: 1px solid #000;
+    min-width: 100px;
+    display: inline-block;
+    margin: 0 12px 0 4px;
+    min-height: 18px;
+    max-width: 160px;
+}
+
+.question-options {
+    margin-top: 6px;
+    padding-left: 18px;
+}
+
+.question-options li {
+    margin-bottom: 2px;
+    font-size: 12pt;
+}
+
+.students-advisor-pdf {
+    margin-top: 6px;
+}
+
+.students-advisor-pdf .sa-label {
+    font-weight: bold;
+    font-size: 12pt;
+    margin-bottom: 4px;
+}
+
+.students-advisor-pdf .sa-row {
+    margin-bottom: 4px;
+    line-height: 1.6;
+}
+
+.students-advisor-pdf .sa-row .student-info {
+    display: inline-block;
+    margin-right: 12px;
+}
+
+.students-advisor-pdf .sa-item {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.students-advisor-pdf .sa-row .question-line {
+    border: none;
+    border-bottom: 1px solid #000;
+    min-height: 18px;
+}
+
+.me-1 {
+    margin-right: 0.25rem;
+}
+
+/* 編號列表（多行）題型：支援自動換行、不跑版 */
+.numbered-list-content {
+    margin-top: 6px;
+    padding: 10px 14px 20px 14px;
+    border: 1px solid #000;
+    line-height: 1.7;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+    text-align: left;
+    font-size: 12pt;
+    page-break-inside: avoid;
+    min-height: 80px;
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+    box-sizing: border-box;
+}
+
+.numbered-list-content .numbered-list-item {
+    margin-bottom: 0.35em;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
+}
+
+/* 子題多小題：單一外框包住所有小題，回答左對齊 */
+.sub-questions-outer-frame {
+    margin-top: 6px;
+    padding: 10px 14px 20px 14px;
+    border: 1px solid #000;
+    line-height: 1.7;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    text-align: left;
+    font-size: 12pt;
+    page-break-inside: avoid;
+}
+
+.sub-questions-outer-frame .sub-question-item {
+    margin-bottom: 16px;
+}
+
+.sub-questions-outer-frame .sub-question-item:last-child {
+    margin-bottom: 0;
+}
+
+.sub-questions-outer-frame .sub-question-answer-line {
+    border-bottom: 1px solid #000;
+    min-height: 22px;
+    text-align: left;
+    white-space: pre-wrap;
+    padding-bottom: 2px;
+}
+
+.sub-question-options-pdf {
+    margin-top: 4px;
+    line-height: 1.8;
+}
+
+.sub-question-option-box {
+    margin-right: 1em;
+    white-space: nowrap;
+}
+
+/* 敘述型欄位（如第四題專題概述）：高度自動撐開，整塊不分割，與題幹一起換頁 */
+.question-textarea-content {
+    margin-top: 6px;
+    padding: 10px 14px 20px 14px;
+    border: 1px solid #000;
+    line-height: 1.7;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+    text-align: left;
+    font-size: 12pt;
+    page-break-inside: avoid;
+    min-height: 80px;
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+    box-sizing: border-box;
+}
+
+/* 表格題：整題不分割，不足時整題移到下一頁，邊框與方格如正式公文 */
+.question-table-wrap {
+    margin-top: 6px;
+    page-break-inside: avoid;
+    overflow: visible;
+}
+
+.question-table-wrap table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #000;
+    table-layout: auto;
+    page-break-inside: avoid;
+}
+
+.question-table-wrap th,
+.question-table-wrap td {
+    border: 1px solid #000;
+    padding: 4px 8px;
+    font-size: 12pt;
+    line-height: 1.4;
+    text-align: center;
+    vertical-align: middle;
+    min-height: 18px;
+}
+
+.question-answer-line {
+    margin-top: 6px;
+    border: none;
+    border-bottom: 1px solid #000;
+    min-height: 22px;
+    padding-bottom: 2px;
+}
+
+/* 專題基本資料（系統自動帶入，與學生端填寫頁一致） */
+.pdf-project-basic {
+    margin: 16px 0 20px 0;
+    padding: 14px 16px;
+    border: 1px solid #333;
+    border-left-width: 4px;
+    border-left-color: #17a2b8;
+    background: #f8fcff;
+    font-size: 12pt;
+}
+
+.pdf-project-basic .pdf-project-basic-title {
+    font-weight: bold;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #ccc;
+}
+
+.pdf-project-basic .pdf-project-basic-row {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.pdf-project-basic .pdf-project-basic-row:last-child {
+    margin-bottom: 0;
+}
+
+.pdf-project-basic .pdf-project-basic-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.pdf-project-basic .pdf-project-basic-value {
+    display: block;
+    width: 100%;
+    min-height: 22px;
+    padding: 4px 8px;
+    border-bottom: 1px solid #333;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.pdf-footer-info {
+    position: relative;
+    margin-top: 24px;
+    padding-top: 12px;
+    padding-right: 96px;
+    border-top: 1px solid #999;
+    font-size: 10pt;
+    color: #333;
+    line-height: 1.6;
+}
+
+.pdf-footer-info .pdf-version-row {
+    display: block;
+}
+
+.pdf-footer-info .pdf-version-text {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+
+
+.pdf-preview-wrap {
+    position: fixed;
+    top: 52px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f0f0f0;
+    z-index: 10;
+}
+
+.pdf-generating {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 20;
+    color: #333;
+}
+
+/* QR Code 測試區域 */
+.qr-test-area {
+    margin-bottom: 24px;
+    padding: 16px;
+    border: 2px solid #17a2b8;
+    border-radius: 8px;
+    background: #f0f8ff;
+}
+
+.qr-test-area h3 {
+    margin: 0 0 12px 0;
+    color: #17a2b8;
+    font-size: 14pt;
+}
+
+.qr-test-content {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.qr-test-info {
+    flex: 1;
+    min-width: 300px;
+}
+
+.qr-test-info .info-row {
+    margin-bottom: 8px;
+    font-size: 11pt;
+}
+
+.qr-test-info .info-label {
+    font-weight: bold;
+    display: inline-block;
+    min-width: 100px;
+}
+
+.qr-test-preview {
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.qr-test-preview canvas {
+    border: 3px solid #333;
+    padding: 8px;
+    background: #fff;
+    display: block;
+    margin: 0 auto 8px;
+}
+
+.qr-test-preview .qr-size-label {
+    font-size: 10pt;
+    color: #666;
+}
+
+/* 科辦／預覽：簽名後 PDF 主預覽 + 簽名前後對比（與學生端一致） */
+.signed-pdf-preview-wrap {
+    margin: 0 0 24px 0;
+    padding: 0;
+}
+
+.signed-pdf-preview-wrap .preview-section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #2c3e50;
+}
+
+.signed-pdf-preview-wrap .signed-main-iframe {
+    width: 100%;
+    min-height: 80vh;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f5f5f5;
+}
+
+.compare-section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 32px 0 12px 0;
+    color: #2c3e50;
+}
+
+.compare-pdf-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.compare-pdf-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.compare-pdf-item h4 {
+    margin: 0;
+    padding: 10px 14px;
+    font-size: 14px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.compare-pdf-viewer {
+    min-height: 500px;
+    position: relative;
+}
+
+.compare-pdf-viewer iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+}
+
+.compare-pdf-placeholder {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    padding: 24px;
+}
+
+body.embed-doc-view {
+    /* embed：左側呈現與右邊 PDF 很像的「文件頁」樣式 */
+    background: #e9ecef !important;
+    padding: 12px !important;
+    min-height: 100vh;
+}
+
+body.embed-doc-view .form-container {
+    background: #fff !important;
+    max-width: 210mm;
+    margin: 0 auto;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    padding: 1.5cm;
+}

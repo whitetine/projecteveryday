@@ -1,0 +1,88 @@
+/* 學生評分頁面樣式 */
+
+.period-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.period-item {
+    border: none;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem;
+    transition: background-color 0.2s;
+}
+
+.period-item:hover {
+    background-color: #f8f9fa;
+}
+
+.period-item.active {
+    background-color: #e7f3ff;
+    border-left: 4px solid #0d6efd;
+}
+
+.period-item:last-child {
+    border-bottom: none;
+}
+
+.member-card {
+    background-color: #f8f9fa;
+    transition: box-shadow 0.2s;
+}
+
+.member-card:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.star-rating {
+    display: flex;
+    align-items: center;
+}
+
+.star {
+    transition: color 0.2s, transform 0.1s;
+}
+
+.star:hover {
+    transform: scale(1.1);
+}
+
+.star.filled {
+    color: #ffc107 !important;
+}
+
+.comment-input {
+    resize: none;
+    height: 100px;
+    overflow-y: auto;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .col-md-3 {
+        margin-bottom: 1rem;
+    }
+    
+    .member-card {
+        padding: 1rem !important;
+    }
+}
+
+/* 滾動條樣式 */
+.period-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.period-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.period-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.period-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+

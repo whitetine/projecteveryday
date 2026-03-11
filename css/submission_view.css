@@ -1,0 +1,234 @@
+/* =========================================================
+   submission_view.css
+   行政系統 / 舊系統表格感（最終穩定版）
+   強制壓過 main.php / 全站 / Bootstrap 樣式
+   ========================================================= */
+
+/* ===== 基本頁面 ===== */
+
+
+/* 外層容器 */
+.wrap{
+  width:96%;
+  margin:18px auto;
+  background:#fff;
+  padding:14px;
+  border-radius:8px;
+}
+
+/* ===== 工具列 ===== */
+.toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.toolbar-left label{
+  font-size:16px;
+  margin-right:6px;
+}
+
+.toolbar-left select{
+  font-size:15px;
+  padding:4px 8px;
+}
+
+/* ===== 表格外框（只留線，不要底色） ===== */
+html body .wrap .table-box{
+  border:2px solid #333;
+  border-radius:6px;
+  overflow:hidden;
+  background-color:#fff !important;
+  background-image:none !important;
+}
+
+/* ===== 表格本體 ===== */
+html body .wrap table.data-table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  background-color:#fff !important;
+  background-image:none !important;
+}
+
+/* ===== 表頭 ===== */
+html body .wrap table.data-table thead th{
+  font-weight:700;
+  font-size:15px;
+  text-align:center;
+  border:1px solid #333;
+  border-bottom:2px solid #333;
+  padding:8px 6px;
+  background-color:#fff !important;
+  background-image:none !important;
+}
+
+/* ===== 表格內容格 ===== */
+html body .wrap table.data-table td{
+  border:1px solid #333;
+  padding:8px 6px;
+  text-align:center;
+  font-size:15px;
+  word-break:break-all;
+  background-color:#fff !important;
+  background-image:none !important;
+}
+
+/* ===== tbody / tr 強制清底色（重點） ===== */
+html body .wrap table.data-table tbody,
+html body .wrap table.data-table tr{
+  background-color:#fff !important;
+  background-image:none !important;
+}
+
+/* ===== 載入中那一列（不撐高、不變色） ===== */
+html body .wrap #tableBody .loading{
+  background-color:#fff !important;
+  background-image:none !important;
+  color:#666;
+  padding:12px 8px;
+  height:auto !important;
+  min-height:0 !important;
+  line-height:normal !important;
+  text-align:center;
+}
+
+/* ===== 操作按鈕 ===== */
+html body .wrap .btn{
+  border:1px solid #333;
+  background-color:#fff !important;
+  padding:4px 10px;
+  font-size:14px;
+  cursor:pointer;
+  margin:0 2px;
+  text-decoration:none;
+  display:inline-block;
+}
+
+html body .wrap .btn:hover{
+  background-color:#eee !important;
+}
+
+html body .wrap .btn:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+}
+
+/* 通過按鈕 */
+html body .wrap .btn-approve{
+  background-color:#d4edda !important;
+  color:#155724;
+  border-color:#c3e6cb;
+}
+
+html body .wrap .btn-approve:hover:not(:disabled){
+  background-color:#c3e6cb !important;
+}
+
+/* 退件按鈕 */
+html body .wrap .btn-reject{
+  background-color:#f8d7da !important;
+  color:#721c24;
+  border-color:#f5c6cb;
+}
+
+html body .wrap .btn-reject:hover:not(:disabled){
+  background-color:#f5c6cb !important;
+}
+
+/* 提醒按鈕 */
+html body .wrap .btn-remind{
+  background-color:#fff3cd !important;
+  color:#856404;
+  border-color:#ffeaa7;
+}
+
+html body .wrap .btn-remind:hover:not(:disabled){
+  background-color:#ffeaa7 !important;
+}
+
+/* 查看按鈕 */
+html body .wrap .btn-view{
+  background-color:#d1ecf1 !important;
+  color:#0c5460;
+  border-color:#bee5eb;
+}
+
+html body .wrap .btn-view:hover{
+  background-color:#bee5eb !important;
+}
+
+/* 審核按鈕 */
+html body .wrap .btn-review{
+  background-color:#ffc107 !important;
+  color:#856404;
+  border-color:#ffc107;
+}
+
+html body .wrap .btn-review:hover{
+  background-color:#e0a800 !important;
+}
+
+/* ===== 防止任何套版加的 before / after 疊色 ===== */
+html body .wrap .table-box::before,
+html body .wrap .table-box::after,
+html body .wrap table.data-table::before,
+html body .wrap table.data-table::after{
+  content:none !important;
+  background:none !important;
+}
+.filter-box{
+  margin-left: 12px;
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.filter-box label{
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.filter-box input{
+  width: 16px;
+  height: 16px;
+}
+.filter-box{
+  margin-left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.filter-box .chk{
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.filter-box input[type="checkbox"]{
+  width: 16px;
+  height: 16px;
+}
+
+/* 審核徽章（不會太新，偏行政系統感） */
+.badge{
+  display:inline-block;
+  padding:2px 8px;
+  border:1px solid #333;
+  border-radius:10px;
+  font-size:13px;
+  line-height:18px;
+  background:#fff;
+}
+.badge-ok{ font-weight:700; }
+.badge-bad{ font-weight:700; }
+.badge-wait{ }
+.badge-warn{ }
+
+/* ===== 查看彈窗（申請單） ===== */
+.submission-view-modal .submission-view-download-link:hover {
+  text-decoration: underline;
+  color: #004499;
+}

@@ -1,0 +1,196 @@
+/* 導航欄跑馬燈樣式 */
+.navbar-marquee-container {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 1rem;
+}
+
+.navbar-marquee-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-marquee-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    white-space: nowrap;
+    animation: navbar-marquee-scroll 25s linear infinite;
+}
+
+.navbar-marquee-content:hover {
+    animation-play-state: paused;
+}
+
+.navbar-marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-width: fit-content;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.navbar-marquee-item:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+.navbar-marquee-item-icon {
+    font-size: 0.9rem;
+    color: #ffc107;
+    flex-shrink: 0;
+}
+
+.navbar-marquee-item-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.navbar-marquee-item-content {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.navbar-marquee-item-link {
+    color: #ffc107;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.navbar-marquee-item-link:hover {
+    color: #ffd54f;
+    text-decoration: underline;
+}
+
+.navbar-marquee-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1rem;
+    padding: 0 0.5rem;
+    flex-shrink: 0;
+}
+
+/* 管理員導航欄樣式（深藍色背景） */
+.admin-navbar .navbar-marquee-item {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.admin-navbar .navbar-marquee-item:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.admin-navbar .navbar-marquee-item-title,
+.admin-navbar .navbar-marquee-item-content {
+    color: white;
+}
+
+/* 一般導航欄樣式（淺色背景） */
+.navbar-light .navbar-marquee-item {
+    background: rgba(0, 0, 0, 0.08);
+    color: #333;
+}
+
+.navbar-light .navbar-marquee-item:hover {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.navbar-light .navbar-marquee-item-title,
+.navbar-light .navbar-marquee-item-content {
+    color: #333;
+}
+
+.navbar-light .navbar-marquee-item-icon {
+    color: #007bff;
+}
+
+.navbar-light .navbar-marquee-item-link {
+    color: #007bff;
+}
+
+.navbar-light .navbar-marquee-item-link:hover {
+    color: #0056b3;
+}
+
+.navbar-light .navbar-marquee-separator {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+/* 跑馬燈動畫 */
+@keyframes navbar-marquee-scroll {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* 多個公告時的樣式 */
+.navbar-marquee-content.multiple {
+    animation-duration: 50s;
+}
+
+/* 高優先級公告樣式 */
+.navbar-marquee-item.priority-high {
+    background: rgba(255, 193, 7, 0.3);
+    border: 1px solid rgba(255, 193, 7, 0.5);
+}
+
+.admin-navbar .navbar-marquee-item.priority-high {
+    background: rgba(255, 193, 7, 0.25);
+    border: 1px solid rgba(255, 193, 7, 0.4);
+}
+
+.navbar-marquee-item.priority-high .navbar-marquee-item-icon {
+    animation: navbar-pulse 2s infinite;
+}
+
+@keyframes navbar-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* 響應式設計 */
+@media (max-width: 992px) {
+    .navbar-marquee-container {
+        display: none; /* 在小螢幕上隱藏跑馬燈 */
+    }
+}
+
+@media (max-width: 1200px) {
+    .navbar-marquee-container {
+        max-width: 400px;
+    }
+    
+    .navbar-marquee-item-content {
+        max-width: 150px;
+    }
+}
+

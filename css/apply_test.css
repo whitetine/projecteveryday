@@ -1,0 +1,1031 @@
+/* 防止 Vue 掛載前的閃爍 */
+[v-cloak] {
+    display: none !important;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+#app.main {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.form-fill-container {
+    padding: 20px;
+    width: 100%;
+    margin: 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.page-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 36px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+}
+
+.form-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+    padding: 30px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    font-size: 16px;
+}
+
+.form-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
+}
+
+/* 該表單該組已完成繳交橫幅：明顯提示一份表單一組僅能填寫一次 */
+.form-card .submitted-banner {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #0f5132;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(25, 135, 84, 0.2);
+}
+
+.form-card .submitted-banner strong {
+    color: #0f5132;
+}
+
+.form-card h3 {
+    color: #667eea;
+    font-weight: 700;
+    font-size: 24px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #667eea;
+}
+
+.doc-header-block {
+    font-size: 1.75rem;
+}
+
+.question-group {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.question-group:hover {
+    background: linear-gradient(135deg, #f0f2ff 0%, #f8f9ff 100%);
+    border-left-color: #764ba2;
+}
+
+.question-group:last-child {
+    border-bottom: none;
+}
+
+.question-label {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 12px;
+    display: block;
+    color: #495057;
+}
+
+.question-label.required::after {
+    content: ' *';
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background: #ffffff;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    background: #ffffff;
+}
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* 審查/簽名欄位：反黑、不可輸入（僅審查角色可編輯） */
+textarea.form-control.review-field-locked,
+input.form-control.review-field-locked {
+    background-color: #e9ecef;
+    color: #495057;
+    cursor: not-allowed;
+    resize: none;
+}
+
+textarea.form-control.review-field-locked {
+    min-height: auto;
+}
+
+/* 一般多行：足夠高度顯示完整內容、可捲動，保留學生換行 */
+textarea.form-control.textarea-multi {
+    min-height: 280px;
+    resize: vertical;
+}
+
+/* 大型敘述區（科辦設定 textarea_display=large 時）：接近整頁空白區 */
+textarea.form-control.textarea-large {
+    min-height: 50vh;
+    resize: vertical;
+}
+
+/* 編號列表（多行）／子題多小題：預覽區即時顯示 1. 2. 3.，長文自動換行不撐破版面 */
+.numbered-textarea-block .numbered-list-preview {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.numbered-textarea-block .numbered-list-item {
+    margin-bottom: 0.35rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
+}
+
+/* 日期選擇器：選到的日期顯示單行底線（類紙本表單） */
+.date-picker-input {
+    cursor: pointer;
+    background-color: #fff;
+    border: none;
+    border-bottom: 1px solid #333;
+    border-radius: 0;
+}
+
+.date-picker-input:hover {
+    border-bottom-color: #667eea;
+}
+
+.date-picker-input:focus {
+    outline: none;
+    border-bottom-color: #667eea;
+    box-shadow: none;
+}
+
+.options-container {
+    margin-top: 10px;
+}
+
+.option-item {
+    margin-bottom: 10px;
+}
+
+.option-item label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 14px 18px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    border: 2px solid transparent;
+    font-size: 16px;
+}
+
+.option-item label:hover {
+    background: linear-gradient(135deg, #e8ebff 0%, #f0f2ff 100%);
+    border-color: #667eea;
+    transform: translateX(5px);
+}
+
+.option-item input[type="radio"]:checked+label,
+.option-item input[type="checkbox"]:checked+label {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+.option-item input[type="radio"],
+.option-item input[type="checkbox"] {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* 單選/複選：□ ☑ 形式（與 PDF 一致） */
+.options-box-format .option-box-item {
+    margin-bottom: 0.5rem;
+}
+
+.options-box-format .option-box-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.4rem 0;
+    font-size: 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+.options-box-format .option-box-label:hover {
+    background: transparent;
+    border-color: transparent;
+    transform: none;
+}
+
+.options-box-format .option-box-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.options-box-format .option-box-display {
+    margin-left: 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.options-box-format .option-box-label:focus-within .option-box-display,
+.options-box-format .option-box-label:hover .option-box-display {
+    color: #667eea;
+}
+
+/* 圖檔上傳（學生上傳）題型 */
+.image-upload-block .question-image-file-input {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.question-image-preview-wrap {
+    margin-top: 0.75rem;
+}
+
+.question-image-thumb {
+    display: inline-block;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.question-image-thumb-img {
+    display: block;
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: contain;
+}
+
+/* 表格題型：學生端編輯用表格 */
+.student-table-editor-wrap {
+    margin-top: 8px;
+    overflow-x: auto;
+}
+
+.student-table-editor {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.student-table-editor th,
+.student-table-editor td {
+    border: 1px solid #dee2e6;
+    padding: 4px;
+    vertical-align: middle;
+}
+
+.student-table-editor input.form-control {
+    padding: 4px 6px;
+    font-size: 14px;
+    height: auto;
+}
+
+.table-size-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.table-size-controls input[type="number"] {
+    width: 70px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    font-size: 14px;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+    border: none;
+    padding: 14px 45px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(67, 233, 123, 0.4);
+    background: linear-gradient(135deg, #38f9d7 0%, #43e97b 100%);
+}
+
+.btn-submit:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.form-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+}
+
+.form-action-buttons .btn-draft-apply,
+.form-action-buttons .btn-export,
+.form-action-buttons .btn-submit {
+    margin: 0;
+}
+
+.btn-export {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-export:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.btn-draft-apply {
+    padding: 16px 32px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(13, 148, 136, 0.35);
+    transition: all 0.3s ease;
+}
+
+.btn-draft-apply:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13, 148, 136, 0.45);
+}
+
+.btn-draft-apply:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #94a3b8;
+    box-shadow: none;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #667eea;
+}
+
+.student-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.students-advisor-block {
+    margin-top: 15px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f0f2ff 0%, #ffffff 100%);
+    border-radius: 8px;
+    border: 2px dashed #667eea;
+}
+
+.form-label {
+    color: #495057;
+    font-weight: 600;
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+/* 時間資訊區塊 */
+.border.rounded {
+    background: linear-gradient(135deg, #e8ebff 0%, #f0f2ff 100%);
+    border: 2px solid #667eea !important;
+}
+
+.text-primary {
+    color: #667eea !important;
+}
+
+.text-success {
+    color: #43e97b !important;
+}
+
+.text-danger {
+    color: #f5576c !important;
+}
+
+.text-warning {
+    color: #fee140 !important;
+}
+
+.alert {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #fef0f0 0%, #ffe8e8 100%);
+    color: #f5576c;
+    border-left: 4px solid #f5576c;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #e8f4ff 0%, #f0f8ff 100%);
+    color: #667eea;
+    border-left: 4px solid #667eea;
+}
+
+/* 選擇框樣式 */
+select.form-control {
+    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-size: 0 0;
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+select.form-control:focus {
+    border-color: #667eea;
+}
+
+/* 頁面標題 */
+header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #495057;
+}
+
+/* 小字體文本 */
+.text-muted,
+small {
+    font-size: 15px !important;
+}
+
+/* 時間資訊文字 */
+.fw-bold {
+    font-size: 17px;
+}
+
+/* 載入中文字 */
+.loading p {
+    font-size: 18px;
+}
+
+/* 專題生區塊標籤 */
+.students-advisor-block .form-label {
+    font-size: 17px;
+}
+
+/* 附件（PDF）上傳區塊 */
+.supplement-pdf-block {
+    margin-top: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.supplement-pdf-block.readonly {
+    background: #f0f0f0;
+    border-left-color: #6c757d;
+    pointer-events: none;
+}
+
+.supplement-pdf-block .supplement-pdf-note {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 8px;
+}
+
+/* 隱藏 file input，不顯示原生「沒有選擇檔案」；僅由「選擇檔案」以程式觸發選檔 */
+.supplement-pdf-block input[type="file"].supplement-pdf-file-input-hidden {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0);
+}
+
+/* 單一外框內 [選擇檔案] [檔名] */
+.supplement-pdf-inline {
+    display: flex;
+    align-items: center;
+    border: 2px solid rgba(102, 126, 234, 0.5);
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.supplement-pdf-inline .btn-choose-file {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    border: none;
+    border-right: 1px solid #dee2e6;
+    background: #e9ecef;
+    color: #495057;
+    font-size: 15px;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.supplement-pdf-inline .btn-choose-file:hover {
+    background: #dee2e6;
+}
+
+.supplement-pdf-inline .supplement-pdf-filename {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    font-size: 15px;
+    color: #212529;
+}
+
+.supplement-pdf-inline .supplement-pdf-filename.text-muted {
+    color: #6c757d;
+}
+
+.supplement-pdf-inline .btn-reset-file {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, 0.08);
+    background: #84cc16;
+    color: #fff;
+    font-size: 15px;
+    border-radius: 0;
+    cursor: pointer;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.supplement-pdf-inline .btn-reset-file:hover {
+    background: #65a30d;
+    color: #fff;
+}
+
+/* 簽名圖檔上傳區塊 */
+.sign-image-block {
+    margin-top: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, #fff8f0 0%, #fff 100%);
+    border-radius: 8px;
+    border-left: 4px solid #0d9488;
+}
+
+.sign-image-block.readonly {
+    background: #f0f0f0;
+    border-left-color: #6c757d;
+    pointer-events: none;
+}
+
+.sign-image-block .sign-image-note {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 8px;
+}
+
+.sign-image-block input[type="file"].sign-image-file-input-hidden {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0);
+}
+
+.sign-image-inline {
+    display: flex;
+    align-items: center;
+    border: 2px solid rgba(13, 148, 136, 0.5);
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.sign-image-inline .btn-choose-file {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    border: none;
+    border-right: 1px solid #dee2e6;
+    background: #e9ecef;
+    color: #495057;
+    font-size: 15px;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.sign-image-inline .btn-choose-file:hover {
+    background: #dee2e6;
+}
+
+.sign-image-inline .sign-image-filename {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    font-size: 15px;
+    color: #212529;
+}
+
+.sign-image-inline .sign-image-filename.text-muted {
+    color: #6c757d;
+}
+
+/* 版本核實提示：僅在通過時可送出申請 */
+.version-verify-msg {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.version-verify-msg.version-verify-ok {
+    background: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+}
+
+.version-verify-msg.version-verify-err {
+    background: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+}
+
+/* 對比視窗：接近滿版、左右等高對齊 */
+.compare-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 12px;
+    box-sizing: border-box;
+    overflow: hidden !important;
+}
+
+@media (min-width: 1024px) {
+    .compare-modal-overlay {
+        padding: 12px 12px 12px 292px;
+    }
+}
+
+.compare-modal-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+}
+
+.compare-modal-content {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: calc(100vw - 304px);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    margin: auto;
+    overflow: hidden;
+}
+
+.compare-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    background: #f8f9fa;
+    min-height: 0;
+}
+
+.compare-modal-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.compare-modal-header h3,
+.compare-modal-header .compare-modal-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.compare-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.compare-modal-close:hover {
+    background: #f8f9fa;
+    color: #495057;
+}
+
+.compare-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    background: #f8f9fa;
+    min-height: 0;
+}
+
+/* 左右兩欄等寬、等高，外框與 PDF 區域樣式一致；標題與預覽區緊貼，無中間白縫 */
+.compare-pdf-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 0 20px;
+    margin-bottom: 24px;
+    align-items: stretch;
+    min-height: 0;
+}
+
+.compare-pdf-item {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+}
+
+/* 左右標題列一致：深灰底色、圓角，與下方 PDF 區緊貼（無白縫） */
+.compare-pdf-item h4,
+.compare-pdf-item .compare-pdf-item-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #e0e0e0;
+    padding: 10px 12px;
+    background: #525252;
+    border-radius: 10px 10px 0 0;
+    border: 1px solid #3d3d3d;
+    border-bottom: none;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    line-height: 1.3;
+}
+
+.compare-pdf-viewer {
+    border: 1px solid #3d3d3d;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    width: 100%;
+    height: calc(98vh - 140px);
+    min-height: 400px;
+    max-height: none;
+    overflow: auto;
+    background: #525252;
+    display: block;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
+}
+
+.compare-pdf-viewer iframe,
+.compare-pdf-viewer .compare-iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    display: block;
+    border: none;
+    background: #525252;
+}
+
+.compare-pdf-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    color: #b0b0b0;
+    font-size: 16px;
+    background: #525252;
+    padding: 20px;
+    text-align: center;
+}
+
+.compare-result-info {
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.compare-result-status {
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.compare-result-status.result-consistent {
+    background: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+}
+
+.compare-result-status.result-inconsistent {
+    background: #f8d7da;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+}
+
+.compare-result-status.result-pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+}
+
+.compare-result-status .result-main-text {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.compare-result-status .result-warning-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #dc3545;
+    margin-top: 8px;
+}
+
+.compare-result-status.result-consistent .result-main-text {
+    margin-bottom: 4px;
+}
+
+.compare-result-status .result-sub-text {
+    font-size: 14px;
+    color: inherit;
+    opacity: 0.95;
+    margin-top: 4px;
+}
+
+.compare-result-status.result-consistent .result-sub-text {
+    margin-bottom: 0;
+}
+
+.compare-time-info {
+    font-size: 14px;
+    color: #495057;
+}
+
+.compare-time-info div {
+    margin-bottom: 8px;
+}
+
+.compare-time-info div:last-child {
+    margin-bottom: 0;
+}
+
+.compare-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.compare-modal-footer .btn {
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.compare-modal-footer .btn-secondary {
+    background: #6c757d;
+    color: #fff;
+}
+
+.compare-modal-footer .btn-secondary:hover {
+    background: #5a6268;
+}
+
+.compare-modal-footer .btn-primary {
+    background: #667eea;
+    color: #fff;
+}
+
+.compare-modal-footer .btn-primary:hover {
+    background: #5568d3;
+}
+
+.compare-modal-footer .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 核實不一致確認彈窗：仍要提交在右、取消在左 */
+.swal-verify-submit .swal2-actions {
+    flex-direction: row;
+}
+
+.swal-verify-submit .swal2-actions .swal2-cancel {
+    order: 1;
+}
+
+.swal-verify-submit .swal2-actions .swal2-confirm {
+    order: 2;
+}

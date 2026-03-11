@@ -1,0 +1,948 @@
+Array
+(
+)
+Array
+(
+)
+Array
+(
+)
+Array
+(
+    [doc_ID] => 13
+    [document_id] => 13
+    [doc_name] => abc
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 0
+    [document_id] => 0
+    [doc_name] => ddd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dddd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 14
+    [document_id] => 14
+    [doc_name] => ddd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dddd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 14
+    [document_id] => 14
+    [doc_name] => ddd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dddd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 14
+    [document_id] => 14
+    [doc_name] => ddd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dddd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 14
+    [document_id] => 14
+    [doc_name] => ddd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dddd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 14
+    [document_id] => 14
+    [doc_name] => ddd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dddd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 14
+    [document_id] => 14
+    [doc_name] => ddd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dddd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 0
+    [document_id] => 0
+    [doc_name] => dd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 15
+    [document_id] => 15
+    [doc_name] => dd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 15
+    [document_id] => 15
+    [doc_name] => dd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 15
+    [document_id] => 15
+    [doc_name] => dd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 15
+    [document_id] => 15
+    [doc_name] => dd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 1
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 15
+    [document_id] => 15
+    [doc_name] => dd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 0
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 15
+    [document_id] => 15
+    [doc_name] => dd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 0
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => ddddd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)
+Array
+(
+    [doc_ID] => 15
+    [document_id] => 15
+    [doc_name] => dddddddddddddddddddddddddd
+    [doc_header] => 
+    [doc_des] => 審查文件
+    [is_required] => 0
+    [doc_start_d] => 
+    [doc_end_d] => 
+    [doc_status] => 1
+    [form_schema] => Array
+        (
+            [_remark] => 
+            [pdf_footer_timestamps] => 1
+            [supplement_attachment_enabled] => 0
+            [supplement_attachment_note] => 
+            [questions] => Array
+                (
+                    [0] => Array
+                        (
+                            [order] => 0
+                            [title] => dddddddddd
+                            [type] => text
+                            [special_field] => none
+                            [required] => 
+                            [options] => Array
+                                (
+                                )
+
+                            [rows] => 5
+                            [prefill_source] => none
+                            [prefill_fields] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [exresultdata] => 1
+        )
+
+    [doc_target_all] => 0
+    [doc_target_grades] => Array
+        (
+            [0] => 110
+        )
+
+    [doc_target_groups] => Array
+        (
+            [0] => 1
+            [1] => 2
+        )
+
+    [doc_target_classes] => Array
+        (
+        )
+
+)

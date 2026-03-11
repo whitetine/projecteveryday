@@ -1,0 +1,1298 @@
+/* 時程表管理頁面樣式 */
+
+.schedule-manage-container {
+    padding: 30px;
+    width: 100%;
+    max-width: 1400px;
+    margin: auto;
+    background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+    min-height: 100vh;
+}
+
+/* 標題區域（參考 suggest） */
+.schedule-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #e8ecf1;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.schedule-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+}
+
+.schedule-subtitle {
+    color: #6c757d;
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* 篩選區塊（參考 suggest） */
+.schedule-filter-box {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 30px;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e8ecf1;
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.schedule-filter-box-row1 {
+    display: flex;
+    gap: 12px;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    overflow: visible;
+    width: 100%;
+    min-width: 0;
+}
+
+/* 確保在 #content 容器內也能正常顯示 */
+#content .schedule-filter-box-row1 {
+    display: flex !important;
+    gap: 12px !important;
+    flex-wrap: nowrap !important;
+    align-items: flex-end !important;
+    overflow: visible !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.schedule-filter-box-row2 {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+/* 線上評分狀態區塊 */
+.schedule-online-scoring-row {
+    padding-top: 12px;
+    margin-top: 8px;
+    border-top: 1px solid #e8ecf1;
+}
+.schedule-online-scoring-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+}
+.schedule-online-scoring-label {
+    font-weight: 600;
+    color: #374151;
+}
+.schedule-online-scoring-status {
+    font-weight: 600;
+    color: #059669;
+}
+.schedule-online-scoring-status.closed {
+    color: #dc2626;
+}
+.schedule-btn-toggle-scoring {
+    padding: 6px 14px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #f3f4f6;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+.schedule-btn-toggle-scoring:hover {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+}
+.schedule-btn-toggle-scoring:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.schedule-btn-toggle-scoring:disabled:hover {
+    background: #f3f4f6;
+    border-color: #e5e7eb;
+}
+.schedule-online-scoring-notes {
+    width: 100%;
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-top: 4px;
+}
+
+/* 屆別固定 240 */
+.schedule-cohort-box {
+    flex: 0 0 280px !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    width: 280px !important;
+    position: relative;
+    z-index: 10;
+    overflow: visible !important;
+    box-sizing: border-box;
+}
+
+/* 確保在 #content 容器內也能正常顯示 */
+#content .schedule-cohort-box {
+    flex: 0 0 280px !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    width: 280px !important;
+    overflow: visible !important;
+}
+
+.schedule-cohort-box .form-select {
+    z-index: 1000;
+    position: relative;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+}
+
+/* 確保下拉選單選項文字完整顯示 */
+.schedule-cohort-box .form-select option {
+    white-space: normal;
+    word-wrap: break-word;
+    padding: 0.5rem;
+    font-size: 16px;
+}
+
+/* 確保在 #content 容器內的 form-select 也能正常顯示 */
+#content .schedule-cohort-box .form-select {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    padding-right: 2.75rem !important;
+}
+
+.schedule-cohort-box label,
+.schedule-title-box label,
+.schedule-time-box label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    color: #374151;
+    line-height: 1.5;
+    min-height: 24px;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.schedule-cohort-box .form-select,
+.schedule-title-box .form-control {
+    width: 100% !important;
+    height: 44px;
+    font-size: 16px !important;
+    padding: 0.5rem 2.75rem 0.5rem 0.75rem !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-wrap: break-word !important;
+    text-align: left !important;
+    line-height: 1.5 !important;
+}
+
+.schedule-time-box .form-control {
+    width: 100%;
+    height: 38px;
+    font-size: 16px;
+    padding: 0.5rem 0.75rem;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+/* 類組選擇框 */
+.schedule-group-box {
+    flex: 0 0 240px;
+    min-width: 240px;
+    position: relative;
+    z-index: 10;
+    overflow: visible;
+    box-sizing: border-box;
+}
+
+.schedule-group-box .form-select {
+    z-index: 1000;
+    position: relative;
+    width: 100%;
+    overflow: visible;
+}
+
+.schedule-group-box label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    color: #374151;
+    line-height: 1.5;
+    min-height: 24px;
+    font-size: 16px;
+}
+
+.schedule-group-box .form-select {
+    width: 100%;
+    height: 38px;
+    font-size: 16px;
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+/* 標題輸入框 */
+.schedule-title-box {
+    flex: 1 1 300px;
+    min-width: 200px;
+    flex-shrink: 1;
+}
+
+/* 時間輸入框 */
+.schedule-time-box {
+    flex: 0 0 300px;
+}
+
+/* 按鈕區域 */
+.schedule-export-box {
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    white-space: nowrap;
+}
+
+/* 按鈕樣式（參考 suggest） */
+.schedule-btn-save,
+.schedule-btn-export,
+.schedule-btn-back-home,
+.schedule-btn-edit-all,
+.schedule-btn-new-schedule {
+    padding: 10px 28px;
+    border-radius: 8px;
+    border: none;
+    color: #fff;
+    font-size: 17px;
+    white-space: nowrap;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.schedule-btn-back-home {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+}
+
+.schedule-btn-back-home:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5a6268 0%, #6c757d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+}
+
+.schedule-btn-edit-all {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
+.schedule-btn-edit-all:hover:not(:disabled) {
+    background: linear-gradient(135deg, #138496 0%, #17a2b8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
+}
+
+.schedule-btn-edit-all:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.schedule-btn-new-schedule {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.schedule-btn-new-schedule:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+.schedule-btn-new-schedule:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.schedule-btn-save {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.schedule-btn-save:hover:not(:disabled) {
+    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+.schedule-btn-save:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+}
+
+.schedule-btn-save:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.schedule-btn-export {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.schedule-btn-export:hover:not(:disabled) {
+    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+.schedule-btn-export:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+}
+
+.schedule-btn-export:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* 檔案列表容器（參考 suggest） */
+.schedule-file-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    width: 100%;
+    min-height: 200px;
+}
+
+.schedule-file-card {
+    background: #fff;
+    border: 2px solid #e8ecf1;
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: visible;
+}
+
+/* 卡片按鈕容器 */
+.schedule-file-card-buttons {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+}
+
+/* 卡片按鈕樣式 */
+.schedule-card-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    color: #495057;
+    padding: 0;
+}
+
+.schedule-card-btn:hover {
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.1);
+}
+
+.schedule-card-btn-notify {
+    color: #667eea;
+}
+
+.schedule-card-btn-notify:hover {
+    background: #667eea;
+    color: #fff;
+}
+
+.schedule-card-btn-export {
+    color: #28a745;
+}
+
+.schedule-card-btn-export:hover {
+    background: #28a745;
+    color: #fff;
+}
+
+.schedule-file-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.schedule-file-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    border-color: #667eea;
+}
+
+.schedule-file-card:hover::before {
+    transform: scaleX(1);
+}
+
+.schedule-file-icon {
+    font-size: 52px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    transition: transform 0.3s ease;
+}
+
+.schedule-file-card:hover .schedule-file-icon {
+    transform: scale(1.1);
+}
+
+.schedule-file-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #212529;
+    word-break: break-word;
+    margin-bottom: 8px;
+}
+
+.schedule-file-date {
+    font-size: 15px;
+    color: #6c757d;
+}
+
+.page-header {
+    margin-bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+#schedule-table-card .page-header {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.time-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.time-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.time-input-group label {
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+    white-space: nowrap;
+    font-size: 16px;
+}
+
+.time-input-group .form-control {
+    min-width: 200px;
+}
+
+.time-input-group .form-control[readonly] {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+.page-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+#schedule-table-card .page-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+#schedule-table-card .card-header {
+    padding-bottom: 0.5rem;
+    margin-bottom: 0;
+}
+
+#schedule-table-card .card-body {
+    padding-top: 0;
+}
+
+.cohort-selector {
+    display: flex;
+    align-items: center;
+}
+
+.cohort-selector label {
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.cohort-selector select#cohortSelect {
+    min-width: 180px;
+    width: auto;
+}
+
+.card {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    margin-bottom: 1.5rem;
+    background: transparent;
+}
+
+.card-header {
+    background: transparent;
+    color: #333;
+    border-radius: 0;
+    padding: 0.5rem 0 0.5rem 0;
+    border: none;
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.card-body {
+    padding: 0;
+    background: white;
+}
+
+/* 移除水平滾動 */
+#scheduleTableContainer {
+    overflow-x: hidden;
+    overflow-y: visible;
+    width: 100%;
+}
+
+/* 紫色標題欄 */
+.table-header-bar {
+    display: flex;
+    width: 100%;
+    background: linear-gradient(135deg, #673ab7 0%, #512da8 100%);
+    border: 2px solid #000;
+    border-bottom: 1px solid #000;
+    font-family: 'Microsoft JhengHei', '微軟正黑體', 'Arial', sans-serif;
+    box-sizing: border-box;
+    /* 確保標題列與表格使用相同的寬度計算 */
+}
+
+.header-cell {
+    flex: 1;
+    padding: 12px 10px;
+    text-align: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 20px;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.header-cell:last-child {
+    border-right: none;
+}
+
+.header-cell:nth-child(1) {
+    flex: 0 0 12%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.header-cell:nth-child(2) {
+    flex: 0 0 6%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.header-cell:nth-child(3) {
+    flex: 0 0 15%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.header-cell:nth-child(4) {
+    flex: 0 0 15%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.header-cell:nth-child(5) {
+    flex: 0 0 32%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.header-cell:nth-child(6) {
+    flex: 0 0 20%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.header-cell:nth-child(7) {
+    flex: 0 0 40px;
+    min-width: 40px;
+    max-width: 40px;
+    box-sizing: border-box;
+}
+
+.card-header h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.export-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.export-buttons .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.export-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.export-buttons .btn-success {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    color: #fff;
+}
+
+.export-buttons .btn-success:hover {
+    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+}
+
+.export-buttons .btn-primary {
+    background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+    border: none;
+    color: #fff;
+}
+
+.export-buttons .btn-primary:hover {
+    background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+}
+
+.card-body {
+    padding: 1.5rem;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* 表單樣式 */
+.form-group label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 16px;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 0.75rem;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* 表格樣式 - 仿照圖片格式 */
+#scheduleTable {
+    margin: 0;
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 18px;
+    border: 2px solid #000;
+    border-top: 1px solid #000;
+    table-layout: fixed;
+    min-width: 0;
+    font-family: 'Microsoft JhengHei', '微軟正黑體', 'Arial', sans-serif;
+    /* 確保表格寬度計算與標題列一致 */
+    box-sizing: border-box;
+}
+
+#scheduleTable thead th {
+    background: #e8e8e8;
+    font-weight: 600;
+    color: #000;
+    border: 1px solid #000;
+    padding: 12px 10px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 20px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    word-wrap: break-word;
+    font-family: 'Microsoft JhengHei', '微軟正黑體', 'Arial', sans-serif;
+}
+
+#scheduleTable thead th:nth-child(1) {
+    width: 12%;
+    min-width: 5em;
+}
+
+#scheduleTable thead th:nth-child(2) {
+    width: 6%;
+    min-width: 3em;
+}
+
+#scheduleTable thead th:nth-child(3) {
+    width: 15%;
+    min-width: 4em;
+}
+
+#scheduleTable thead th:nth-child(4) {
+    width: 15%;
+    min-width: 4em;
+}
+
+#scheduleTable thead th:nth-child(5) {
+    width: 32%;
+    min-width: 5em;
+}
+
+#scheduleTable thead th:nth-child(6) {
+    width: 20%;
+    min-width: 5em;
+}
+
+#scheduleTable thead th:nth-child(7) {
+    min-width: 3em;
+}
+
+#scheduleTable tbody td {
+    padding: 12px 10px;
+    vertical-align: middle;
+    border: 1px solid #000;
+    background: white;
+    word-wrap: break-word;
+    overflow: visible;
+    text-overflow: clip;
+    max-width: none;
+    text-align: center;
+    font-size: 18px;
+    font-family: 'Microsoft JhengHei', '微軟正黑體', 'Arial', sans-serif;
+    line-height: 1.8;
+}
+
+/* 確保表格列寬度與標題欄完全對齊 */
+#scheduleTable tbody td:nth-child(1) {
+    width: 12%;
+    box-sizing: border-box;
+}
+
+#scheduleTable tbody td:nth-child(2) {
+    width: 6%;
+    box-sizing: border-box;
+}
+
+#scheduleTable tbody td:nth-child(3) {
+    width: 15%;
+    box-sizing: border-box;
+}
+
+#scheduleTable tbody td:nth-child(4) {
+    width: 15%;
+    box-sizing: border-box;
+}
+
+#scheduleTable tbody td:nth-child(5) {
+    width: 32%;
+    box-sizing: border-box;
+}
+
+#scheduleTable tbody td:nth-child(6) {
+    width: 20%;
+    box-sizing: border-box;
+}
+
+#scheduleTable tbody td:nth-child(7) {
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    box-sizing: border-box;
+}
+
+/* 特殊時間段的專題題目欄位樣式（合併專題題目和指導老師，colspan="2"） */
+#scheduleTable tbody tr.special-time-row td.project-cell[colspan="2"] {
+    text-align: center;
+    font-weight: 600;
+    font-size: 18px;
+    box-sizing: border-box;
+}
+
+#scheduleTable tbody tr {
+    transition: background-color 0.15s;
+}
+
+#scheduleTable tbody tr:hover:not(.special-time-row) {
+    background-color: #f5f5f5;
+}
+
+#scheduleTable tbody tr.selected {
+    background-color: #e3f2fd !important;
+}
+
+#scheduleTable tbody tr.special-time-row {
+    background-color: #fffacd !important;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#scheduleTable tbody tr.special-time-row:hover {
+    background-color: #fff8dc !important;
+}
+
+#scheduleTable tbody tr.special-time-row td {
+    border: 1px solid #000;
+    text-align: center;
+}
+
+#scheduleTable tbody tr.special-time-row td.project-cell {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.team-row {
+    cursor: move;
+    transition: background-color 0.2s, transform 0.2s;
+    user-select: none;
+}
+
+.team-row:hover {
+    background-color: #f9fafb;
+    transform: translateX(4px);
+}
+
+.team-row * {
+    cursor: move;
+    user-select: none;
+}
+
+.sortable-ghost {
+    opacity: 0.3;
+    background-color: #e5e7eb !important;
+}
+
+.sortable-drag {
+    /* 隱藏拖移中的行，使用自定義拖移元素代替 */
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+.sortable-chosen {
+    background-color: #e0e7ff;
+}
+
+/* 自定義拖移元素樣式（橢圓形） */
+.custom-drag-element {
+    position: fixed;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 99999;
+    pointer-events: none;
+    white-space: nowrap;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Microsoft JhengHei', '微軟正黑體', 'Arial', sans-serif;
+    transform: translate(-50%, -50%);
+    /* 確保元素在滑鼠位置 */
+    margin: 0;
+    line-height: 1.2;
+}
+
+.sequence-cell {
+    text-align: center;
+    font-weight: 600;
+    color: #000;
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+.time-cell {
+    text-align: center;
+    font-weight: 500;
+    color: #000;
+    font-family: 'Microsoft JhengHei', '微軟正黑體', 'Arial', sans-serif;
+    font-size: 18px;
+    white-space: nowrap;
+    vertical-align: middle;
+    word-break: keep-all;
+    overflow: visible;
+}
+
+.student-cell {
+    text-align: center;
+    color: #000;
+    line-height: 1.8;
+    padding: 12px 10px;
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+.name-cell {
+    text-align: center;
+    color: #000;
+    line-height: 1.8;
+    padding: 12px 10px;
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+.project-cell {
+    text-align: center;
+    font-weight: 500;
+    color: #000;
+    padding: 12px 10px;
+    font-size: 18px;
+    line-height: 1.8;
+    vertical-align: middle;
+}
+
+.teacher-cell {
+    text-align: center;
+    color: #000;
+    line-height: 1.8;
+    padding: 12px 10px;
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+/* 按鈕樣式 */
+.btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-secondary {
+    background: #6b7280;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .schedule-manage-container {
+        padding: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    #scheduleTable {
+        font-size: 0.875rem;
+    }
+    
+    #scheduleTable thead th,
+    #scheduleTable tbody td {
+        padding: 0.5rem;
+    }
+    
+    .student-cell,
+    .name-cell {
+        font-size: 0.8rem;
+    }
+}
+
+/* 載入動畫 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.team-row {
+    animation: fadeIn 0.3s ease-in;
+}
+
+/* 刪除團隊按鈕樣式 */
+.delete-cell {
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    text-align: center;
+    padding: 8px !important;
+    vertical-align: middle;
+    border: 1px solid #000 !important;
+    background: white !important;
+}
+
+.btn-delete-team {
+    background: none !important;
+    border: none !important;
+    color: #dc3545 !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    padding: 4px 8px !important;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.btn-delete-team:hover {
+    background-color: #fee !important;
+    color: #c82333 !important;
+    transform: scale(1.1);
+}
+
+.btn-delete-team:active {
+    transform: scale(0.95);
+}
+
+.btn-delete-team i {
+    pointer-events: none;
+    display: inline-block !important;
+    visibility: visible !important;
+}
+
+/* 特殊時間選項區域樣式 */
+.special-time-options-container {
+    background: #ffffff;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e8ecf1;
+    margin-bottom: 30px;
+}
+
+.special-time-options-header {
+    margin-bottom: 16px;
+}
+
+.special-time-options-header h6 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 4px;
+}
+
+.special-time-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-special-time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-special-time:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.btn-special-time:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+.btn-special-time:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.btn-special-time .btn-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.btn-special-time .btn-text {
+    line-height: 1;
+}
+
+/* 確保屆別下拉選單選項完整顯示 */
+#cohortSelect {
+    min-width: 100% !important;
+    max-width: 100% !important;
+}
+
+#cohortSelect option {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    padding: 0.5rem !important;
+    font-size: 16px !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+/* 確保選中的文字完整顯示 */
+.schedule-cohort-box .form-select:not([size]):not([multiple]) {
+    background-size: 20px 16px !important;
+    background-position: right 0.75rem center !important;
+    padding-right: 2.75rem !important;
+    text-overflow: clip !important;
+    overflow: visible !important;
+}
+
+/* 強制覆蓋所有可能影響文字顯示的樣式 */
+.schedule-cohort-box .form-select,
+#content .schedule-cohort-box .form-select {
+    text-overflow: clip !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    max-width: 100% !important;
+}
+

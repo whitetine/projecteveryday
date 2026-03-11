@@ -1,0 +1,32 @@
+{
+  "name": "projecteveryday",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+"scripts": {
+  "start": "node server.js"
+}
+,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whitetine/projecteveryday.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/whitetine/projecteveryday/issues"
+  },
+  "homepage": "https://github.com/whitetine/projecteveryday#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.0.0"
+  }
+}

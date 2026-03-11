@@ -1,0 +1,738 @@
+/* ============================
+   Admin User Manage - 現代化 UI（淺色主題）
+   參考 React 設計，提升 UI/UX
+   ============================ */
+
+/* 強制淺色：當帳號管理頁面載入時，讓 #content 區域為白色（覆蓋深色模式） */
+#content .um-container,
+#content:has(#userManagementContent),
+body #content:has(#userManagementContent),
+body.sidebar-dark-mode #content:has(#userManagementContent),
+body.sidebar-dark-mode #content .um-container,
+body.sidebar-light-mode #content:has(#userManagementContent) {
+  background: #f5f7fb !important;
+  background-color: #f5f7fb !important;
+  color: #000000 !important;
+}
+
+.um-init-hidden { visibility: hidden; }
+.um-advanced-hidden { display: none !important; }
+.um-modal-cohort { max-width: 800px; }
+
+/* ===== 整體容器（強制淺色） ===== */
+.um-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+  background: #f5f7fb !important;
+  min-height: 100vh;
+  color: #1e293b;
+}
+
+/* ===== 頂部導覽列（sticky，白色） ===== */
+.um-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff !important;
+  backdrop-filter: blur(8px);
+}
+
+.um-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.um-header-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.um-breadcrumb {
+  font-size: 0.875rem;
+  color: #334155 !important;
+  margin-bottom: 0.25rem;
+}
+
+.um-page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #000000 !important;
+  margin: 0;
+}
+
+.um-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.um-search-input {
+  width: 18rem;
+  max-width: 100%;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background: #ffffff !important;
+  color: #000000 !important;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.um-search-input:focus {
+  border-color: #64748b;
+}
+
+/* ===== 按鈕 ===== */
+.um-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.um-btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.um-btn-primary {
+  background: #e2e8f0;
+  color: #000000 !important;
+  border-color: #94a3b8;
+}
+
+.um-btn-primary:hover {
+  background: #cbd5e1;
+  color: #000000 !important;
+  border-color: #64748b;
+}
+
+.um-btn-outline {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #cbd5e1;
+}
+
+.um-btn-outline:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* ===== 主內容區 ===== */
+.um-main-content {
+  padding: 1.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ===== 屆別 + 統計區 ===== */
+.um-section {
+  margin-bottom: 1.25rem;
+}
+
+.um-section-stats {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.um-cohort-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.um-cohort-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #000000 !important;
+  min-width: 72px;
+}
+
+.um-cohort-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.um-cohort-tab {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  border: 1px solid #cbd5e1;
+  background: #ffffff !important;
+  color: #000000 !important;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.um-cohort-tab:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.um-cohort-tab.active {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #000000 !important;
+}
+
+.um-cohort-tab .um-tab-badge {
+  margin-left: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 9999px;
+}
+
+.um-cohort-tab.active .um-tab-badge {
+  background: rgba(0, 0, 0, 0.08);
+  color: #000000 !important;
+}
+
+.um-cohort-tab:not(.active) .um-tab-badge {
+  background: #f1f5f9;
+  color: #334155 !important;
+}
+
+/* 統計卡片網格（縮小版，讓主體回到篩選與列表） */
+.um-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .um-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.um-stat-card {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.um-stat-card .um-stat-label {
+  font-size: 0.75rem;
+  color: #000000 !important;
+}
+
+.um-stat-card .um-stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #000000 !important;
+  margin-top: 0.125rem;
+}
+
+.um-stat-card .um-stat-note {
+  font-size: 0.6875rem;
+  color: #334155 !important;
+  margin-top: 0.125rem;
+}
+
+/* ===== 篩選與老師負載區（兩欄） ===== */
+.um-section-filter-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1200px) {
+  .um-section-filter-grid {
+    grid-template-columns: 1.5fr 1fr;
+  }
+}
+
+.um-filter-panel,
+.um-teacher-panel {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.um-panel-header {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 1.25rem;
+}
+
+.um-panel-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #000000 !important;
+  margin: 0;
+}
+
+.um-panel-desc {
+  font-size: 0.875rem;
+  color: #334155 !important;
+  margin: 0.25rem 0 0;
+}
+
+.um-filter-content {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+@media (min-width: 992px) {
+  .um-filter-content {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+.um-filter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.um-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.um-filter-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #000000 !important;
+}
+
+.um-quick-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.um-quick-filter-tag {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #000000 !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.um-quick-filter-tag:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #000000 !important;
+}
+
+.um-quick-filter-tag.active {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #000000 !important;
+}
+
+.um-filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.um-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.um-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.um-filter-advanced {
+  margin-top: 0.5rem;
+}
+
+.um-advanced-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #000000 !important;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.um-advanced-toggle:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.um-advanced-filters {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.um-filter-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* 班級分布（進度條） */
+.um-class-distribution {
+  background: #f8fafc;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.um-dist-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #000000 !important;
+  margin: 0 0 0.75rem;
+}
+
+.um-dist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.um-dist-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.um-dist-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.um-dist-item-name {
+  font-weight: 500;
+  color: #000000 !important;
+}
+
+.um-dist-item-count {
+  color: #334155 !important;
+}
+
+.um-dist-bar {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.um-dist-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: #334155;
+  transition: width 0.3s ease;
+}
+
+/* 指導老師負載：老師 × 屆別表格 */
+.um-teacher-list {
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+}
+
+.um-teacher-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.um-teacher-table {
+  width: 100%;
+  min-width: 320px;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.um-teacher-table thead th {
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  background: #f1f5f9;
+  color: #000000 !important;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.um-teacher-table .um-th-teacher {
+  text-align: left;
+  min-width: 80px;
+}
+
+.um-teacher-table .um-th-cohort {
+  min-width: 72px;
+}
+
+.um-teacher-table tbody td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #000000 !important;
+}
+
+.um-teacher-table .um-teacher-name {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.um-teacher-table .um-teacher-cell {
+  text-align: center;
+  font-weight: 500;
+}
+
+.um-teacher-table .um-cell-empty {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.um-teacher-table .um-cell-ok {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.um-teacher-table .um-cell-near {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.um-teacher-table .um-cell-full {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.um-teacher-table tbody tr:hover td {
+  background: #f8fafc;
+}
+
+.um-teacher-table tbody tr:hover .um-cell-empty,
+.um-teacher-table tbody tr:hover .um-cell-ok,
+.um-teacher-table tbody tr:hover .um-cell-near,
+.um-teacher-table tbody tr:hover .um-cell-full {
+  filter: brightness(0.97);
+}
+
+/* ===== 帳號列表區 ===== */
+.um-section-table {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.um-table-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.um-table-meta {
+  font-size: 0.875rem;
+  color: #334155 !important;
+  margin: 0.25rem 0 0;
+}
+
+.um-table-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.um-selected-info {
+  font-size: 0.875rem;
+  color: #000000 !important;
+}
+
+.um-table-wrapper {
+  overflow-x: auto;
+}
+
+.um-user-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.um-user-table thead {
+  background: #e2e8f0;
+  color: #000000 !important;
+}
+
+.um-user-table th {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+  color: #000000 !important;
+}
+
+.um-user-table tbody tr {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.um-user-table tbody tr:nth-child(even) {
+  background: rgba(248, 250, 252, 0.6);
+}
+
+.um-user-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.um-user-table tbody tr.user-table-row-selected {
+  background: #f1f5f9;
+}
+
+.um-user-table td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  color: #000000 !important;
+}
+
+.um-user-table .um-td-check {
+  text-align: center;
+  width: 48px;
+}
+
+.um-user-table .um-td-actions {
+  white-space: nowrap;
+}
+
+.um-user-table .um-td-actions .um-btn {
+  margin-right: 0.35rem;
+}
+
+.um-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  border: 1px solid;
+}
+
+.um-status-badge-blue {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.um-status-badge-amber {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.um-status-badge-green {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.um-status-badge-red {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.um-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.um-table-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+  color: #334155 !important;
+}
+
+.um-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  color: #334155 !important;
+  font-size: 0.875rem;
+}
+
+.um-loading-lg {
+  padding: 3rem 1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #334155 !important;
+}
+
+.empty-state i {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.4;
+  display: block;
+}
+
+.empty-state h3 {
+  font-size: 1.125rem;
+  margin: 0.5rem 0 0.25rem;
+  color: #000000 !important;
+}
+
+/* 強制淺色主題（不使用系統深色模式） */

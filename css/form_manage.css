@@ -1,0 +1,1102 @@
+/* 表單管理頁面專用樣式 */
+.form-manage-container {
+    padding: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.page-header-section {
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.page-title i {
+    color: #ffc107;
+}
+
+.page-subtitle {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.page-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.btn-add-form {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.btn-add-form:hover {
+    background: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+}
+
+.forms-list-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.forms-table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.forms-table thead {
+    background: #f8f9fa;
+}
+
+.forms-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    font-size: 0.9rem;
+}
+
+.forms-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    color: #495057;
+    font-size: 0.9rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.forms-table .col-target {
+    max-width: 220px;
+}
+
+.forms-table .col-datetime {
+    min-width: 140px;
+}
+
+.forms-table .col-actions {
+    width: 280px;
+    min-width: 280px;
+    text-align: left;
+}
+
+.forms-table th.col-actions,
+.forms-table td.col-actions {
+    padding-left: 0.5rem;
+}
+
+.forms-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.forms-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-required {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge-not-required {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.badge-active {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.badge-inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.action-buttons .btn-group-inline {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+.btn-action,
+.btn-export-link {
+    min-width: 4.5rem;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.btn-action {
+    padding: 0.375rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-edit {
+    background: #007bff;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #0056b3;
+}
+
+.btn-toggle {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-toggle:hover {
+    background: #5a6268;
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+}
+
+.btn-pdf {
+    background: #c9302c;
+    color: white;
+}
+
+.btn-pdf:hover {
+    background: #ac2925;
+    color: white;
+}
+
+.btn-export-link {
+    padding: 0.375rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Modal 樣式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    overflow: hidden !important;
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    /* 垂直置中 */
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 900px;
+    margin: 0;
+    /* 移除 margin，靠 flex 置中 */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    overflow: visible;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    /* 讓內容充滿中間並可捲動 */
+}
+
+.form-section {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* 系統說明提示（頁面上方固定說明，不影響題目設定） */
+.system-notice-box {
+    background: #e7f3ff;
+    border-left: 4px solid #0d6efd;
+    margin-bottom: 1.5rem;
+}
+
+.system-notice-box .system-notice-text {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #0c5460;
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.system-notice-box .system-notice-text i {
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+    color: #0d6efd;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.form-group label.required::after {
+    content: " *";
+    color: #dc3545;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-control[type="textarea"],
+textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 表單管理頁：縮放時版面不跑版 */
+@media (max-width: 992px) {
+    .form-manage-container {
+        padding: 1rem;
+    }
+
+    .page-actions {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .forms-table {
+        min-width: 700px;
+    }
+
+    .forms-table th,
+    .forms-table td {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-manage-container {
+        padding: 0.75rem;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .btn-add-form {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.switch-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: #28a745;
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+/* 題目管理區域 */
+.questions-section {
+    margin-top: 1.5rem;
+}
+
+.question-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.question-order {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-order {
+    background: #6c757d;
+    color: white;
+    border: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-order:hover {
+    background: #5a6268;
+}
+
+.btn-order:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.question-content {
+    flex: 1;
+}
+
+.question-title-input {
+    width: 100%;
+    min-width: 0;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+}
+
+.question-meta {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem 1.5rem;
+    align-items: center;
+}
+
+.question-type-select,
+.question-required-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.question-type-select select {
+    min-width: 180px;
+    padding: 0.5rem 0.75rem;
+}
+
+/* 題型 + 特殊欄位 雙下拉（便利 > 複雜） */
+.question-type-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: end;
+}
+
+.question-type-row label {
+    display: block;
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.35rem;
+    font-size: 0.9rem;
+}
+
+.question-type-row select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background: white;
+}
+
+.question-type-row select:focus {
+    outline: none;
+    border-color: #80bdff;
+}
+
+@media (max-width: 576px) {
+    .question-type-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 進階設定收合區 */
+.advanced-settings-toggle {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    color: #007bff;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.advanced-settings-toggle:hover {
+    color: #0056b3;
+}
+
+.advanced-settings-toggle i.fa-chevron-down {
+    transition: transform 0.2s;
+}
+
+.advanced-settings-toggle.expanded i.fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.advanced-settings-body {
+    display: none;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #eee;
+}
+
+.advanced-settings-body.show {
+    display: block;
+}
+
+/* 題型設定區塊 */
+.question-type-settings {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.question-type-settings-title {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+/* 段落題行數設定 */
+.textarea-rows-select {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.textarea-rows-select label {
+    font-weight: 500;
+    color: #495057;
+    margin: 0;
+}
+
+.textarea-rows-select select {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+/* 專題生+指導老師設定 */
+.sa-settings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.sa-setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sa-setting-item label {
+    font-weight: 500;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.sa-setting-item input,
+.sa-setting-item select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+/* 資料庫帶入來源選擇 */
+.prefill-source-select {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.prefill-source-select label {
+    font-weight: 500;
+    color: #495057;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.prefill-source-select select {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    min-width: 150px;
+}
+
+.prefill-source-hint {
+    font-size: 0.85rem;
+    color: #6c7280;
+    font-style: italic;
+}
+
+.btn-remove-question {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-remove-question:hover {
+    background: #c82333;
+}
+
+.question-remark-row {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #eee;
+}
+
+.question-remark-row .remark-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* 子題多小題：左側顯示 1. 2. 3. 編號，右側輸入內容，換行時自動顯示下一編號 */
+.sub-questions-numbered-wrap {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 0.9rem;
+}
+
+.sub-questions-line-numbers {
+    flex-shrink: 0;
+    padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+    color: #6c757d;
+    line-height: 1.5;
+    font-size: 0.9rem;
+    user-select: none;
+    overflow-y: auto;
+    white-space: pre;
+    border-right: 1px solid #dee2e6;
+}
+
+.sub-questions-numbered-wrap .sub-questions-textarea {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    border-radius: 0;
+    resize: vertical;
+    line-height: 1.5;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.sub-questions-numbered-wrap .sub-questions-textarea:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1px #86b7fe;
+}
+
+/* 子題多小題（舊版多輸入框，保留以備相容） */
+.sub-questions-admin-wrap .sub-questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sub-question-admin-item {
+    padding: 0.75rem;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+}
+
+.sub-question-admin-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.sub-question-admin-row .sub-question-num {
+    flex-shrink: 0;
+    font-weight: 600;
+    color: #495057;
+    min-width: 1.5rem;
+}
+
+.sub-question-admin-row .sub-question-label-input {
+    flex: 1;
+    min-width: 120px;
+}
+
+.sub-question-admin-row .sub-question-type-select {
+    flex-shrink: 0;
+}
+
+.sub-question-rows-row,
+.sub-question-options-wrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    margin-left: 1.5rem;
+}
+
+.sub-question-options-wrap .question-options {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #eee;
+}
+
+.question-remark-row .remark-textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    resize: vertical;
+}
+
+.question-options {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.question-options-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.option-item {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+
+.option-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.btn-remove-option {
+    background: #dc3545;
+    color: white;
+    border: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-add-option {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+.btn-add-question {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+
+.btn-add-question:hover {
+    background: #0056b3;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.btn-save {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-save:hover {
+    background: #218838;
+}
+
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+}
+
+/* 專題生、指導老師 區塊 */
+.students-advisor-block {
+    margin-top: 1rem;
+}
+
+.students-advisor-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.student-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.student-row .wide-input {
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.advisor-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.advisor-row .wide-input {
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.btn-db-lookup {
+    background: #17a2b8;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-db-lookup:hover {
+    background: #138496;
+}
+
+.btn-add-student {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 0.25rem;
+}
+
+.btn-add-student:hover {
+    background: #218838;
+}
+
+/* 從資料庫帶入 Modal */
+.db-lookup-modal .modal-content {
+    max-width: 480px;
+}
+
+.db-lookup-search {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.db-lookup-list {
+    max-height: 280px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.db-lookup-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.db-lookup-item:hover {
+    background: #f8f9fa;
+}
+
+.db-lookup-item:last-child {
+    border-bottom: none;
+}

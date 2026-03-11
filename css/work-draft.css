@@ -1,0 +1,1141 @@
+/* ==============================
+   頁面容器樣式
+   ============================== */
+.work-draft-page {
+  /* section-body 已經有 padding，這裡不需要額外的 padding */
+}
+
+/* ==============================
+   按鈕樣式（與 work-form 一致）
+   ============================== */
+.work-draft-page .text-end {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.work-draft-page .ajax-link {
+  font-size: 13px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.work-draft-page .ajax-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ==============================
+   卡片樣式美化
+   ============================== */
+.work-draft-page .card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.work-draft-page .card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.work-draft-page #filter-form {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e9ecef;
+}
+
+/* ==============================
+   篩選表單美化
+   ============================== */
+.work-draft-page .filter-row {
+  padding: 0.75rem;
+  gap: 0.75rem !important; /* 進一步減少元素之間的間距 */
+}
+
+.work-draft-page .filter-row > div {
+  min-width: 130px; /* 進一步減少最小寬度 */
+  flex: 0 1 auto; /* 允許彈性縮放但不強制 */
+}
+
+.work-draft-page .filter-row > div.ms-auto {
+  min-width: auto; /* 按鈕不需要最小寬度 */
+  flex: 0 0 auto; /* 按鈕不縮放 */
+}
+
+.work-draft-page .filter-row .form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.35rem; /* 進一步減少標籤和輸入框之間的間距 */
+}
+
+.work-draft-page .filter-row .form-control,
+.work-draft-page .filter-row .form-select {
+  font-size: 13px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  min-height: 34px; /* 進一步減少輸入框高度 */
+}
+
+.work-draft-page .filter-row .form-control:focus,
+.work-draft-page .filter-row .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+  outline: none;
+}
+
+.work-draft-page .filter-row .btn-primary {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.work-draft-page .filter-row .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* ==============================
+   表單元素字體大小（已移至上方統一管理）
+   ============================== */
+
+/* 分頁器字體大小 */
+.pager-bar {
+  font-size: 13px;
+  padding: 0.6rem;
+}
+
+.pager-bar a,
+.pager-bar span {
+  font-size: 13px;
+  padding: 0.35rem 0.5rem;
+  min-width: 28px;
+  height: 28px;
+}
+
+/* 表格中的按鈕和徽章字體大小 - 與 work-form 一致 */
+.table td .btn-primary,
+.table td .badge {
+  font-size: 14px;
+}
+
+.table td .btn-primary {
+  padding: 0.4rem 0.75rem;
+}
+
+/* 無資料提示文字 */
+.table td.text-muted,
+.table td.text-center.text-muted {
+  padding: 1.5rem !important;
+  font-size: 15px;
+}
+
+/* ==============================
+   固定表格、不浮動、不捲動、像 Excel 格線
+   ============================== */
+
+/* 最外層容器：絕對禁止水平捲軸 */
+#work-table + .table-responsive,
+.card-body .table-responsive {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  /* 確保表格不會超出容器 */
+  box-sizing: border-box !important;
+}
+
+/* 通用樣式（備用） */
+.table-responsive {
+  overflow-x: hidden !important;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 表格固定，不隨內容撐開 */
+#work-table {
+  width: 100% !important;
+  table-layout: fixed !important; /* 改為 fixed，讓列寬固定，防止內容撐開 */
+  border-collapse: collapse !important;
+  background: #fff;
+  max-width: 100%;
+  /* 確保表格不會超出容器 */
+  box-sizing: border-box;
+}
+
+/* 通用表格樣式（備用） */
+.table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse !important;
+  background: #fff;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* 每格都畫線，並防止內容溢出 - 使用套版樣式 */
+.table th,
+.table td {
+  border-top: none;
+  padding: 0.5rem 0.75rem;
+  height: auto;
+  min-height: 45px;
+  vertical-align: middle;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  /* 防止內容撐開表格 */
+  min-width: 0;
+  overflow: hidden;
+  /* 確保 inline style 的寬度設定生效 */
+  box-sizing: border-box;
+  font-size: 15px; /* 表格內容字體大小 */
+}
+
+/* 表格行樣式 - 使用套版樣式 */
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* 表頭文字確保完整顯示 */
+#work-table thead th {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+/* 無資料時的 td 樣式 - 確保不影響表格列寬 */
+/* 使用 table-layout: fixed 時，列寬由 thead 決定 */
+/* 無資料時的 colspan td 應該跨越所有列，但不改變列寬 */
+#work-table tbody td[colspan] {
+  /* 讓 colspan td 佔滿整行，但不影響各列的寬度 */
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+}
+
+/* 確保表格列寬始終由 thead 決定，即使 tbody 有 colspan */
+/* table-layout: fixed 已在上面定義，確保列寬由 thead 決定 */
+
+/* 使用百分比寬度，讓表格適應容器 */
+/* 確保所有 th 的 inline style width 都能正確應用 */
+#work-table thead th[style*="width:12%"] {
+  width: 12% !important;
+  min-width: 100px !important;
+}
+
+#work-table thead th[style*="width:15%"] {
+  width: 15% !important;
+  min-width: 120px !important;
+}
+
+#work-table thead th[style*="width:20%"] {
+  width: 20% !important;
+  min-width: 150px !important;
+}
+
+#work-table thead th[style*="width:25%"] {
+  width: 25% !important;
+  min-width: 180px !important;
+}
+
+#work-table thead th[style*="width:30%"] {
+  width: 30% !important;
+  min-width: 200px !important;
+}
+
+#work-table thead th[style*="width:35%"] {
+  width: 35% !important;
+  min-width: 220px !important;
+}
+
+#work-table thead th[style*="width:13%"] {
+  width: 13% !important;
+  min-width: 100px !important;
+}
+
+#work-table thead th[style*="width:12.5%"] {
+  width: 12.5% !important;
+  min-width: 100px !important;
+}
+
+/* 對應的 tbody td 也要設定相同寬度 - 但排除 colspan td */
+/* 寬度由 JavaScript 的 inline style 控制，這裡只設定 min-width */
+#work-table tbody td.time-cell:not([colspan]) {
+  min-width: 100px !important;
+}
+
+#work-table tbody td:has(.title-preview):not([colspan]) {
+  min-width: 150px !important;
+}
+
+#work-table tbody td:has(.content-preview):not([colspan]) {
+  min-width: 200px !important;
+  overflow: hidden !important;
+}
+
+#work-table tbody td:has(.badge):not([colspan]) {
+  min-width: 100px !important;
+}
+
+#work-table tbody td:has(.btn-primary[data-bs-target="#commentModal"]):not([colspan]),
+#work-table tbody td:has(.text-muted):last-child:not([colspan]) {
+  min-width: 100px !important;
+}
+
+/* 提交者列（如果有） */
+#work-table tbody td:nth-child(2):not(.time-cell):not(:has(.title-preview)):not([colspan]) {
+  width: 12% !important;
+  min-width: 100px !important;
+}
+
+/* 內容預覽 div 的寬度限制 */
+.table td .content-preview {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  /* 確保不會溢出父容器 */
+  word-break: break-word;
+  overflow-wrap: break-word;
+  display: block;
+}
+
+/* 標題列背景 - 使用套版樣式 */
+.table thead th {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: #666;
+  border-bottom: none;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  font-size: 15px; /* 表頭字體大小 */
+  font-weight: 600;
+}
+
+/* 狀態列和留言列居中對齊 */
+/* 狀態列：包含 badge 的列 */
+.table td:has(.badge),
+.table th[style*="width:180px"] {
+  text-align: center !important;
+}
+
+/* 留言列：包含留言按鈕的列 */
+.table th[style*="width:120px"],
+.table td:has(.btn-primary[data-bs-target="#commentModal"]),
+.table td:has(.text-muted) {
+  text-align: center !important;
+}
+
+/* 確保狀態和留言列的按鈕和內容都居中 */
+.table td:has(.badge),
+.table td:has(.btn-primary[data-bs-target="#commentModal"]) {
+  text-align: center !important;
+}
+
+.table td .badge,
+.table td .btn {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* 表格中的按鈕統一大小 - 與 work-form 一致 */
+.table td .btn {
+  font-size: 14px;
+  padding: 0.4rem 0.75rem;
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 時間列特殊處理，確保正常顯示 */
+.table td.time-cell {
+  white-space: nowrap !important; /* 時間不換行 */
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  overflow: visible !important; /* 確保時間完整顯示 */
+  min-width: 140px;
+  font-size: 15px;
+}
+
+
+/* 去除所有造成浮動的 overflow */
+.table td div {
+  overflow: visible !important; /* 改為 visible，讓內容正常顯示 */
+  max-width: 100%;
+}
+
+/* 內容預覽 div 例外，需要滾動功能 */
+.table td div.content-preview {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* 標題預覽特殊處理 */
+.title-preview {
+  max-width: 260px; /* 對應表格中標題列的寬度 */
+  max-height: 50px; /* 標題預覽高度 */
+  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 減少到2行 */
+  line-clamp: 2; /* 標準屬性 */
+  -webkit-box-orient: vertical;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  font-size: 15px;
+}
+
+/* 內容預覽特殊處理 - 最多顯示4行，超過時顯示滾動條 */
+.content-preview {
+  max-width: 100%;
+  max-height: 85px; /* 約4行的高度 */
+  overflow-y: auto !important; /* 超過4行時顯示垂直滾動條 */
+  overflow-x: hidden !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  line-height: 1.4;
+  display: block;
+  box-sizing: border-box;
+  min-width: 0;
+  font-size: 15px;
+  /* 優化滾動條樣式 */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #cbd5e0 #f7fafc; /* Firefox */
+}
+
+/* Webkit 瀏覽器滾動條樣式 */
+.content-preview::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-preview::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 3px;
+}
+
+.content-preview::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+.content-preview::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+#cmn-list {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 100px;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.comment-item {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.comment-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.comment-author {
+  font-size: 15px;
+  color: #495057;
+}
+
+.comment-author b {
+  color: #212529;
+  font-weight: 600;
+}
+
+.comment-time {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.comment-text {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  padding-left: 0.5rem;
+}
+
+/* ==============================
+   Modal 字體大小
+   ============================== */
+#viewModal .modal-title,
+#commentModal .modal-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+#viewModal .modal-body h5,
+#viewModal .modal-body p,
+#viewModal .modal-body pre {
+  font-size: 17px;
+}
+
+#commentModal .modal-body textarea {
+  font-size: 17px;
+}
+
+/* Modal 中的按鈕統一大小 - 與 work-form 一致 */
+#commentModal .modal-body .btn {
+  font-size: 16px;
+  padding: 10px 20px;
+}
+
+#cmn-list {
+  font-size: 17px;
+}
+
+/* ==============================
+   Modal z-index 設定（確保在導航欄上方）
+   ============================== */
+body .modal {
+  z-index: 1080 !important; /* 高於導航欄的 1060 */
+  position: fixed !important;
+}
+
+body .modal-backdrop {
+  z-index: 1079 !important; /* 在 modal 下方，但在導航欄上方 */
+  position: fixed !important;
+}
+
+/* 確保 Modal 顯示在最上層 */
+body #viewModal,
+body #commentModal {
+  z-index: 1080 !important;
+  position: fixed !important;
+}
+
+body #viewModal .modal-dialog,
+body #commentModal .modal-dialog {
+  z-index: 1081 !important;
+  position: relative !important;
+}
+
+/* ==============================
+   響應式設計
+   ============================== */
+
+/* 平板設備 (768px - 991px) */
+@media (max-width: 991px) {
+  /* 表格在小屏幕上允許橫向滾動 */
+  .table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* 表格列寬調整 */
+  .table {
+    min-width: 800px; /* 確保表格最小寬度 */
+  }
+  
+  /* 時間列寬度調整 */
+  .table td.time-cell {
+    min-width: 140px;
+  }
+  
+  /* 篩選表單改為垂直排列 */
+  .filter-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  
+  .filter-row > div {
+    width: 100% !important;
+    margin-bottom: 0.5rem;
+  }
+  
+  .filter-row > div.ms-auto {
+    margin-left: 0 !important;
+    margin-top: 0.5rem;
+  }
+  
+  /* 按鈕全寬 */
+  .filter-row .btn {
+    width: 100%;
+  }
+  
+  /* Modal 寬度調整 */
+  .modal-dialog {
+    max-width: 90% !important;
+    margin: 1rem auto;
+  }
+}
+
+/* 手機設備 (最大 767px) */
+@media (max-width: 767px) {
+  /* 回日誌填寫按鈕全寬 */
+  .work-draft-page .ajax-link {
+    width: 100%;
+  }
+  
+  /* 表格最小寬度 */
+  .table {
+    min-width: 600px;
+    font-size: 0.875rem;
+  }
+  
+  /* 表格內邊距縮小 */
+  .table th,
+  .table td {
+    padding: 6px 4px;
+  }
+  
+  /* 時間列寬度 */
+  .table td.time-cell {
+    min-width: 120px;
+    font-size: 0.8rem;
+  }
+  
+  /* 按鈕文字大小 */
+  .table td .btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  /* 內容預覽高度調整 */
+  .title-preview,
+  .content-preview {
+    max-height: 60px;
+    font-size: 0.8rem;
+  }
+  
+  /* 卡片內邊距 */
+  .card-body {
+    padding: 0.75rem !important;
+  }
+  
+  /* Modal 全屏 */
+  .modal-dialog {
+    max-width: 100% !important;
+    margin: 0;
+    height: 100%;
+  }
+  
+  .modal-content {
+    height: 100%;
+    border-radius: 0;
+  }
+  
+  /* 留言列表高度調整 */
+  #cmn-list {
+    max-height: 200px;
+  }
+  
+  /* 分頁器調整 */
+  .pager-bar {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .pager-bar a,
+  .pager-bar span {
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.125rem;
+  }
+}
+
+/* 小手機設備 (最大 575px) */
+@media (max-width: 575px) {
+  /* 表格字體更小 */
+  .table {
+    min-width: 500px;
+    font-size: 0.75rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 4px 2px;
+  }
+  
+  /* 時間列 */
+  .table td.time-cell {
+    min-width: 100px;
+    font-size: 0.7rem;
+  }
+  
+  /* 按鈕更小 */
+  .table td .btn {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+  
+  /* 標題字體 */
+  .page-title {
+    font-size: 1.25rem;
+  }
+  
+  /* 表單元素 */
+  .form-label {
+    font-size: 0.875rem;
+  }
+  
+  .form-control,
+  .form-select {
+    font-size: 0.875rem;
+  }
+  
+  /* Modal 標題 */
+  .modal-title {
+    font-size: 1rem;
+  }
+  
+  /* 留言輸入框 */
+  #cmn-text {
+    font-size: 0.875rem;
+  }
+}/* 註解*/
+/* 橫向模式優化 */
+@media (max-width: 991px) and (orientation: landscape) {
+  /* 表格在橫向模式下保持可讀性 */
+  .table {
+    min-width: 900px;
+  }
+  
+  /* Modal 高度調整 */
+  .modal-dialog {
+    max-height: 90vh;
+  }
+  
+  .modal-body {
+    max-height: calc(90vh - 120px);
+    overflow-y: auto;
+  }
+
+
+
+}
+/* ==============================
+   分頁器美化
+   ============================== */
+.pager-bar {
+  padding: 0.6rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.pager-bar a,
+.pager-bar span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #495057;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid #dee2e6;
+  background-color: #fff;
+  font-size: 13px;
+}
+
+.pager-bar a:hover {
+  background: linear-gradient(135deg, #ffe2c2 0%, #ffd4a3 100%);
+  border-color: #f4a460;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(244, 164, 96, 0.3);
+}
+
+.pager-bar .active {
+  background: linear-gradient(135deg, #f4a460 0%, #e8964f 100%);
+  color: #fff;
+  font-weight: 700;
+  border-color: #f4a460;
+  box-shadow: 0 2px 6px rgba(244, 164, 96, 0.4);
+}
+
+.pager-bar .disabled {
+  color: #adb5bd;
+  pointer-events: none;
+  background-color: #f8f9fa;
+  border-color: #e9ecef;
+  opacity: 0.6;
+}
+
+/* ==============================
+   視圖切換器樣式
+   ============================== */
+.view-toggle-switch {
+  display: flex;
+  border: 1px solid #dee2e6;
+  border-radius: 25px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.view-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  background: #fff;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  position: relative;
+  outline: none;
+}
+
+.view-toggle-btn:first-child {
+  border-right: 1px solid #dee2e6;
+}
+
+.view-toggle-btn:hover {
+  background: #f8f9fa;
+}
+
+.view-toggle-btn.active {
+  background: #e3f2fd;
+  color: #1976d2;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.view-toggle-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.view-toggle-btn i {
+  font-size: 14px;
+}
+
+/* 視圖容器 */
+.view-container {
+  min-height: 200px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* ==============================
+   時間軸視圖樣式（CodePen 風格）
+   ============================== */
+:root {
+  --timeline-cream: #f7f4ef;
+  --timeline-off-white: #fdfcfa;
+  --timeline-ink: #1a1814;
+  --timeline-ink-light: #3d3832;
+  --timeline-terracotta: #c4654a;
+  --timeline-sage: #8b9e82;
+  --timeline-stone: #a89f94;
+  --timeline-containerpadding: 10px;
+  --timeline-linewidth: 2px;
+  --timeline-gapwidth: 40px;
+  --timeline-skewvalue: -2deg;
+}
+
+.view-timeline {
+  padding-block: 1vw;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.timeline-container {
+  container-type: inline-size;
+  container-name: timeline-container;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--timeline-containerpadding);
+  position: relative;
+  box-sizing: border-box;
+}
+
+.timeline-items {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.timeline-item {
+  display: flex;
+  margin-block-start: 0.75rem;
+  border-radius: 0.5rem;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.timeline-item .timeline-marker {
+  flex-shrink: 0;
+  width: calc(2 * var(--timeline-gapwidth));
+  transform: translatey(-40%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.timeline-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--timeline-terracotta);
+  border: 4px solid var(--timeline-cream);
+  box-shadow: 0 0 0 2px var(--timeline-terracotta);
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-item .timeline-content {
+  transform: skew(var(--timeline-skewvalue));
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s ease;
+  border-radius: 6px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.timeline-item:nth-child(2n + 1) .timeline-content {
+  transform: skew(calc(var(--timeline-skewvalue) * -1));
+}
+
+.timeline-line {
+  position: absolute;
+  left: calc(var(--timeline-containerpadding) + var(--timeline-gapwidth));
+  top: 0;
+  bottom: 0;
+  width: var(--timeline-linewidth);
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--timeline-stone) 10%,
+    var(--timeline-stone) 90%,
+    transparent 100%
+  );
+  opacity: 0.8;
+}
+
+.timeline-status-top {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+}
+
+.timeline-item-status {
+  font-size: 12px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  border: 1px solid;
+  font-weight: 500;
+}
+
+.timeline-item-status.bg-success {
+  background: transparent;
+  color: #28a745;
+  border-color: #28a745;
+}
+
+.timeline-item-status.bg-warning {
+  background: transparent;
+  color: #ffc107;
+  border-color: #ffc107;
+}
+
+.timeline-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.timeline-label:first-of-type {
+  margin-top: 0;
+}
+
+.timeline-title {
+  font-size: 13px;
+  font-weight: 400;
+  color: #333;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.35;
+  padding: 0.35rem;
+  background: #fff;
+  border-radius: 4px;
+  min-height: 1.2rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.timeline-text {
+  font-size: 12px;
+  color: #333;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+  padding: 0.4rem;
+  background: #fff;
+  border-radius: 4px;
+  min-height: 2.5rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.timeline-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.timeline-date {
+  font-size: 12px;
+  color: #333;
+  font-weight: 400;
+  padding: 0.3rem;
+  background: #fff;
+  border-radius: 4px;
+}
+
+.timeline-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.timeline-actions .btn {
+  font-size: 12px;
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  transform: skew(var(--timeline-skewvalue));
+}
+
+.timeline-item:nth-child(2n + 1) .timeline-actions .btn {
+  transform: skew(calc(var(--timeline-skewvalue) * -1));
+}
+
+/* 響應式：大屏幕時左右交替布局 */
+@container timeline-container (width > 700px) {
+  .timeline-item {
+    width: calc(50% + var(--timeline-gapwidth));
+    max-width: calc(50% + var(--timeline-gapwidth));
+    display: grid;
+    grid-template-columns: 1fr calc(var(--timeline-gapwidth) * 2);
+    box-sizing: border-box;
+  }
+
+  .timeline-item:nth-child(2n + 1) {
+    align-self: flex-end;
+    grid-template-columns: calc(var(--timeline-gapwidth) * 2) 1fr;
+    max-width: calc(50% + var(--timeline-gapwidth));
+  }
+
+  .timeline-item:nth-child(2n) .timeline-marker {
+    order: 999;
+  }
+
+  .timeline-line {
+    left: 50%;
+  }
+  
+  .timeline-item .timeline-content {
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* 響應式：小屏幕時單列布局 */
+@container timeline-container (width <= 700px) {
+  .timeline-item {
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .timeline-line {
+    left: calc(var(--timeline-containerpadding) + var(--timeline-gapwidth));
+  }
+  
+  .timeline-item .timeline-content {
+    transform: none;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  
+  .timeline-item:nth-child(2n + 1) .timeline-content {
+    transform: none;
+    max-width: 100%;
+  }
+  
+  .timeline-actions .btn,
+  .timeline-tag {
+    transform: none !important;
+  }
+}

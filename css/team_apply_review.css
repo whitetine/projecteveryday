@@ -1,0 +1,729 @@
+/**
+ * 專題申請審核 - 乾淨版（大字、少色、表格為主）
+ * 行政系統風格：單一主色 + 灰階
+ */
+#reviewApp {
+  --bg: #f4f6f8;
+  --panel: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #d1d5db;
+  --primary: #2f5bea;
+  --primary-weak: #e8efff;
+  --danger: #b91c1c;
+  --radius: 12px;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--text);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px 30px;
+}
+
+/* Header - 與 apply_preview_list 一致：無外框、黃色底線、大字 */
+#reviewApp .tar-header {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 1.5rem 0 !important;
+  border-bottom: 3px solid #ffc107 !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+#reviewApp .tar-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#reviewApp .tar-title-icon {
+  color: #ffc107;
+  font-size: 2rem;
+}
+#reviewApp .tar-title {
+  font-weight: 700;
+  font-size: 2rem;
+  color: #2c3e50;
+  margin: 0;
+}
+#reviewApp .tar-sub {
+  color: var(--muted);
+  font-size: 16px;
+  margin-top: 2px;
+}
+#reviewApp .tar-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+#reviewApp .tar-search {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 18px;
+  min-width: 280px;
+  outline: none;
+  background: #fff;
+}
+#reviewApp .tar-btn {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+#reviewApp .tar-btn.primary {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+#reviewApp .tar-btn:active { transform: translateY(1px); }
+
+/* Panel：單一主區塊（無外框，與 apply_preview_list 一致）*/
+#reviewApp .tar-panel {
+  margin-top: 0;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0;
+  overflow-x: auto;
+}
+
+/* 帶組設定 Modal：簡化版面 */
+#teacherLimitModal .modal-dialog {
+  max-width: 640px;
+}
+#teacherLimitModal .tar-modal-simple .modal-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+#teacherLimitModal .tar-modal-quick {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+}
+#teacherLimitModal .tar-modal-quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+}
+#teacherLimitModal .tar-modal-quick-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#teacherLimitModal .tar-modal-quick-label {
+  font-size: 0.9rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+#teacherLimitModal .tar-modal-quick-value,
+#teacherLimitModal .tar-modal-quick-edit {
+  font-size: 1rem;
+}
+#teacherLimitModal .tar-modal-quick-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+#teacherLimitModal .tar-modal-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+#teacherLimitModal .tar-modal-table {
+  margin: 0;
+  font-size: 0.95rem;
+}
+#teacherLimitModal .tar-modal-table thead th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+#teacherLimitModal .tar-modal-table tbody td {
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+#teacherLimitModal .tar-modal-table tbody tr:hover {
+  background: #fbfdff;
+}
+#teacherLimitModal .tar-modal-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* 帶組設定：精簡可點擊 */
+#reviewApp .tar-inline-edit {
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+#reviewApp .tar-inline-edit:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+/* 老師一眼就懂：精簡 dashboard */
+#reviewApp .tar-dashboard {
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+#reviewApp .tar-dash-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+#reviewApp .tar-dash-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+  color: var(--text);
+}
+#reviewApp .tar-dash-sub {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin: 0;
+}
+#reviewApp .tar-dash-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+#reviewApp .tar-dash-info { min-width: 0; }
+#reviewApp .tar-dash-cohort { font-weight: 600; color: var(--text); }
+#reviewApp .tar-dash-sep { color: var(--border); margin: 0 4px; }
+#reviewApp .tar-dash-actions .tar-search {
+  min-width: 180px;
+  font-size: 0.95rem;
+  padding: 8px 12px;
+}
+#reviewApp .tar-dash-actions .tar-select {
+  min-width: 110px;
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+#reviewApp .tar-dash-actions .tar-btn {
+  font-size: 0.95rem;
+  padding: 8px 12px;
+}
+#reviewApp .tar-link-inline {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+#reviewApp .tar-link-inline:hover { text-decoration: underline; }
+/* 精簡 summary：一行四數 */
+#reviewApp .tar-summary-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+#reviewApp .tar-summary-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+#reviewApp .tar-summary-item b {
+  font-size: 1.25rem;
+  color: var(--text);
+}
+#reviewApp .tar-summary-item.tar-summary-highlight b {
+  color: var(--primary);
+}
+/* 老師負載：精簡 chip 列，不佔大空間 */
+#reviewApp .tar-teacher-load {
+  margin-bottom: 1rem;
+}
+#reviewApp .tar-teacher-load-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+#reviewApp .tar-teacher-load-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+#reviewApp .tar-teacher-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+#reviewApp .tar-teacher-chip.tar-chip-full {
+  background: #1e293b;
+  color: #fff;
+  border-color: #1e293b;
+}
+#reviewApp .tar-teacher-chip.tar-chip-near {
+  background: #e2e8f0;
+  color: #475569;
+}
+#reviewApp .tar-teacher-chip.tar-chip-ok {
+  background: #fff;
+  color: var(--text);
+}
+#reviewApp .tar-teacher-chip.tar-chip-none {
+  background: #f1f5f9;
+  color: #64748b;
+}
+#reviewApp .tar-chip-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 2px;
+}
+#reviewApp .tar-teacher-chip.tar-chip-full .tar-chip-label {
+  color: rgba(255,255,255,0.85);
+}
+/* 重點提醒：精簡一行 */
+#reviewApp .tar-reminders {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+#reviewApp .tar-reminder-label {
+  font-weight: 600;
+  color: var(--text);
+}
+#reviewApp .tar-reminder-item {
+  padding: 2px 8px;
+  background: #f8fafc;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+/* 表格：大字 + 清楚 */
+#reviewApp .tar-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+#reviewApp .tar-table th,
+#reviewApp .tar-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 10px;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 1.1rem;
+}
+#reviewApp .tar-table th {
+  color: var(--muted);
+  font-weight: 900;
+  background: #fafafa;
+  text-align: center;
+}
+#reviewApp .tar-table th.tar-th-center {
+  text-align: center;
+}
+#reviewApp .tar-table tbody tr:hover td {
+  background: #fbfdff;
+}
+#reviewApp .tar-table .col-project { font-weight: 700; color: var(--text); }
+
+/* 狀態：文字為主，不用彩色 badge */
+#reviewApp .tar-status { font-weight: 900; }
+#reviewApp .tar-status.on { color: var(--text); }
+#reviewApp .tar-status.off { color: var(--muted); }
+#reviewApp .tar-status.pending { color: var(--text); }
+#reviewApp .tar-status.approved { color: var(--text); }
+#reviewApp .tar-status.rejected { color: var(--danger); }
+#reviewApp .tar-status.teamed { color: var(--text); }
+
+/* 狀態欄：水平排列、不換行、置中、樸素樣式 */
+#reviewApp .tar-status-cell {
+  white-space: nowrap;
+  min-width: 0;
+  text-align: center;
+}
+#reviewApp .tar-status-cell .tar-status {
+  margin-right: 10px;
+}
+/* KPI 小標（待審核 N、退件 N、已組隊 N）- 樸素文字樣式 */
+#reviewApp .tar-kpi {
+  font-weight: 600;
+  display: inline;
+  padding: 0;
+  margin-left: 12px;
+  font-size: 15px;
+  color: var(--muted);
+}
+#reviewApp .tar-kpi::before {
+  content: '· ';
+  margin-right: 2px;
+  color: var(--border);
+}
+#reviewApp .tar-kpi:first-of-type {
+  margin-left: 0;
+}
+#reviewApp .tar-kpi:first-of-type::before {
+  content: none;
+}
+
+/* 操作按鈕 */
+#reviewApp .tar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+#reviewApp .tar-link {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: 900;
+  cursor: pointer;
+  font-size: 18px;
+}
+#reviewApp .tar-link.main {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: #fff;
+}
+
+/* Modal 開啟時：壓低 sidebar 確保 modal 在上層 */
+body:has(#teacherLimitModal.show) #layoutSidenav_nav,
+body:has(#teacherLimitModal.show) .sb-sidenav,
+body:has(#teacherLimitModal.show) .sb-sidenav-menu,
+body:has(#detailModal.show) #layoutSidenav_nav,
+body:has(#detailModal.show) .sb-sidenav,
+body:has(#detailModal.show) .sb-sidenav-menu {
+  z-index: 1030 !important;
+}
+
+/* Modal：確保在 navbar/sidebar 之上，不被遮擋 */
+#teacherLimitModal.modal,
+#detailModal.modal {
+  z-index: 10600 !important;
+  position: fixed !important;
+  top: calc(var(--navbar-height, 56px) + 16px) !important;
+  left: var(--sidebar-w, 250px) !important;
+  right: 0 !important;
+  width: auto !important;
+  height: calc(100vh - var(--navbar-height, 56px) - 16px) !important;
+  padding: 24px !important;
+  align-items: flex-start !important;
+  overflow-y: auto !important;
+  transition: none !important;
+  --border: #d1d5db;
+  --primary: #2f5bea;
+  --danger: #b91c1c;
+  --muted: #6b7280;
+}
+body.sb-sidenav-toggled #teacherLimitModal.modal,
+body.sb-sidenav-toggled #detailModal.modal {
+  left: var(--sidebar-collapsed, 80px) !important;
+}
+#detailModal.modal.fade .modal-dialog { transition: none !important; }
+#detailModal.modal.show { display: flex !important; }
+/* modal-dialog 固定寬度；margin-top 由 modal 的 padding-top 處理，不蓋到 nav */
+#detailModal .modal-dialog {
+  margin: 0 auto 24px !important;
+  max-width: 900px !important;
+  width: 100% !important;
+  transition: none !important;
+}
+#detailModal.modal .modal-dialog {
+  transition: none !important;
+}
+body:has(#teacherLimitModal.show) .modal-backdrop,
+body:has(#detailModal.show) .modal-backdrop {
+  z-index: 10590 !important;
+  position: fixed !important;
+  top: calc(var(--navbar-height, 56px) + 16px) !important;
+  left: var(--sidebar-w, 250px) !important;
+  width: calc(100vw - var(--sidebar-w, 250px)) !important;
+  height: calc(100vh - var(--navbar-height, 56px) - 16px) !important;
+}
+body.sb-sidenav-toggled:has(#teacherLimitModal.show) .modal-backdrop,
+body.sb-sidenav-toggled:has(#detailModal.show) .modal-backdrop {
+  left: var(--sidebar-collapsed, 80px) !important;
+  width: calc(100vw - var(--sidebar-collapsed, 80px)) !important;
+}
+/* Modal 可能被移到 body，需用 #detailModal 選擇器 */
+#detailModal .modal-header,
+#reviewApp .modal-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 900;
+  font-size: 20px;
+  background: #fafafa;
+}
+/* 關閉按鈕：標準位置、適當大小 */
+#detailModal .modal-header .tar-modal-close {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0 !important;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 20px;
+  line-height: 1;
+  border: 1px solid #d1d5db !important;
+  background: #fff !important;
+  color: #374151 !important;
+  cursor: pointer;
+}
+#detailModal .modal-header .tar-modal-close:hover {
+  background: #f3f4f6 !important;
+}
+#detailModal .modal-body,
+#reviewApp .modal-body {
+  padding: 14px 16px;
+  font-size: 18px;
+}
+#detailModal .modal-footer,
+#reviewApp .modal-footer {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  background: #fafafa;
+}
+/* Modal 按鈕樣式（覆蓋 Bootstrap 預設，modal 可能在 body）*/
+#detailModal button.tar-btn,
+#detailModal .modal-header button.tar-btn,
+#detailModal .modal-footer button.tar-btn,
+#detailModal .modal-footer .tar-btn {
+  border: 1px solid #d1d5db !important;
+  background: #fff !important;
+  border-radius: 10px !important;
+  padding: 10px 14px !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  color: #111827 !important;
+}
+#detailModal button.tar-btn.primary,
+#detailModal .modal-footer button.tar-btn.primary {
+  border-color: #2f5bea !important;
+  background: #2f5bea !important;
+  color: #fff !important;
+}
+#detailModal button.tar-btn[style*="danger"],
+#detailModal .modal-footer button.tar-btn[style*="danger"] {
+  border-color: #b91c1c !important;
+  color: #b91c1c !important;
+  background: #fff !important;
+}
+#detailModal button.tar-btn:active { transform: translateY(1px); }
+#reviewApp .modal-body textarea,
+#detailModal .modal-body textarea {
+  width: 100%;
+  min-height: 110px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 18px;
+  outline: none;
+}
+#reviewApp .modal-body .tar-grid,
+#detailModal .tar-grid {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 10px 14px;
+  margin-bottom: 12px;
+}
+#reviewApp .modal-body .tar-muted,
+#detailModal .tar-muted { color: var(--muted); }
+
+/* 圖片區：placeholder 與載入失敗 */
+.tar-image-wrap {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  background: #fafafa;
+  min-height: 200px;
+  position: relative;
+}
+#detailModal .tar-image-wrap { --border: #d1d5db; }
+.tar-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  color: #9ca3af;
+  font-size: 1rem;
+  gap: 12px;
+}
+.tar-image-placeholder i {
+  font-size: 4rem;
+  opacity: 0.5;
+}
+.tar-img-hidden { display: none !important; }
+
+/* Loading / Empty */
+#reviewApp .tar-loading,
+#reviewApp .tar-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+/* ===== RWD 響應式 ===== */
+@media (max-width: 992px) {
+  #reviewApp {
+    padding: 0 16px 24px;
+    font-size: 1rem;
+  }
+  #reviewApp .tar-title { font-size: 1.5rem; }
+  #reviewApp .tar-search { min-width: 0; flex: 1; max-width: 100%; }
+  #reviewApp .tar-right { width: 100%; }
+  #reviewApp .tar-btn { font-size: 16px; padding: 8px 12px; }
+  #reviewApp .tar-table { font-size: 1rem; }
+  #reviewApp .tar-table th,
+  #reviewApp .tar-table td { padding: 10px 8px; }
+  #detailModal .modal-dialog { margin-top: 0 !important; max-width: 95vw !important; }
+  #detailModal .modal-body,
+  #reviewApp .modal-body { font-size: 16px; padding: 12px; }
+  #detailModal .modal-footer,
+  #reviewApp .modal-footer {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+  }
+  #detailModal .modal-footer .tar-btn,
+  #reviewApp .modal-footer .tar-btn {
+    flex: 1;
+    min-width: 80px;
+  }
+  .tar-image-wrap iframe.tar-media,
+  .tar-image-wrap img.tar-media { min-height: 300px !important; }
+  .tar-image-placeholder { min-height: 200px; font-size: 0.9rem; }
+}
+
+@media (max-width: 768px) {
+  #teacherLimitModal .tar-modal-quick-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  #teacherLimitModal .tar-modal-quick-item {
+    width: 100%;
+  }
+  #reviewApp {
+    padding: 0 12px 20px;
+    font-size: 0.95rem;
+  }
+  #reviewApp .tar-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 1rem 0 !important;
+  }
+  #reviewApp .tar-title-wrap { flex-wrap: wrap; }
+  #reviewApp .tar-title { font-size: 1.35rem; }
+  #reviewApp .tar-right {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #reviewApp .tar-search {
+    width: 100%;
+    min-width: 0;
+    font-size: 16px;
+  }
+  #reviewApp .tar-right .tar-btn,
+  #reviewApp .tar-right .tar-select {
+    width: 100%;
+    min-width: 0;
+    font-size: 15px;
+  }
+  #reviewApp .tar-panel { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #reviewApp .tar-table { min-width: 600px; font-size: 0.9rem; }
+  #reviewApp .tar-table th,
+  #reviewApp .tar-table td { padding: 8px 6px; }
+  #reviewApp .tar-table .col-project { max-width: 180px; }
+  #reviewApp .tar-table .text-truncate { max-width: 120px !important; }
+  #reviewApp .tar-link { font-size: 14px; padding: 6px 10px; }
+  #reviewApp .tar-kpi { font-size: 13px; margin-left: 8px; }
+  #reviewApp .tar-muted { font-size: 0.95rem; }
+  #detailModal .modal-dialog {
+    margin: 12px !important;
+    margin-top: 0 !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+  #detailModal .modal-header,
+  #reviewApp .modal-header {
+    padding: 12px;
+    font-size: 18px;
+    flex-wrap: wrap;
+  }
+  #detailModal .modal-header .tar-title {
+    font-size: 1rem !important;
+    word-break: break-word;
+  }
+  #detailModal .modal-body .row.g-3 { flex-direction: column; }
+  #detailModal .modal-body .col-12 { max-width: 100%; }
+  #reviewApp .modal-body .tar-grid,
+  #detailModal .tar-grid {
+    grid-template-columns: 1fr;
+    gap: 8px 12px;
+  }
+  #detailModal .modal-body textarea,
+  #reviewApp .modal-body textarea {
+    font-size: 16px;
+    min-height: 90px;
+  }
+  .tar-image-wrap iframe.tar-media,
+  .tar-image-wrap img.tar-media { min-height: 250px !important; }
+  .tar-image-placeholder { min-height: 200px; font-size: 0.85rem; }
+}
+
+@media (max-width: 576px) {
+  #reviewApp { padding: 0 10px 16px; }
+  #reviewApp .tar-title { font-size: 1.2rem; }
+  #reviewApp .tar-title-icon { font-size: 1.5rem; }
+  #reviewApp .tar-table { min-width: 500px; }
+  #reviewApp .tar-actions { flex-direction: column; }
+  #reviewApp .tar-actions .tar-link { width: 100%; text-align: center; }
+  #detailModal .modal-dialog { margin: 8px !important; margin-top: 0 !important; }
+  #detailModal .modal-footer,
+  #reviewApp .modal-footer {
+    flex-direction: column;
+  }
+  #detailModal .modal-footer .tar-btn,
+  #reviewApp .modal-footer .tar-btn {
+    width: 100%;
+    min-width: 0;
+  }
+  #detailModal .modal-header .tar-modal-close {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+}

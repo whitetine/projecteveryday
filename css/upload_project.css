@@ -1,0 +1,236 @@
+/**
+ * 上傳專題樣式 - 學生端
+ */
+
+.upload-project-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.upload-header {
+    margin-bottom: 20px;
+}
+
+.upload-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.upload-description {
+    color: #666;
+    font-size: 14px;
+}
+
+.upload-form {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+}
+
+.form-group label.required::after {
+    content: ' *';
+    color: #dc3545;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.image-upload-section {
+    margin-bottom: 20px;
+}
+
+.image-upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.image-upload-area:hover {
+    border-color: #667eea;
+    background-color: #f8f9fa;
+}
+
+.image-upload-area.dragover {
+    border-color: #667eea;
+    background-color: #e7ecff;
+}
+
+.image-preview-container {
+    margin-top: 15px;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+    display: none;
+}
+
+.file-upload-section {
+    margin-bottom: 20px;
+}
+
+.file-upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.file-upload-area:hover {
+    border-color: #667eea;
+}
+
+.file-list {
+    margin-top: 15px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.file-name {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+}
+
+.file-size {
+    font-size: 12px;
+    color: #666;
+    margin: 0 10px;
+}
+
+.btn-remove-file {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s;
+}
+
+.btn-remove-file:hover {
+    color: #c82333;
+}
+
+.no-files {
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+    padding: 20px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 30px;
+}
+
+.btn-submit {
+    padding: 12px 30px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-submit:hover:not(:disabled) {
+    background: #5568d3;
+}
+
+.btn-submit:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-cancel {
+    padding: 12px 30px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+}
+
+.help-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .upload-project-container {
+        padding: 15px;
+    }
+
+    .upload-form {
+        padding: 20px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn-submit,
+    .btn-cancel {
+        width: 100%;
+    }
+}
+
+

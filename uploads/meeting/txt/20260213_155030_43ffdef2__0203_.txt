@@ -1,0 +1,122 @@
+CarActivity.java
+
+
+
+String accountId = getIntent().getStringExtra("ACCOUNT_ID");
+String url = ""+accountId;
+//因為用get所以把剛剛的body刪掉
+Request request = new Request.Builder().rul(url).get().build();
+
+OkHttpClient client = new OkHttpClient();
+client.newCall(request).enqueue(new Callback(){
+@Override 
+public void onFailure(@NonNull Call call, @NonNull IOException e){
+//處理錯誤
+}
+
+@Override 
+public void onResponse(@NonNull Call call,@NonNull Response response)throws IOException{
+Gson gson = new Gson();
+
+
+//如果有錯誤的話 就拉到外面
+     String[] seat = {"ZEV1 - 4 人座","ZEVX - 7 人座"};
+        String[] color = {"科技藍","時髦棕"};
+
+        ArrayAdapter<String> seatada = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,seat);
+        seatada.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        selectseat.setAdapter(seatada);
+
+
+        ArrayAdapter<String> colorada = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,color);
+        colorada.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        selectcolor.setAdapter(colorada);
+
+        selectcolor.setSelection(0);
+        selectseat.setSelection(0);
+
+        TextView text1 = findViewById(R.id.textView1);
+        TextView text2 = findViewById(R.id.textView2);
+        TextView text3 = findViewById(R.id.textView3);
+        TextView text4 = findViewById(R.id.textView4);
+        TextView text5 = findViewById(R.id.textView5);
+        TextView text6 = findViewById(R.id.textView6);
+        TextView text7 = findViewById(R.id.textView7);
+        TextView text8 = findViewById(R.id.textView8);
+
+
+runOnUiThread(() -> {
+try{
+
+String json = response.body().string();
+//判斷抓到的json是不是空值
+if(!json.isEmpty()){
+//有車
+Car car = gson.fromJson(json,Car.class);
+TextView textView = findViewById(R.id.textView1);
+textView.setText("移交日期："+car.transferDate);
+//以此類推
+
+}else{
+//沒車
+
+        text1.setText("年份：2021~2024");
+        text2.setText("產地：美國/台灣");
+        text3.setText("人數：4 人");
+        text4.setText("電池容量:63 kWh");
+        text5.setText("馬達功率：125 kW");
+        text6.setText("馬力：170 hp");
+        text7.setText("建議售價：48,500");
+        text8.setText("充電時間：快充 50 分鐘可充電至 80%,一般充電可約於 9 小時充飽。");
+
+        selectseat.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0){
+                    text1.setText("年份：2021~2024");
+                    text2.setText("產地：美國/台灣");
+                    text3.setText("人數：4 人");
+                    text4.setText("電池容量:63 kWh");
+                    text5.setText("馬達功率：125 kW");
+                    text6.setText("馬力：170 hp");
+                    text7.setText("建議售價：48,500");
+                    text8.setText("充電時間：快充 50 分鐘可充電至 80%,一般充電可約於 9 小時充飽。");
+                }else if(position ==1){
+                    text1.setText("年份：2021~2024");
+                    text2.setText("產地：美國/台灣");
+                    text3.setText("人數：7 人");
+                    text4.setText("電池容量:82 kWh");
+                    text5.setText("馬達功率：150 kW");
+                    text6.setText("馬力：204 hp");
+                    text7.setText("建議售價：59,500");
+                    text8.setText("充電時間：快充 50 分鐘可充電至 80%,一般充電可約於 9 小時充飽。");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        ImageView car = findViewById(R.id.nocarbluecar);
+        selectcolor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position ==0){
+                    car.setImageResource(R.drawable.bluecar);
+                }else if (position == 1){
+                    car.setImageResource(R.drawable.browncar);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+}
+}catch(Exception ex){
+
+}
+}
+});

@@ -1,0 +1,1257 @@
+/* ============================================================
+   meeting.css - 會議紀錄頁面樣式（統一版）
+   僅作用於會議相關頁面，不影響主 layout 與 sidebar
+   ============================================================ */
+
+/* 變數 */
+:root {
+  --meeting-bg: #f8fafc;
+  --meeting-border: #e2e8f0;
+  --meeting-text: #1e293b;
+  --meeting-muted: #64748b;
+  --meeting-primary: #2563eb;
+  --meeting-success: #10b981;
+  --meeting-danger: #ef4444;
+}
+
+/* 僅套用於會議內容區 */
+#content:has(.app-container),
+#content:has(.team-overview-card),
+#content:has(.meeting-list-page) {
+  font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  background: var(--meeting-bg);
+}
+
+/* ===== 主佈局 ===== */
+.app-container {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 400px;
+}
+
+/* 左側邊欄 */
+.app-sidebar {
+    display: flex;
+    flex-direction: column;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid var(--meeting-border);
+  border-radius: 10px;
+  padding: 14px;
+  overflow-y: auto;
+  min-height: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.sidebar-header {
+  display: none;
+}
+
+/* 出席區塊 */
+.attendance-panel {
+  background: #fafbfc;
+  border: 1px solid var(--meeting-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  overflow: visible;
+}
+
+.attendance-card-header {
+    display: flex;
+    align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--meeting-border);
+}
+
+.attendance-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.attendance-add-meeting-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+    font-weight: 600;
+  color: #fff;
+  background: var(--meeting-primary);
+  border-radius: 6px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.attendance-add-meeting-btn:hover {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.attendance-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--meeting-text);
+  margin: 0;
+}
+
+.attendance-stats {
+    display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--meeting-muted);
+}
+
+.attendance-stat--present {
+  color: #166534;
+}
+
+.attendance-stat--present .attendance-stat-badge {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--meeting-success);
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.attendance-stat--absent {
+  color: #991b1b;
+}
+
+.attendance-stat--absent .attendance-stat-badge {
+  display: inline-block;
+    width: 8px;
+    height: 8px;
+  border-radius: 2px;
+  background: var(--meeting-danger);
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.attendance-stat--rate {
+  color: var(--meeting-text);
+}
+
+/* 出席表格 */
+.attendance-list-grid {
+  display: block;
+}
+
+.attendance-table {
+    display: flex;
+    flex-direction: column;
+  gap: 0;
+}
+
+.attendance-table-head, .attendance-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--meeting-border);
+}
+
+.attendance-table-head {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--meeting-text);
+}
+
+.attendance-row:last-child {
+  border-bottom: none;
+}
+
+.attendance-th {
+  font-weight: 600;
+  color: var(--meeting-muted);
+}
+
+.attendance-cell.attendance-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--meeting-text);
+}
+
+.attendance-cell.attendance-status {
+    display: flex;
+  gap: 8px;
+}
+
+.attendance-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--meeting-border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--meeting-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.attendance-btn:hover:not(:disabled) {
+  border-color: #94a3b8;
+  color: var(--meeting-text);
+}
+
+.attendance-btn--ok.is-active {
+  border-color: var(--meeting-success);
+  background: #dcfce7;
+  color: #166534;
+}
+
+.attendance-btn--no.is-active {
+  border-color: var(--meeting-danger);
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.attendance-aux-switch {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--meeting-border);
+}
+
+.attendance-aux-content {
+  margin-top: 10px;
+  max-height: 280px;
+    overflow-y: auto;
+}
+
+/* 輔助面板（歷史/工具切換） */
+.aux-panel {
+  background: #fff;
+  border: 1px solid var(--meeting-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.aux-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.aux-switch-btn {
+  border: 1px solid var(--meeting-border);
+  background: #fff;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--meeting-text);
+  cursor: pointer;
+  text-align: center;
+}
+
+.aux-switch-btn.is-active {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: var(--meeting-primary);
+}
+
+/* 歷史區塊 */
+.history-panel {
+  padding: 0;
+}
+
+.history-filters {
+    display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.history-search,
+.history-filters .form-control,
+.history-filters input {
+  border: 1px solid var(--meeting-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  background: #fff;
+}
+
+.history-date-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-date-row .form-control {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-date-sep {
+  font-size: 12px;
+  color: var(--meeting-muted);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-month-group {
+  margin-bottom: 10px;
+}
+
+.history-month-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--meeting-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 6px 0;
+  padding-left: 2px;
+}
+
+.history-month-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-timeline-item {
+  background: #fff;
+  border: 1px solid var(--meeting-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.history-timeline-item:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.history-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.history-item-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--meeting-text);
+  line-height: 1.25;
+}
+
+.history-item-time {
+  font-size: 12px;
+  color: var(--meeting-muted);
+}
+
+.history-badge-latest {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--meeting-primary);
+  background: #dbeafe;
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
+/* 工具區塊 */
+#toolBody.tool-panel {
+  padding: 0;
+}
+
+.tool-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--meeting-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 10px 0;
+}
+
+.tool-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--meeting-border);
+  background: #f8fafc;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tool-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.tool-icon {
+  width: 20px;
+  text-align: center;
+  color: var(--meeting-muted);
+}
+
+.tool-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--meeting-text);
+}
+
+.tool-item--record .tool-icon { color: var(--meeting-danger); }
+.tool-item--ai .tool-icon { color: #7c3aed; }
+.tool-item--ai {
+  background: #f5f3ff;
+  border-color: #ddd6fe;
+}
+
+.tool-item--ai:hover {
+  background: #ede9fe;
+}
+
+/* 錄音中 */
+.recording-active-panel {
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.rec-wave {
+  display: flex;
+  align-items: center;
+  color: var(--meeting-danger);
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.rec-wave .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--meeting-danger);
+  border-radius: 50%;
+  margin-right: 8px;
+  animation: pulse 1s infinite;
+}
+
+.btn-stop {
+  width: 100%;
+  border: none;
+  background: #fff;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  border: 1px solid var(--meeting-border);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ===== 右側主內容 ===== */
+.app-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: #fff;
+  border: 1px solid var(--meeting-border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+/* 標題列 */
+.doc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--meeting-border);
+  background: #fafbfc;
+  flex-shrink: 0;
+}
+
+.doc-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.doc-context-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.date-badge,
+.user-badge {
+  font-size: 11px;
+  color: var(--meeting-muted);
+  background: #fff;
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--meeting-border);
+}
+
+.doc-context-note {
+  font-size: 11px;
+  color: var(--meeting-muted);
+}
+
+.meeting-title {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--meeting-text);
+  min-width: 180px;
+  outline: none;
+}
+
+.meeting-title:focus {
+  background: rgba(37, 99, 235, 0.06);
+  border-radius: 4px;
+}
+
+.meeting-title:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+}
+
+/* 操作按鈕 */
+.doc-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  background: #fff;
+  border: 1px solid var(--meeting-border);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--meeting-text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.action-btn.primary {
+  background: var(--meeting-primary);
+  border-color: var(--meeting-primary);
+  color: #fff;
+}
+
+.action-btn.primary:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.action-more {
+  position: relative;
+}
+
+.action-more summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.action-more summary::-webkit-details-marker {
+  display: none;
+}
+
+.action-more-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 140px;
+  border: 1px solid var(--meeting-border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 6px;
+  z-index: 50;
+}
+
+.action-more-item {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--meeting-text);
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.action-more-item:hover {
+  background: #f1f5f9;
+}
+
+/* 編輯器區 */
+.editor-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.editor-paper {
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  min-height: 360px;
+  padding: 0;
+}
+
+.content-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--meeting-border);
+  background: #fafbfc;
+}
+
+.content-panel-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--meeting-text);
+  margin: 0;
+}
+
+.content-panel-status {
+  font-size: 12px;
+  color: var(--meeting-muted);
+  font-weight: 600;
+}
+
+.content-panel-status-note {
+  margin-left: 4px;
+  color: #b45309;
+  font-size: 11px;
+}
+
+.content-type-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--meeting-border);
+  background: #fff;
+}
+
+.content-type-tab {
+  border: 1px solid var(--meeting-border);
+  background: #fff;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--meeting-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.content-type-tab:hover {
+  border-color: #94a3b8;
+  color: var(--meeting-text);
+}
+
+.content-type-tab.is-active {
+  background: var(--meeting-primary);
+  border-color: var(--meeting-primary);
+  color: #fff;
+}
+
+.content-kind-shell {
+  min-height: 280px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.content-kind-empty {
+  flex: 1;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  color: var(--meeting-muted);
+}
+
+.content-kind-empty-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--meeting-text);
+  margin: 0;
+}
+
+.content-kind-empty-desc {
+  font-size: 13px;
+  margin: 0;
+}
+
+/* 打字紀錄空狀態提示 */
+.note-empty-hint {
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--meeting-muted);
+  background: #fffbeb;
+  border-bottom: 1px solid #fef3c7;
+  margin: 0;
+}
+
+.content-upload-btn,
+.content-add-btn,
+.content-edit-toggle-btn,
+.content-save-summary-btn,
+.content-clear-btn {
+  border: 1px solid var(--meeting-border);
+  background: #fff;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--meeting-text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.content-upload-btn:hover,
+.content-add-btn:hover,
+.content-edit-toggle-btn:hover,
+.content-save-summary-btn:hover,
+.content-clear-btn:hover {
+  border-color: var(--meeting-primary);
+  color: var(--meeting-primary);
+  background: #eff6ff;
+}
+
+.content-save-summary-btn.primary,
+.content-upload-btn[data-action="save"] {
+  background: var(--meeting-primary);
+  border-color: var(--meeting-primary);
+  color: #fff;
+}
+
+.content-save-summary-btn.primary:hover,
+.content-upload-btn[data-action="save"]:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #fff;
+}
+
+.content-upload-btn--primary {
+  background: var(--meeting-primary);
+  border-color: var(--meeting-primary);
+  color: #fff;
+}
+
+.content-upload-btn--primary:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.content-kind-item {
+  border: 1px solid var(--meeting-border);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
+}
+
+.content-kind-item-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--meeting-text);
+  margin: 0 0 6px 0;
+}
+
+.content-kind-item-meta {
+  font-size: 12px;
+  color: var(--meeting-muted);
+  margin-bottom: 8px;
+}
+
+.content-kind-item-text {
+  font-size: 13px;
+  color: var(--meeting-text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.editor-content {
+  min-height: 240px;
+  outline: none;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--meeting-text);
+  white-space: pre-wrap;
+}
+
+/* 打字紀錄編輯區（含編輯人、按鈕列） */
+.content-note-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--meeting-border);
+  font-size: 12px;
+  color: var(--meeting-muted);
+}
+
+.content-note-actions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--meeting-border);
+  background: #fafbfc;
+}
+
+/* 內容區塊（JS 動態產生） */
+.content-note-body,
+.content-filemeta-name,
+.content-kind-item-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--meeting-text);
+}
+
+.content-filemeta-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.content-filemeta-name {
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.txtdoc {
+  display: block;
+  padding: 0;
+  margin: 0;
+}
+
+.txtdoc__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--meeting-border);
+}
+
+.txtdoc__content {
+  margin-top: 8px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.content-type-count {
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 4px;
+  opacity: 0.8;
+}
+
+.content-pager-btn {
+  padding: 4px 10px;
+  font-size: 13px;
+  border: 1px solid var(--meeting-border);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.content-pager-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* 歷史檢視面板 */
+.history-view-panel {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  border: 1px solid var(--meeting-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.history-type-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--meeting-border);
+  background: #f8fafc;
+}
+
+.history-type-btn {
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--meeting-muted);
+  padding: 12px 12px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.history-type-btn:hover {
+  color: var(--meeting-text);
+}
+
+.history-type-btn.is-active {
+  color: var(--meeting-primary);
+  border-bottom-color: var(--meeting-primary);
+}
+
+.history-type-btn__count {
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: var(--meeting-muted);
+  margin-left: 4px;
+}
+
+.history-type-btn.is-active .history-type-btn__count {
+  background: #dbeafe;
+  color: var(--meeting-primary);
+}
+
+.history-file-content {
+  padding: 16px;
+  min-height: 200px;
+}
+
+.history-empty {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 24px;
+}
+
+.history-empty__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--meeting-text);
+  margin: 0;
+}
+
+.history-empty__text {
+  font-size: 14px;
+  color: var(--meeting-muted);
+  margin: 0;
+}
+
+/* 選擇器面板（指導老師選組別） */
+.selector-panel {
+  padding: 24px;
+}
+
+.selector-panel h3 {
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* 會議總覽（教師首頁） */
+.meeting-overview-title {
+  margin: 0 0 14px 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--meeting-text);
+}
+
+.meeting-overview-empty {
+  color: var(--meeting-muted);
+}
+
+.team-overview-card {
+  border: 1px solid var(--meeting-border);
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.team-overview-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.team-overview-table thead tr {
+  background: #f8fafc;
+}
+
+.team-overview-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--meeting-muted);
+  border-bottom: 1px solid var(--meeting-border);
+}
+
+.team-overview-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: var(--meeting-text);
+}
+
+.member-names {
+        font-weight: 500;
+  line-height: 1.5;
+}
+
+.member-hint {
+  font-size: 12px;
+  color: var(--meeting-muted);
+  margin-top: 4px;
+}
+
+.rate-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.rate-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  border-radius: 999px;
+  transition: width 0.3s;
+}
+
+.rate-text {
+        font-size: 12px;
+  color: var(--meeting-muted);
+  margin-top: 4px;
+}
+
+.rate-wrap {
+  min-width: 120px;
+}
+
+.meeting-count-text {
+  font-weight: 600;
+}
+
+.col-cohort,
+.col-project {
+  font-weight: 600;
+}
+
+/* 處理中遮罩 */
+    .busy-overlay {
+  display: none;
+        position: fixed;
+        inset: 0;
+  background: rgba(0,0,0,0.4);
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+.busy-overlay.is-visible {
+  display: flex !important;
+}
+
+    .busy-card {
+        background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        text-align: center;
+  min-width: 280px;
+    }
+
+    .busy-spinner {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e5e7eb;
+  border-top-color: var(--meeting-primary);
+        border-radius: 50%;
+  margin: 0 auto 12px;
+  animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+  to { transform: rotate(360deg); }
+    }
+
+    .busy-title {
+        font-weight: 700;
+  color: var(--meeting-text);
+        margin-bottom: 6px;
+    }
+
+    .busy-desc {
+        font-size: 13px;
+  color: var(--meeting-muted);
+}
+
+/* 工具類 */
+#historyBody { display: block; }
+#toolBody { display: none; }
+#meetingFiles { display: none; }
+#recordingStatus { display: none; }
+.u-hidden-input { display: none !important; }
+
+.empty-state {
+  color: var(--meeting-muted);
+  font-size: 13px;
+  padding: 10px;
+  margin: 0;
+  text-align: center;
+}
+
+/* 確認會議按鈕 */
+.action-btn--important {
+  background: linear-gradient(135deg, #047857, #059669) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  padding: 12px 20px !important;
+  border: none !important;
+  border-radius: 10px !important;
+}
+
+.action-btn--important:hover {
+  background: linear-gradient(135deg, #065f46, #047857) !important;
+}
+
+.action-btn--important:disabled {
+  background: #94a3b8 !important;
+  cursor: not-allowed;
+}
+
+/* 響應式 */
+@media (max-width: 992px) {
+  .app-container {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .app-sidebar {
+    max-height: 360px;
+  }
+
+  .doc-header {
+    flex-wrap: wrap;
+  }
+
+  .doc-actions {
+    justify-content: flex-start;
+  }
+
+  .meeting-title {
+    min-width: 100%;
+  }
+
+}
+
+@media (max-width: 576px) {
+  .attendance-table-head,
+  .attendance-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .attendance-cell.attendance-status {
+    justify-content: flex-start;
+  }
+
+  .content-type-tabs {
+    gap: 4px;
+  }
+
+  .content-type-tab {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
+
+/* SweetAlert2 確認對話框按鈕樣式（與會議頁面一致） */
+#content .swal2-popup .swal2-actions .swal2-confirm {
+  background: var(--meeting-primary) !important;
+  border-color: var(--meeting-primary) !important;
+  color: #fff !important;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: 600;
+}
+#content .swal2-popup .swal2-actions .swal2-cancel {
+  background: #e2e8f0 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: 600;
+}

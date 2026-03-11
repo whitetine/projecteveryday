@@ -1,0 +1,486 @@
+/**
+ * 指導老師線上評分頁面 - 參考 expected_teacher.php（專題預期成果）
+ * 單一黃線標題、背景與滿版與專題預期成果一致
+ */
+
+/* 頁面容器 - 正常寬度、不拉出視窗，避免頁面靠左無法使用 */
+.teacher-scoring-page {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 30px 30px 30px !important;
+    box-sizing: border-box;
+    background: #fff;
+    min-height: 100vh;
+}
+
+/* 頁面標題區域（參考專題預期成果：單一黃線、標題+圖示） */
+.teacher-scoring-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.5rem 0 !important;
+    margin: 0 0 2rem 0 !important;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 3px solid #ffc107;
+}
+
+/* 主標題（僅一條底線在 page-header 下方，與專題預期成果一致） */
+.teacher-scoring-page .page-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.teacher-scoring-page .page-title i {
+    color: #ffc107;
+}
+
+.teacher-scoring-page .page-subtitle {
+    color: #6c757d;
+    font-size: 0.95rem;
+    margin: 0 0 20px 0;
+}
+
+/* 卡片樣式 - 紫色漸層標題（與專題上傳一致） */
+.teacher-scoring-page .upload-card {
+    margin-bottom: 0;
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.teacher-scoring-page .upload-card .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #fff !important;
+    border: none;
+    padding: 15px 20px;
+    font-size: 16px;
+}
+
+.teacher-scoring-page .upload-card .card-header h5 {
+    color: #fff;
+    font-weight: 600;
+}
+
+.teacher-scoring-page .upload-card .card-body {
+    padding: 25px;
+    background: #fff;
+}
+
+.teacher-scoring-page .upload-card .card-body.p-0 {
+    padding: 0;
+}
+
+/* 表單欄位 */
+.teacher-scoring-page .form-label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.teacher-scoring-page .form-select,
+.teacher-scoring-page .form-control {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+.teacher-scoring-page .form-select:focus,
+.teacher-scoring-page .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* 主按鈕 - 紫色漸層（與圖2一致） */
+.teacher-scoring-page .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 10px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+.teacher-scoring-page .btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.teacher-scoring-page .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 團隊列表表格 - 表頭紫色漸層 */
+.teacher-scoring-page .teacher-scoring-table thead tr {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+}
+
+.teacher-scoring-page .teacher-scoring-table thead th {
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 12px 16px;
+    border: none;
+}
+
+.teacher-scoring-page .teacher-scoring-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.teacher-scoring-page .teacher-scoring-table tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+.teacher-scoring-page .teacher-scoring-table tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+}
+
+/* 評分狀態按鈕 - 綠色 */
+.teacher-scoring-page .tos-status-badge,
+.teacher-scoring-page .btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.teacher-scoring-page .tos-status-badge.bg-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    color: #fff;
+}
+
+/* 提示區塊 */
+.teacher-scoring-page #tosEmpty {
+    border-radius: 12px;
+    border: none;
+    background: #e7f1ff;
+    color: #0d6efd;
+}
+
+/* 評分時段卡片（圖1樣式） */
+.teacher-scoring-page #tosPeriodCard .tos-period-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #fff !important;
+}
+
+.teacher-scoring-page .tos-period-body {
+    background: #fff;
+    padding: 1rem 1.25rem;
+}
+
+.teacher-scoring-page .tos-period-title {
+    font-weight: 700;
+    color: #333;
+    font-size: 1rem;
+}
+
+.teacher-scoring-page .tos-period-status {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.teacher-scoring-page .tos-period-status.status-doing {
+    background: #28a745;
+    color: #fff;
+}
+
+.teacher-scoring-page .tos-period-status.status-ended {
+    background: #6c757d;
+    color: #fff;
+}
+
+.teacher-scoring-page .tos-period-status.status-notstarted {
+    background: #ffc107;
+    color: #333;
+}
+
+.teacher-scoring-page .tos-period-row {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.teacher-scoring-page .tos-period-row:last-child {
+    margin-bottom: 0;
+}
+
+.teacher-scoring-page .tos-period-empty {
+    padding: 0.5rem 0;
+}
+
+/* 評分時段列表（與 student_review 相同呈現） */
+.teacher-scoring-page .period-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.teacher-scoring-page .tos-period-item {
+    border: none;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem;
+    transition: background-color 0.2s;
+    text-align: left;
+}
+
+.teacher-scoring-page .tos-period-item:hover {
+    background-color: #f8f9fa;
+}
+
+.teacher-scoring-page .tos-period-item.active {
+    background-color: #e7f3ff;
+    border-left: 4px solid #0d6efd;
+}
+
+.teacher-scoring-page .tos-period-item:last-child {
+    border-bottom: none;
+}
+
+.teacher-scoring-page .period-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.teacher-scoring-page .period-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.teacher-scoring-page .period-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.teacher-scoring-page .period-list::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* 已超過評分時段：按鈕仍可點擊以「查看」，僅 Modal 內內容為唯讀 */
+.teacher-scoring-page.tos-period-ended .tos-btn-score {
+    /* 不設 pointer-events: none，讓按鈕可點擊開啟檢視 */
+    opacity: 1;
+}
+
+/* ========== 評分彈跳視窗：統一排版（不論主表單/有無學生列都與圖一一致）==========
+ * 所有樣式皆限定在 #tosScoreModal 內，避免 modal 被移到 body 後失去樣式
+ */
+#tosScoreModal .modal-dialog {
+    max-width: 1140px;
+}
+#tosScoreModal .modal-body.tos-modal-body-two-col {
+    min-height: 420px;
+    padding: 1rem 1.25rem;
+}
+#tosScoreModal .tos-modal-body-two-col .row {
+    display: flex;
+    flex-wrap: nowrap;
+    min-height: 380px;
+    margin: 0 -0.5rem;
+}
+#tosScoreModal .tos-modal-body-two-col .tos-col-history {
+    flex: 0 0 41.666667%;
+    max-width: 41.666667%;
+    padding: 0 0.5rem 0 0;
+    border-right: 1px solid #e2e6ea;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+#tosScoreModal .tos-modal-body-two-col .tos-col-form {
+    flex: 0 0 58.333333%;
+    max-width: 58.333333%;
+    padding: 0 0 0 1rem;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+#tosScoreModal .tos-label-block {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.5rem;
+    flex-shrink: 0;
+}
+#tosScoreModal .tos-past-suggest-box {
+    flex: 1;
+    min-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e2e6ea;
+    border-radius: 10px;
+    background: #fafbfc;
+    padding: 14px 16px;
+}
+#tosScoreModal .tos-past-suggest-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+/* 右側表格：固定欄寬，有無學生列都同一版面 */
+#tosScoreModal .tos-suggest-score-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    width: 100%;
+    border: 1px solid #e2e6ea;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fafbfc;
+}
+#tosScoreModal .tos-suggest-score-table thead th {
+    font-weight: 600;
+    color: #495057;
+    border: none;
+    border-bottom: 1px solid #e2e6ea;
+    padding: 12px 16px;
+    background: #f1f3f5;
+    font-size: 0.95rem;
+}
+#tosScoreModal .tos-suggest-score-table .tos-th-suggest { width: 75%; }
+#tosScoreModal .tos-suggest-score-table .tos-th-score { width: 25%; min-width: 90px; }
+#tosScoreModal .tos-suggest-score-table tbody td {
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: top;
+    padding: 0;
+    background: #fff;
+}
+#tosScoreModal .tos-suggest-score-table tbody tr:last-child td {
+    border-bottom: none;
+}
+#tosScoreModal .tos-suggest-cell {
+    width: 100%;
+    min-height: 100px;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 14px 16px !important;
+    resize: none !important;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #212529;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+#tosScoreModal .tos-suggest-cell::placeholder { color: #adb5bd; }
+#tosScoreModal .tos-suggest-cell:focus {
+    outline: none !important;
+    box-shadow: inset 0 0 0 1px #dee2e6 !important;
+}
+#tosScoreModal .tos-score-cell {
+    padding: 12px 16px !important;
+    vertical-align: middle !important;
+}
+#tosScoreModal .tos-score-cell .form-control {
+    min-width: 72px;
+    border: 1px solid #e2e6ea;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    background: #fff;
+}
+#tosScoreModal .tos-score-cell .form-control:focus {
+    border-color: #b8c4ce;
+    box-shadow: 0 0 0 3px rgba(200, 210, 220, 0.35);
+    outline: none;
+}
+/* 學生列：與團隊列同一表格，統一風格 */
+#tosScoreModal .tos-student-row td {
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: top;
+    padding: 12px 16px;
+    background: #fff;
+}
+#tosScoreModal .tos-student-row:last-child td { border-bottom: none; }
+#tosScoreModal .tos-student-row .tos-student-label {
+    font-size: 0.9rem;
+    color: #495057;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+#tosScoreModal .tos-student-row .tos-student-suggest,
+#tosScoreModal .tos-student-row .tos-student-score {
+    border: 1px solid #e2e6ea;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+}
+#tosScoreModal .tos-student-row .tos-student-suggest:focus,
+#tosScoreModal .tos-student-row .tos-student-score:focus {
+    border-color: #b8c4ce;
+    box-shadow: 0 0 0 2px rgba(200, 210, 220, 0.3);
+    outline: none;
+}
+#tosScoreModal .tos-student-row .tos-student-readonly-content {
+    padding: 10px 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #212529;
+}
+#tosScoreModal .tos-history-list { padding: 0; border: none; background: transparent; }
+#tosScoreModal .tos-history-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.9rem;
+}
+#tosScoreModal .tos-history-item:last-child { border-bottom: none; }
+#tosScoreModal .tos-history-period { font-weight: 600; color: #495057; margin-bottom: 4px; }
+#tosScoreModal .tos-history-content { color: #212529; white-space: pre-wrap; word-break: break-word; margin-bottom: 4px; }
+#tosScoreModal .tos-history-score { font-size: 0.85rem; color: #6c757d; }
+
+/* Modal 內按鈕風格一致 */
+#tosScoreModal .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+#tosScoreModal .btn-primary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+}
+
+/* 評分建議框不可由使用者調整大小 */
+#tosScoreModal textarea,
+#tosScoreModal .tos-student-suggest {
+    resize: none !important;
+}
+
+/* 覆寫 Bootstrap .table 在 modal 內的預設，避免不同主表單載入時排版跑掉 */
+#tosScoreModal .tos-suggest-score-table.table-bordered th,
+#tosScoreModal .tos-suggest-score-table.table-bordered td {
+    border-top: none;
+}
+
+@media (max-width: 768px) {
+    .teacher-scoring-page {
+        padding: 15px !important;
+    }
+    .teacher-scoring-page .page-title {
+        font-size: 20px;
+    }
+}

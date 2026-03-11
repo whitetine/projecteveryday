@@ -1,0 +1,9 @@
+{
+    "require": {
+        "smalot/pdfparser": "^2.12",
+        "phpoffice/phpword": "^1.1",
+        "overtrue/pinyin": "^5.0",
+        "khanamiryan/php-qrcode-detector-decoder": "^2.1",
+        "mpdf/mpdf": "^8.2"
+    }
+}
