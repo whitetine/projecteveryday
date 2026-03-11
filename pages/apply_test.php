@@ -101,7 +101,8 @@ if ($currentUser['u_name'] === '' && isset($_SESSION['u_name'])) {
                                     :class="{'text-danger': isExpired(selectedFile.doc_end_d), 'text-warning': !isExpired(selectedFile.doc_end_d)}"></i>截止時間：</small>
                             <div class="fw-bold"
                                 :class="{'text-danger': isExpired(selectedFile.doc_end_d), 'text-warning': !isExpired(selectedFile.doc_end_d)}">
-                                {{ formatDateTime(selectedFile.doc_end_d) }}</div>
+                                {{ formatDateTime(selectedFile.doc_end_d) }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -320,6 +321,17 @@ if ($currentUser['u_name'] === '' && isset($_SESSION['u_name'])) {
                     <div v-if="submittedAt" class="mt-1"><strong>提交時間與狀態：</strong>{{ submittedAt }}</div>
                 </div>
             </div>
+            <a v-if="showExresultdataNotice"
+                @click.prevent="goExpectedOutcome"
+                class="question-group mt-4 d-block text-decoration-none"
+                style="background: #fff5f5; border-left: 4px solid #dc3545; border: 1px solid #f5c2c7; border-left-width: 4px; border-radius: 8px; padding: 16px; cursor: pointer;">
+                <div class="question-label mb-2"
+                    style="color: #dc3545; font-weight: 700;">注意</div>
+                <div class="small" style="color: #842029;">
+                    此申請表須連同預期成果一併繳交，送出前請先確認預期成果已完成。
+                    <span style="font-weight: 700; text-decoration: underline;">（點擊前往填寫）</span>
+                </div>
+            </a>
 
             <template v-if="files.length > 0">
                 <div class="form-action-buttons text-center mt-4">

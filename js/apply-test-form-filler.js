@@ -96,6 +96,13 @@ window.mountApplyTestFormFiller = function (mountSelector) {
         const v = this.selectedForm.pdf_footer_timestamps;
         return v === undefined || v === 1 || v === '1';
       },
+      showExresultdataNotice() {
+        if (!this.selectedForm) return false;
+        return this.selectedForm.exresultdata === true ||
+          this.selectedForm.exresultdata === 1 ||
+          this.selectedForm.exresultdata === '1';
+      },
+
       // 表單抬頭（在「XX科專題」前自動換行，如：資管科專題初審申請單；多個換行合併，中間不空行）
       displayDocHeader() {
         const h = this.selectedForm && this.selectedForm.doc_header ? String(this.selectedForm.doc_header).trim() : '';
@@ -940,6 +947,22 @@ window.mountApplyTestFormFiller = function (mountSelector) {
         } else {
           setTimeout(() => this.initDatePickers(), 500);
         }
+      },
+      goExpectedOutcome() {
+        Swal.fire({
+          title: '準備跳轉頁面',
+          text: '已填寫的資料將會消失',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '確定',
+          cancelButtonText: '取消',
+          confirmButtonColor: '#dc3545',
+          reverseButtons: true   // ⭐ 讓取消在左邊
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = 'main.php#pages/expected_outcome.php';
+          }
+        });
       },
       renderQuestion(q, index) {
         const key = `q_${q.order}`;
