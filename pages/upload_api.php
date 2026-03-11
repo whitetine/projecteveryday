@@ -518,17 +518,9 @@ try {
      * @return array 允許的類型代碼陣列，若未設定則回傳空陣列（表示不限制）
      */
     function getAllowedFileTypesForProject($conn, $pro_ID) {
-        if (!$pro_ID) return [];
-        try {
-            $stmt = $conn->prepare("SELECT allow_file_types FROM projectdata WHERE pro_ID = ?");
-            $stmt->execute([$pro_ID]);
-            $json = $stmt->fetchColumn();
-            if (!$json) return [];
-            $arr = json_decode($json, true);
-            return is_array($arr) ? array_values($arr) : [];
-        } catch (Exception $e) {
-            return [];
-        }
+        // 歷屆專題檔案型態已改為依副檔名自動判斷
+        // 不再透過 projectdata.allow_file_types 進行限制，回傳空陣列代表「不限制」
+        return [];
     }
 
     /**
@@ -543,56 +535,9 @@ try {
     function getUnionOfAllowedFileTypes($conn, $cohort_ID, $class_ID = null) {
         if (!$cohort_ID) return [];
         
-        $historyPeriodStmt = $conn->prepare("
-            SELECT pro_des, allow_file_types
-            FROM projectdata
-            WHERE pro_status = 1
-              AND pro_chorot_ID = ?
-              AND pro_start_d IS NOT NULL
-              AND pro_end_d IS NOT NULL
-              AND NOW() BETWEEN pro_start_d AND pro_end_d
-        ");
-        $historyPeriodStmt->execute([$cohort_ID]);
-        $periods = $historyPeriodStmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        if (empty($periods)) return []; // 沒有開放時段
-        
-        $union = [];
-        $hasRestrictedPeriod = false;
-        
-        foreach ($periods as $period) {
-            $pro_des = $period['pro_des'] ?? null;
-            $match = false;
-            
-            if (empty($pro_des)) {
-                $match = true;
-            } else {
-                $desData = json_decode($pro_des, true);
-                if (!is_array($desData) || !isset($desData['class_ID']) || !is_array($desData['class_ID'])) {
-                    $match = true;
-                } else {
-                    $classIDs = array_map('intval', $desData['class_ID']);
-                    if (empty($classIDs) || ($class_ID && in_array($class_ID, $classIDs, true))) {
-                        $match = true;
-                    }
-                }
-            }
-            
-            if ($match) {
-                // 如果任一符合條件的時段沒有設定限制，則視為全部開放
-                if (empty($period['allow_file_types'])) {
-                    return []; // 不限制
-                }
-                
-                $types = json_decode($period['allow_file_types'], true);
-                if (is_array($types)) {
-                    $union = array_merge($union, array_values($types));
-                    $hasRestrictedPeriod = true;
-                }
-            }
-        }
-        
-        return $hasRestrictedPeriod ? array_unique($union) : [];
+        // 歷屆專題檔案型態已改為依副檔名自動判斷
+        // 不再根據時段限制檔案類型，直接回傳空陣列代表「不限制」
+        return [];
     }
 
     /**

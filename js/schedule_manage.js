@@ -1407,6 +1407,21 @@
                 console.log('載入的團隊數量:', data.teams.length);
                 console.log('第一個團隊的資料結構:', data.teams[0]);
                 
+                // 新建立的時程表沒有 timedata 時，為每個團隊建立一筆時程占位，讓 syncOrderFromDOM / 儲存 能正確對應
+                var tinformaId = data.currentTinformaID;
+                if (tinformaId && (!data.schedules || data.schedules.length === 0)) {
+                    data.schedules = data.teams.map(function (team, idx) {
+                        return {
+                            tinforma_ID: tinformaId,
+                            team_ID: team.team_ID,
+                            sort_no: idx + 1,
+                            time_start_d: null,
+                            time_end_d: null
+                        };
+                    });
+                    console.log('新時程表：已為', data.schedules.length, '個團隊建立時程占位，tinforma_ID:', tinformaId);
+                }
+                
                 // 確保場次準備和上台報告說明存在
                 ensureDefaultSpecialTimes();
                 
@@ -5064,7 +5079,8 @@
             const response = await fetch(`${apiUrl}?action=getSchedule&cohort_ID=${cohort_ID}&title=${encodeURIComponent(title)}`);
             const responseData = await response.json();
             
-            if (responseData.success && responseData.data) {
+            // 即使 data 是空陣列（尚未建立任何 timedata），只要 success 為 true 也進入這裡處理
+            if (responseData.success && Array.isArray(responseData.data)) {
                 // 載入時程資料並去重（確保每個 team_ID 只出現一次）
                 const loadedSchedules = responseData.data || [];
                 const uniqueSchedulesMap = new Map();
@@ -5268,6 +5284,15 @@
                 
                 // 檢查時程資料是否為空
                 if (!data.schedules || data.schedules.length === 0) {
+                    // 若尚未有 currentTinformaID（例如 API 未回傳 info），嘗試從 URL 取得（從 integrate 跳轉時）
+                    if (!data.currentTinformaID && typeof getUrlParams === 'function') {
+                        var urlP = getUrlParams();
+                        var urlTid = urlP && urlP.get('tinforma_ID');
+                        if (urlTid) {
+                            data.currentTinformaID = parseInt(urlTid, 10);
+                            console.log('從 URL 取得 currentTinformaID:', data.currentTinformaID);
+                        }
+                    }
                     // 如果時程資料為空，這是第一次編輯，載入當屆的所有團隊
                     console.log('時程資料為空，這是第一次編輯，載入當屆的所有團隊，屆別:', cohort_ID);
                     // 使用 loadTeamsForNewSchedule 而不是 loadTeams，避免調用 loadScheduleInfoForRender

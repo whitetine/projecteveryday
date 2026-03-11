@@ -170,6 +170,9 @@
                                 <button class="btn-action btn-edit" onclick="editForm(${docId})">
                                     <i class="fa-solid fa-edit"></i> 編輯
                                 </button>
+                                <button class="btn-action btn-toggle" onclick="duplicateForm(${docId})" title="複製一份新表單再編輯">
+                                    <i class="fa-solid fa-copy"></i> 複製
+                                </button>
                                 <a href="pages/document_form_pdf.php?document_id=${docId}" target="_blank" rel="noopener" class="btn-export-link btn-pdf" title="預覽並下載 PDF">
                                     <i class="fa-solid fa-file-pdf"></i> PDF
                                 </a>
@@ -785,6 +788,110 @@
         } catch (error) {
             console.error('刪除表單錯誤:', error);
             showError('刪除表單失敗');
+        }
+    }
+
+    // 複製表單：先在後端建立一筆「副本」資料，再開啟該筆供編輯
+    async function duplicateForm(docId) {
+        try {
+            const confirmMsg = '將以這份表單的設定為基礎，先在系統中建立一份「副本」表單，再開啟供您編輯。要繼續嗎？';
+            let confirmed = false;
+            if (window.Swal) {
+                const result = await Swal.fire({
+                    icon: 'question',
+                    title: '複製表單',
+                    text: confirmMsg,
+                    showCancelButton: true,
+                    confirmButtonText: '建立副本',
+                    cancelButtonText: '取消',
+                    confirmButtonColor: '#0d6efd',
+                    reverseButtons: true
+                });
+                confirmed = result.isConfirmed;
+            } else {
+                confirmed = confirm(confirmMsg);
+            }
+            if (!confirmed) return;
+
+            // 讀取原始表單詳情
+            const res = await fetch(`api.php?do=get_document_form_detail&document_id=${docId}`);
+            const data = await res.json();
+            if (!data.ok || !data.form) {
+                showError('讀取原始表單失敗：' + (data.msg || '未知錯誤'));
+                return;
+            }
+            const form = data.form;
+
+            // 解析 schema
+            let schema = form.form_schema;
+            if (typeof schema === 'string') {
+                try {
+                    schema = JSON.parse(schema);
+                } catch (e) {
+                    schema = {};
+                }
+            }
+            if (!schema || typeof schema !== 'object') {
+                schema = {};
+            }
+
+            // 準備送到後端建立「副本」的 payload
+            const baseName = form.doc_name || form.document_name || '';
+            const newName = baseName ? `${baseName} - 副本` : '未命名表單 - 副本';
+            const doc_start_d = form.doc_start_d || form.open_datetime;
+            const doc_end_d = form.doc_end_d || form.close_datetime;
+            const targetGrades = form.doc_target_grades || [];
+            const targetGroups = form.doc_target_groups || [];
+            const targetClasses = form.doc_target_classes || [];
+            const targetAll = form.doc_target_all ? 1 : 0;
+
+            // form_schema：直接沿用原本 schema（保持所有設定）
+            const payload = {
+                doc_ID: 0,
+                document_id: 0,
+                doc_name: newName,
+                doc_header: form.doc_header || '',
+                doc_des: '審查文件',
+                is_required: form.is_required == 1 ? 1 : 0,
+                doc_start_d: doc_start_d || null,
+                doc_end_d: doc_end_d || null,
+                doc_status: 0, // 副本一律先停用
+                form_schema: schema,
+                doc_target_all: targetAll,
+                doc_target_grades: targetGrades,
+                doc_target_groups: targetGroups,
+                doc_target_classes: targetClasses
+            };
+
+            const saveRes = await fetch('api.php?do=save_document_form', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const saveData = await saveRes.json();
+            if (!saveData.ok || !(saveData.doc_ID || saveData.document_id)) {
+                showError('建立副本失敗：' + (saveData.msg || '未知錯誤'));
+                return;
+            }
+
+            const newDocId = saveData.doc_ID || saveData.document_id;
+
+            if (window.Swal) {
+                await Swal.fire({
+                    icon: 'success',
+                    title: '已建立副本',
+                    text: '新表單已建立，接下來會開啟副本供您編輯。',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+
+            // 重新載入列表，並開啟新建立的副本供編輯
+            await loadForms();
+            editForm(newDocId);
+        } catch (error) {
+            console.error('duplicateForm error:', error);
+            showError('複製表單失敗');
         }
     }
 
@@ -2296,6 +2403,8 @@
     window.editForm = editForm;
     window.toggleStatus = toggleStatus;
     window.deleteForm = deleteForm;
+    window.editForm = editForm;
+    window.duplicateForm = duplicateForm;
     window.loadForms = loadForms;
     window.addForm = addForm;
     window.saveForm = saveForm;
@@ -2334,4 +2443,5 @@
     window.updateSAAllowStudentEdit = updateSAAllowStudentEdit;
     window.openDbLookupStudent = openDbLookupStudent;
     window.openDbLookupAdvisor = openDbLookupAdvisor;
+    window.closeDbLookup = closeDbLookup;
 })();

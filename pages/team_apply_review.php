@@ -143,18 +143,34 @@ if (session_status() === PHP_SESSION_NONE) session_start();
           </div>
         </div>
 
-        <!-- 精簡 summary：一行四數，清楚標示 -->
+        <!-- 統計卡片：可指導 / 申請中 / 已審核 / 剩餘名額 -->
         <div class="tar-summary-row" v-if="teacherStats.length">
-          <span class="tar-summary-item"><b>{{ teacherStats.length }}</b> 位可指導</span>
-          <span class="tar-summary-item"><b>{{ listPending }}</b> 組申請中</span>
-          <span class="tar-summary-item"><b>{{ listTeamed }}</b> 組已審核</span>
-          <span class="tar-summary-item tar-summary-highlight"><b>{{ totalRemaining }}</b> 組剩餘可收</span>
+          <div class="tar-summary-card">
+            <div class="tar-summary-label">可指導老師</div>
+            <div class="tar-summary-value">{{ teacherStats.length }}</div>
+            <div class="tar-summary-sub">目前可指導的老師數</div>
+          </div>
+          <div class="tar-summary-card">
+            <div class="tar-summary-label">申請中</div>
+            <div class="tar-summary-value">{{ listPending }}</div>
+            <div class="tar-summary-sub">尚待審核的申請組數</div>
+          </div>
+          <div class="tar-summary-card">
+            <div class="tar-summary-label">已審核</div>
+            <div class="tar-summary-value">{{ listTeamed }}</div>
+            <div class="tar-summary-sub">已組隊或處理完成</div>
+          </div>
+          <div class="tar-summary-card tar-summary-highlight">
+            <div class="tar-summary-label">剩餘名額</div>
+            <div class="tar-summary-value">{{ totalRemaining }}</div>
+            <div class="tar-summary-sub">全體老師尚可收的組數</div>
+          </div>
         </div>
 
         <!-- 老師負載：chip 列，點擊可編輯 -->
         <div class="tar-teacher-load" v-if="teacherStats.length">
           <div class="tar-teacher-load-head">
-            <span>老師負載</span>
+            <span>指導老師帶組數量 / 帶組上限</span>
             <span class="tar-muted" style="font-size:0.85rem">
               <a href="#" @click.prevent="openTeacherLimitModal" class="tar-link-inline"><i class="fas fa-pen fa-xs me-1"></i>編輯</a>
             </span>
@@ -162,7 +178,13 @@ if (session_status() === PHP_SESSION_NONE) session_start();
           <div class="tar-teacher-load-body">
             <template v-for="t in teacherStatsWithStatus" :key="t.u_ID">
               <span class="tar-teacher-chip" :class="'tar-chip-' + t.statusKey">
-                {{ t.u_name }} {{ t.current_count }}/{{ t.max_count ?? '?' }}
+                <div class="tar-teacher-chip-main">
+                  <span>{{ t.u_name }}</span>
+                  <span>{{ t.current_count }}/{{ t.max_count ?? '?' }}</span>
+                </div>
+                <div class="tar-teacher-chip-bar">
+                  <div class="tar-teacher-chip-bar-inner" :style="{ width: (t.max_count > 0 ? Math.min(100, Math.round((t.current_count / t.max_count) * 100)) : 0) + '%' }"></div>
+                </div>
                 <span class="tar-chip-label">{{ t.statusLabel }}</span>
               </span>
             </template>
@@ -181,19 +203,20 @@ if (session_status() === PHP_SESSION_NONE) session_start();
       <table class="tar-table">
         <thead>
           <tr>
-            <th style="width:110px" class="tar-th-center">屆別</th>
             <th class="tar-th-center">專題名稱</th>
-            <th style="width:160px" class="tar-th-center">指導老師</th>
+            <th style="width:180px" class="tar-th-center">指導老師</th>
             <th class="tar-th-center">組員</th>
-            <th style="width:190px" class="tar-th-center">時間</th>
-            <th style="width:110px" class="tar-th-center">狀態</th>
+            <th style="width:200px" class="tar-th-center">申請時間</th>
+            <th style="width:120px" class="tar-th-center">狀態</th>
             <th style="width:120px" class="tar-th-center">操作</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="it in list" :key="it.tap_ID" @click="openDetail(it.tap_ID)" style="cursor:pointer">
-            <td>{{ it.cohort_label || '-' }}</td>
-            <td class="col-project">{{ it.tap_name || '(未填專題名稱)' }}</td>
+            <td class="col-project">
+              <div><b>{{ it.tap_name || '(未填專題名稱)' }}</b></div>
+              <div class="tar-muted" style="font-size:0.85rem;margin-top:2px">{{ it.cohort_label || '-' }}</div>
+            </td>
             <td>{{ it.teacher_name || '-' }}</td>
             <td class="text-truncate" style="max-width:420px">{{ it.members_names_text || '-' }}</td>
             <td class="tar-muted">{{ it.apply_time || '-' }}</td>
@@ -333,7 +356,14 @@ if (session_status() === PHP_SESSION_NONE) session_start();
               <div class="tar-grid">
                 <div class="tar-muted">屆別</div><div><b>{{ detail.cohort_label || '-' }}</b></div>
                 <div class="tar-muted">提交人</div><div>{{ detail.submitter_name }}（{{ detail.tap_u_ID }}）</div>
-                <div class="tar-muted">指導老師</div><div>{{ detail.teacher_name || '-' }}</div>
+                <div class="tar-muted">指導老師</div>
+                <div>
+                  {{ detail.teacher_name || '-' }}
+                  <div v-if="detail.teacher_id" class="tar-muted" style="font-size:14px;margin-top:4px">
+                    帶組：<b>{{ detail.teacher_current_count ?? 0 }}</b> / <b>{{ detail.teacher_max_count ?? '?' }}</b>
+                    ，申請中：<b>{{ detail.teacher_pending_count ?? 0 }}</b> 組
+                  </div>
+                </div>
                 <div class="tar-muted">組員</div><div>{{ (detail.members_names||[]).join('、') || '-' }}</div>
               </div>
               <div style="border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:12px;background:#fafafa">

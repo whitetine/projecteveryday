@@ -75,7 +75,18 @@ $isConvenerRole = ((int)$role_ID === 7);
 
     <!-- 組別列表 - 表格形式（編輯模式時顯示） -->
     <div id="sg-team-list" class="sg-team-list-container">
-        <table class="sg-suggest-table" id="sg-suggest-table">
+        <div class="suggest-table-wrapper">
+            <!-- 批次操作工具列 -->
+            <div id="sg-batch-toolbar" class="suggest-batch-toolbar" style="display:none;">
+                <span class="selected-count">已選取 <span id="sg-batch-count">0</span> 筆</span>
+                <select id="sg-batch-status" class="form-select form-select-sm sg-batch-status-select" style="width:auto;display:inline-block;">
+                    <option value="">選擇審查結果</option>
+                </select>
+                <button type="button" id="sg-batch-apply-status" class="btn btn-primary btn-sm" disabled>套用到已選項目</button>
+                <button type="button" id="sg-batch-delete" class="btn btn-danger btn-sm" disabled>批次刪除</button>
+                <button type="button" id="sg-batch-clear" class="btn btn-secondary btn-sm" disabled>取消選取</button>
+            </div>
+            <table class="sg-suggest-table" id="sg-suggest-table">
             <colgroup>
                 <col class="sg-col-name" style="width:26%">
                 <col class="sg-col-group" style="width:14%">
@@ -86,7 +97,10 @@ $isConvenerRole = ((int)$role_ID === 7);
             </colgroup>
             <thead>
                 <tr>
-                    <th class="sg-th-name">組別名稱</th>
+                    <th class="sg-th-name">
+                        <input type="checkbox" id="sg-select-all" class="form-check-input" />
+                        <span>組別名稱</span>
+                    </th>
                     <th class="sg-th-group">類組</th>
                     <th class="sg-th-suggest">組別建議</th>
                     <th class="sg-th-score">評分</th>
@@ -96,6 +110,7 @@ $isConvenerRole = ((int)$role_ID === 7);
             </thead>
             <tbody id="sg-team-tbody"></tbody>
         </table>
+        </div>
     </div>
 
 </div>

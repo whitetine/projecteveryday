@@ -329,6 +329,78 @@ try {
     $membersNames = array_map(fn($uid)=>($nameMap[$uid] ?? $uid), $mem);
 
     $co = fetch_user_cohort_label($conn, (string)($t['tap_u_ID'] ?? ''));
+    $cohort_ID = $co['cohort_ID'];
+
+    // 指導老師目前帶組數與申請中組數、帶組上限
+    $teacherId = (string)($t['tap_teacher'] ?? '');
+    $teacherCurrent = 0;
+    $teacherPending = 0;
+    $teacherMax = null;
+
+    if ($teacherId !== '' && $cohort_ID) {
+      // tm_team 欄位名稱
+      $tm_col = $conn->query("SHOW COLUMNS FROM teammember LIKE 'team_u_ID'")->fetch() ? 'team_u_ID' : 'u_ID';
+
+      // 已通過的實際帶組數（team_status = 1）
+      $stmt = $conn->prepare("
+        SELECT COUNT(DISTINCT td.team_ID) AS cnt
+        FROM teammember tm
+        JOIN teamdata td ON td.team_ID = tm.team_ID
+        WHERE tm.$tm_col = ? AND td.cohort_ID = ? AND td.team_status = 1 AND (tm.tm_status IS NULL OR tm.tm_status = 1)
+      ");
+      $stmt->execute([$teacherId, $cohort_ID]);
+      $teacherCurrent = (int)$stmt->fetchColumn();
+
+      // 尚在審核中的申請數量（tap_status = 1）
+      $stmt = $conn->prepare("
+        SELECT COUNT(*) FROM teamapply tap
+        JOIN enrollmentdata ed ON tap.tap_u_ID = ed.enroll_u_ID
+        WHERE tap.tap_teacher = ? AND tap.tap_status = 1
+          AND ed.cohort_ID = ? AND ed.enroll_status = 1
+      ");
+      $stmt->execute([$teacherId, $cohort_ID]);
+      $teacherPending = (int)$stmt->fetchColumn();
+
+      // 帶組上限：teacherteamlimit > taf_ttl > 預設 3
+      $teacherMax = null;
+      try {
+        $chk = $conn->query("SHOW TABLES LIKE 'teacherteamlimit'");
+        if ($chk && $chk->rowCount() > 0) {
+          $stmt = $conn->prepare("SELECT max_count FROM teacherteamlimit WHERE ttl_u_ID = ? AND cohort_ID = ? LIMIT 1");
+          $stmt->execute([$teacherId, $cohort_ID]);
+          $val = $stmt->fetchColumn();
+          if ($val !== false && $val !== null && $val !== '') {
+            $teacherMax = (int)$val;
+          }
+        }
+      } catch (Exception $e) {}
+
+      if ($teacherMax === null) {
+        $defaultMax = 3;
+        try {
+          $chk = $conn->query("SHOW COLUMNS FROM teamapplyform LIKE 'taf_ttl'");
+          if ($chk && $chk->rowCount() > 0) {
+            $tafId = (int)($t['tap_taf_ID'] ?? 0);
+            $ttl = null;
+            if ($tafId > 0) {
+              $stmt = $conn->prepare("SELECT taf_ttl FROM teamapplyform WHERE taf_ID = ? LIMIT 1");
+              $stmt->execute([$tafId]);
+              $ttl = $stmt->fetchColumn();
+            }
+            if ($ttl === null || $ttl === '') {
+              $stmt = $conn->prepare("SELECT taf_ttl FROM teamapplyform WHERE taf_cohort_ID = ? AND taf_status IN (1,0) ORDER BY taf_ID DESC LIMIT 1");
+              $stmt->execute([$cohort_ID]);
+              $ttl = $stmt->fetchColumn();
+            }
+            if ($ttl !== false && $ttl !== null && $ttl !== '') {
+              $v = (int)preg_replace('/[^0-9]/', '', (string)$ttl);
+              if ($v > 0) $defaultMax = $v;
+            }
+          }
+        } catch (Exception $e) {}
+        $teacherMax = $defaultMax;
+      }
+    }
 
     $detail = [
       'tap_ID' => $t['tap_ID'],
@@ -339,11 +411,16 @@ try {
       'submitter_name' => $nameMap[$t['tap_u_ID']] ?? ($t['tap_u_ID'] ?? ''),
 
       // ✅ 屆別
-      'cohort_ID' => $co['cohort_ID'],
+      'cohort_ID' => $cohort_ID,
       'cohort_label' => $co['cohort_label'] ?: '-',
 
+      'teacher_id' => $teacherId,
       'teacher_name' => $teacherName,
       'members_names' => $membersNames,
+
+      'teacher_current_count' => $teacherCurrent,
+      'teacher_pending_count' => $teacherPending,
+      'teacher_max_count' => $teacherMax,
 
       'image_url' => $t['tap_url'] ?? '',
       'submitter_comment' => parse_submitter_comment($t['tap_des'] ?? ''),

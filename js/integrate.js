@@ -53,6 +53,7 @@
 
   // 顯示提示彈跳視窗（使用 SweetAlert2）
   // options: { timer: 毫秒 } 則不顯示確定按鈕，時間到自動關閉
+  // options: { toast: true, position: 'bottom-end' } 則以右下角 toast 顯示，較快出現且自動關閉
   async function showAlertDialog(message, type = 'info', options = {}) {
     // 等待 SweetAlert2 載入
     const swalLoaded = await waitForSwal();
@@ -70,8 +71,27 @@
       warning: 'warning'
     };
 
+    const icon = iconMap[type] || 'info';
+
+    // 右下角 toast：顯示快、自動關閉
+    if (options.toast) {
+      const toastTimer = options.timer || 1500;
+      const Toast = Swal.mixin({
+        toast: true,
+        position: options.position || 'bottom-end',
+        showConfirmButton: false,
+        timer: toastTimer,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer);
+          toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+      });
+      return Toast.fire({ icon, title: '提示', text: message });
+    }
+
     const opts = {
-      icon: iconMap[type] || 'info',
+      icon,
       title: '提示',
       text: message,
       confirmButtonText: '確定',
@@ -313,7 +333,7 @@ async function navigateToEditPage(title, cohort_ID, format, id) {
     
     // 判斷是否通過 main.php 載入
     if (pathname.includes('main.php')) {
-      // 通過 main.php 載入，使用 hash 路由
+      // 通過 main.php 載入，改為「完整重新載入 + hash」，避免必須手動重新整理才初始化腳本
       const params = new URLSearchParams();
       if (cohort_ID) {
         params.append('cohort_ID', cohort_ID);
@@ -337,9 +357,11 @@ async function navigateToEditPage(title, cohort_ID, format, id) {
         targetPage = 'pages/suggest.php';
       }
       
-      // 使用 hash 路由跳轉
-      const targetUrl = `${targetPage}?${params.toString()}`;
-      window.location.hash = targetUrl;
+      const hashPart = `${targetPage}?${params.toString()}`;
+      const basePath = pathname.split('?')[0] || 'main.php';
+      const ts = Date.now();
+      // 透過變更查詢字串強制重新載入 main.php，避免舊的 page-script 狀態殘留
+      window.location.href = `${basePath}?_reload=${ts}#${hashPart}`;
     } else {
       // 直接訪問，使用 window.location.href 跳轉
       const params = new URLSearchParams();
@@ -512,7 +534,7 @@ btnCreate.addEventListener('click', async () => {
     const json = await res.json();
     
     if (json.ok) {
-      await showAlertDialog(json.msg || '建立成功', 'success', { timer: 3000 });
+      await showAlertDialog(json.msg || '建立成功', 'success', { toast: true, position: 'bottom-end', timer: 800 });
       // 清空輸入欄位
       titleInput.value = '';
       // 重新載入列表

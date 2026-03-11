@@ -542,10 +542,8 @@
             el.style.opacity = on ? '0.55' : '1';
         };
 
-        disable(elements.uploadTextZone, meetingLocked);
-        disable(elements.uploadImageZone, meetingLocked);
-        disable(elements.uploadAudioZone, meetingLocked);
-        disable(elements.recordBtn, meetingLocked);
+        // 會議鎖定時：仍允許「上傳文字檔 / 圖片 / 音檔 / 錄音」，
+        // 但鎖住出席、AI 統整、清除、刪除與確認相關操作
         disable(elements.btnSummarize, meetingLocked);
         disable(elements.btnClear, meetingLocked);
         disable(elements.btnDeleteMeeting, meetingLocked);
@@ -574,10 +572,15 @@
         btn.disabled = !show;
     }
 
-    function ensureMeetingEditable() {
-        if (!meetingLocked) return true;
-        toast('warning', '此會議已確認，無法再修改。');
-        return false;
+    function ensureMeetingEditable(kindOverride) {
+        const k = kindOverride || currentContentKind;
+        // 會議鎖定時仍允許「文字檔 / 圖片 / 音檔」上傳與內容調整，
+        // 但禁止打字紀錄、AI 摘要與出席相關修改
+        if (meetingLocked && (k === 'note' || k === 'summary')) {
+            toast('warning', '此會議已確認，無法再修改。');
+            return false;
+        }
+        return true;
     }
 
     // ======= History: list + filters + open on right =======
@@ -1026,25 +1029,22 @@
     function handleEmptyStateAction(action) {
         switch (action) {
             case 'edit-note':
-                if (meetingLocked) return;
+                if (!ensureMeetingEditable('note')) return;
                 historyView.selectedKind = 'note';
                 viewingHistory = false;
                 loadMeetingData();
                 break;
             case 'upload-text':
-                if (meetingLocked) return;
                 elements.textInput?.click();
                 break;
             case 'upload-image':
-                if (meetingLocked) return;
                 elements.imageInput?.click();
                 break;
             case 'record-audio':
-                if (meetingLocked) return;
                 elements.recordBtn?.click();
                 break;
             case 'generate-summary':
-                if (meetingLocked) return;
+                if (!ensureMeetingEditable('summary')) return;
                 elements.aiBtn?.click();
                 break;
             default:
@@ -1190,7 +1190,7 @@
     }
 
     function triggerAddByKind(kind) {
-        if (!ensureMeetingEditable()) return;
+        if (!ensureMeetingEditable(kind)) return;
         switch (kind) {
             case 'text':
                 elements.textInput?.click();

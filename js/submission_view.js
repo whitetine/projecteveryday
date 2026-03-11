@@ -223,6 +223,7 @@ function renderRows(rows) {
       ${__SHOW_TEACHER_COL__ ? `<td>${esc(r.teacher)}</td>` : ``}
       ${__SHOW_TUTOR_COL__ ? `<td>${esc(r.tutor)}</td>` : ``}
       ${__SHOW_CLASS_COL__ ? `<td>${esc(r.class)}</td>` : ``}
+      <td>${renderReview(r)}</td>
       <td>${esc(r.time)}</td>
       <td>${renderAction(r)}</td>
     </tr>

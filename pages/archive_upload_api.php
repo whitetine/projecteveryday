@@ -25,6 +25,31 @@ $u_ID = $_SESSION['u_ID'] ?? null;
 $prosub_ID = isset($_POST['prosub_ID']) ? (int)$_POST['prosub_ID'] : 0;
 $action = isset($_POST['action']) ? trim($_POST['action']) : 'upload';
 
+/**
+ * 依檔名副檔名自動判斷檔案類型
+ * - ppt / pptx  -> ppt
+ * - doc / docx  -> word
+ * - pdf        -> pdf
+ * - 常見圖片   -> image
+ * 其餘回傳空字串
+ */
+function detectFileCategoryByExtension($filename) {
+    $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    if (in_array($ext, ['ppt', 'pptx'], true)) {
+        return 'ppt';
+    }
+    if (in_array($ext, ['doc', 'docx'], true)) {
+        return 'word';
+    }
+    if ($ext === 'pdf') {
+        return 'pdf';
+    }
+    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'], true)) {
+        return 'image';
+    }
+    return '';
+}
+
 try {
     if ($action === 'upload') {
         // ====== 上傳檔案 ======
@@ -163,6 +188,7 @@ try {
             // 建立檔案資訊
             // diskPath: 實體檔案完整路徑（不暴露給前端）
             $diskPath = $uploadBaseDir . $storedName;
+            $detectedType = detectFileCategoryByExtension($fileName);
             
             $fileInfo = [
                 'fid' => $fid,
@@ -171,6 +197,7 @@ try {
                 'diskPath' => $diskPath, // 實體路徑，僅後端使用，不返回前端
                 'size' => $fileSize,
                 'mime' => $mimeType ?: 'application/octet-stream',
+                'type' => $detectedType,
                 'uploaded_at' => date('Y-m-d H:i:s'),
                 'allowDownload' => false, // 預設不允許下載
                 'visible' => true
@@ -183,6 +210,7 @@ try {
                 'stored' => $storedName,
                 'size' => $fileSize,
                 'mime' => $mimeType ?: 'application/octet-stream',
+                'type' => $detectedType,
                 'uploaded_at' => date('Y-m-d H:i:s'),
                 'allowDownload' => false,
                 'visible' => true

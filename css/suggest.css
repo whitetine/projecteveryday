@@ -1106,6 +1106,45 @@ textarea {
     display: block;
 }
 
+/* 建議表格 + 批次工具列外層 wrapper，讓寬度一致 */
+.suggest-table-wrapper {
+    width: 100%;
+}
+
+/* 批次操作工具列 */
+.suggest-batch-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 14px 18px;
+    background: #f8f9fc;
+    border-radius: 10px;
+    border: 1px solid #e2e6f0;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.suggest-batch-toolbar .selected-count {
+    font-weight: 600;
+    margin-right: 14px;
+    white-space: nowrap;
+}
+
+.suggest-batch-toolbar .sg-batch-status-select {
+    min-width: 260px;
+    font-size: 15px;
+    height: 40px;
+}
+
+.suggest-batch-toolbar button {
+    white-space: nowrap;
+    padding: 8px 18px;
+    font-size: 15px;
+}
+
+
 .sg-team-column {
     min-width: 0;
     box-sizing: border-box;

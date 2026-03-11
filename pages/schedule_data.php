@@ -375,6 +375,19 @@ if ($action === "getSchedule") {
                         LIMIT 1";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute([$title]);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                // 舊資料可能只寫在 tinforma_content，若找不到，退回用 tinforma_content 模糊比對
+                if (!$result) {
+                    $sql = "SELECT tinforma_ID 
+                            FROM timeinformadata 
+                            WHERE tinforma_content LIKE ? OR tinforma_content = ?
+                            ORDER BY COALESCE(tinforma_update_d, tinforma_create_d) DESC
+                            LIMIT 1";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute(["%" . $title . "%", $title]);
+                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                }
             } else {
                 // 如果沒有 tinforma_title 欄位，使用 tinforma_content
                 $sql = "SELECT tinforma_ID 
@@ -384,8 +397,8 @@ if ($action === "getSchedule") {
                         LIMIT 1";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute(["%" . $title . "%", $title]);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
             }
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($result) {
                 $tinforma_ID = $result['tinforma_ID'];
             } else {

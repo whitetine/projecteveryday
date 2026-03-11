@@ -59,29 +59,11 @@
     const FILE_TYPE_DROPDOWN_EXCLUDE = ['poster', 'other'];
 
     /**
-     * 依科辦設定的 allow_file_types 取得允許的檔案類型（與科辦開放設定同步，只顯示有開放的類型）
-     * 會排除 poster、other。支援後端傳入陣列或 JSON 字串。
-     * @returns {string[]} e.g. ['report','ppt']，科辦未勾選任何類型時為 []
+     * 歷屆專題改為依副檔名自動判斷檔案類型，
+     * 這裡回傳空陣列代表「不限制」，前端下拉選單會顯示通用選項。
      */
     function getAllowedFileTypes() {
-        const cfg = window.PROJECT_UPLOAD_CONFIG || {};
-        const periods = Array.isArray(cfg.activePeriods) ? cfg.activePeriods : [];
-        const allowedSet = new Set();
-        periods.forEach(p => {
-            let types = p.allow_file_types;
-            if (typeof types === 'string') {
-                try {
-                    types = JSON.parse(types);
-                } catch (e) {
-                    types = [];
-                }
-            }
-            if (Array.isArray(types) && types.length) {
-                types.forEach(t => allowedSet.add(t));
-            }
-        });
-        const raw = Array.from(allowedSet);
-        return raw.filter(t => !FILE_TYPE_DROPDOWN_EXCLUDE.includes(t));
+        return [];
     }
     
     // 🔹 【修復重複聲明】創建輔助函數獲取 URL 參數，避免重複聲明
@@ -1490,16 +1472,7 @@
             sumEl.textContent = '尚未選擇檔案';
         }
         
-        // 🔹 每列檔案類型下拉選單（依 allow_file_types 動態產生，已排除海報/其他；必填）
-        const allowedTypes = getAllowedFileTypes();
-        function fileTypeSelectHtml(currentValue, fileKey, rowType) {
-            const opts = '<option value="">請選擇</option>' + allowedTypes.map(t => {
-                const label = FILE_TYPE_LABELS[t] || t;
-                const sel = (currentValue === t) ? ' selected' : '';
-                return `<option value="${escapeHtml(t)}"${sel}>${escapeHtml(label)}</option>`;
-            }).join('');
-            return `<select class="file-type-select form-select form-select-sm" data-file-key="${escapeHtml(fileKey)}" data-row-type="${rowType}" style="min-width: 100px;" required>${opts}</select>`;
-        }
+        // 不再使用檔案類型下拉選單，類型改由副檔名自動判斷
         
         // 🔹 【修復重複渲染】渲染前先清空容器
         list.innerHTML = '';
@@ -1517,7 +1490,6 @@
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                            ${fileTypeSelectHtml(file.file_type, file.fileKey, 'existing')}
                             ${fileUrl ? `<a href="${escapeHtml(fileUrl)}" target="_blank" class="btn btn-sm btn-success" download title="下載" style="white-space: nowrap;"><i class="fa-solid fa-download"></i> <span class="d-none d-md-inline">下載</span></a>` : ''}
                             <button type="button" class="btn btn-sm btn-danger remove-existing-file-btn" data-file-key="${escapeHtml(file.fileKey)}" data-file-path="${escapeHtml(file.filePath)}" title="刪除" style="white-space: nowrap;"><i class="fa-solid fa-trash"></i> <span class="d-none d-md-inline">刪除</span></button>
                         </div>
@@ -1534,7 +1506,6 @@
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                            ${fileTypeSelectHtml(file.file_type, file.fileKey, 'new')}
                             <button type="button" class="btn btn-sm btn-danger remove-new-file-btn" data-file-key="${escapeHtml(file.fileKey)}" title="刪除" style="white-space: nowrap;"><i class="fa-solid fa-trash"></i> <span class="d-none d-md-inline">刪除</span></button>
                         </div>
                     </div>
@@ -4237,15 +4208,7 @@
      * @returns {{ ok: boolean, message?: string }}
      */
     function validateAllFileTypesSelected() {
-        const displayList = getDisplayFileList();
-        for (const item of displayList.new) {
-            const ft = (item.file_type || '').trim();
-            if (!ft) return { ok: false, message: '請先為每個檔案選擇檔案類型' };
-        }
-        for (const file of displayList.existing) {
-            const ft = (file.file_type ?? '').trim();
-            if (!ft) return { ok: false, message: '請先為每個檔案選擇檔案類型' };
-        }
+        // 檔案類型已改由副檔名自動判斷，前端不再要求人工選擇
         return { ok: true };
     }
 

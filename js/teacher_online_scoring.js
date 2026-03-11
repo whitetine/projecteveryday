@@ -30,6 +30,7 @@
     var currentStudents = [];
     var currentStudentReviews = [];
     var currentPeriodEnded = false;
+    var currentPeriodNotStarted = false; // 評分尚未開始時為 true
     var currentPeriodSubmitted = false;  // 該老師是否已送出此評分時段（送出後變唯讀）
     var periodListData = [];            // listSuggestForms 回傳的列表（含 submitted_by_me）
 
@@ -150,6 +151,7 @@
     function loadSubmissionPeriod() {
         if (!currentCohortId || !currentSfId) {
             currentPeriodEnded = false;
+            currentPeriodNotStarted = false;
             applyPeriodEndedClass();
             return Promise.resolve();
         }
@@ -159,11 +161,13 @@
             if (r.success && r.data) {
                 var d = r.data;
                 currentPeriodEnded = (d.status === "已結束");
+                currentPeriodNotStarted = (d.status === "未開始");
                 startText = d.time_start_display || "";
                 endText = d.time_end_plus1_display || "";
             } else {
                 // 無法取得時段時（例如無對應時程表），視為僅能查看，避免已截止的評分無法查看
                 currentPeriodEnded = r.success ? true : false;
+                currentPeriodNotStarted = false;
             }
 
             // 將開始 / 截止時間顯示在左側清單中目前選取的時段標題下方
@@ -189,7 +193,8 @@
     function applyPeriodEndedClass() {
         var page = document.querySelector(".teacher-scoring-page");
         if (page) {
-            if (currentPeriodEnded || currentPeriodSubmitted) page.classList.add("tos-period-ended");
+            var readOnly = currentPeriodEnded || currentPeriodSubmitted || currentPeriodNotStarted;
+            if (readOnly) page.classList.add("tos-period-ended");
             else page.classList.remove("tos-period-ended");
         }
     }
@@ -229,19 +234,20 @@
 
     function renderTeams() {
         teamBody.innerHTML = "";
-        var readOnly = currentPeriodEnded || currentPeriodSubmitted;
-        var btnText = readOnly ? "查看" : "評分";
-        var btnIcon = readOnly ? "fa-eye" : "fa-pen-to-square";
+        var readOnly = currentPeriodEnded || currentPeriodSubmitted || currentPeriodNotStarted;
+        var btnText = readOnly ? (currentPeriodNotStarted ? "尚未開始" : "查看") : "評分";
+        var btnIcon = readOnly && !currentPeriodNotStarted ? "fa-eye" : "fa-pen-to-square";
         currentTeams.forEach(function (team, idx) {
             var tr = document.createElement("tr");
             tr.dataset.teamId = team.team_ID;
             var sortNo = team.time_sort_no != null ? team.time_sort_no : idx + 1;
+            var disabledAttr = currentPeriodNotStarted ? " disabled" : "";
             tr.innerHTML =
                 "<td>" + sortNo + "</td>" +
                 "<td>" + escapeHtml(team.team_project_name || "團隊 " + team.team_ID) + "</td>" +
                 "<td>" + escapeHtml(team.group_name || "") + "</td>" +
                 "<td><span class=\"tos-status-badge\" data-team-id=\"" + team.team_ID + "\">—</span></td>" +
-                "<td><button type=\"button\" class=\"btn btn-sm btn-outline-primary tos-btn-score\" data-team-id=\"" + team.team_ID + "\" data-team-name=\"" + escapeAttr(team.team_project_name || "團隊 " + team.team_ID) + "\"><i class=\"fa-solid " + btnIcon + " me-1\"></i>" + btnText + "</button></td>";
+                "<td><button type=\"button\" class=\"btn btn-sm btn-outline-primary tos-btn-score\" data-team-id=\"" + team.team_ID + "\" data-team-name=\"" + escapeAttr(team.team_project_name || "團隊 " + team.team_ID) + "\"" + disabledAttr + "><i class=\"fa-solid " + btnIcon + " me-1\"></i>" + btnText + "</button></td>";
             teamBody.appendChild(tr);
         });
         currentTeams.forEach(function (team) {
@@ -294,6 +300,19 @@
     function openScoreModal(e) {
         var btn = e.target.closest(".tos-btn-score");
         if (!btn) return;
+        // 若評分尚未開始，禁止開啟評分視窗
+        if (currentPeriodNotStarted) {
+            if (typeof Toast !== "undefined") {
+                Toast.fire({
+                    icon: "info",
+                    title: "評分尚未開始",
+                    text: "開始時間尚未到，請在評分開始後再進行評分。"
+                });
+            } else {
+                alert("評分尚未開始，請在評分開始後再進行評分。");
+            }
+            return;
+        }
         var teamId = btn.dataset.teamId;
         var teamName = btn.dataset.teamName || ("團隊 " + teamId);
         modalSfId.value = currentSfId;

@@ -205,8 +205,6 @@ try {
             $pro_title = isset($_POST['pro_title']) ? trim($_POST['pro_title']) : '';
             $cohort_primary = isset($_POST['cohort_primary']) ? trim($_POST['cohort_primary']) : '';
             $class_ID = isset($_POST['class_ID']) ? trim($_POST['class_ID']) : '';
-            $allowFileTypesRaw = isset($_POST['allow_file_types']) ? trim($_POST['allow_file_types']) : '';
-            $allowFileTypesJson = $allowFileTypesRaw !== '' ? $allowFileTypesRaw : null;
             
             // 驗證必填欄位（詳細檢查）
             if (!$pro_start_d) {
@@ -316,8 +314,8 @@ try {
                     $stmt = $conn->prepare("
                         INSERT INTO projectdata (
                             pro_chorot_ID, pro_title, pro_des, pro_start_d, pro_end_d, 
-                            pro_status, pro_created_u_ID, pro_created_d, allow_file_types
-                        ) VALUES (?, ?, ?, ?, ?, 1, ?, NOW(), ?)
+                            pro_status, pro_created_u_ID, pro_created_d
+                        ) VALUES (?, ?, ?, ?, ?, 1, ?, NOW())
                     ");
                     $stmt->execute([
                         $cohort_ID,
@@ -325,8 +323,7 @@ try {
                         json_encode($targetSettings, JSON_UNESCAPED_UNICODE),
                         $startDateTime->format('Y-m-d H:i:s'),
                         $endDateTime->format('Y-m-d H:i:s'),
-                        $u_ID,
-                        $allowFileTypesJson
+                        $u_ID
                     ]);
                     
                     $conn->commit();
@@ -351,8 +348,7 @@ try {
                         pro_title = ?,
                         pro_des = ?,
                         pro_start_d = ?,
-                        pro_end_d = ?,
-                        allow_file_types = ?
+                        pro_end_d = ?
                     WHERE pro_ID = ?
                 ");
                 $stmt->execute([
@@ -361,7 +357,6 @@ try {
                     json_encode($targetSettings, JSON_UNESCAPED_UNICODE),
                     $startDateTime->format('Y-m-d H:i:s'),
                     $endDateTime->format('Y-m-d H:i:s'),
-                    $allowFileTypesJson,
                     $pro_ID
                 ]);
                 
@@ -384,8 +379,7 @@ try {
                     p.pro_end_d,
                     p.pro_des,
                     p.pro_status,
-                    p.pro_created_d,
-                    p.allow_file_types
+                    p.pro_created_d
                 FROM projectdata p
                 LEFT JOIN cohortdata c ON p.pro_chorot_ID = c.cohort_ID
                 WHERE p.pro_status = 1
@@ -397,13 +391,6 @@ try {
             foreach ($periods as &$period) {
                 $targetSettings = json_decode($period['pro_des'] ?? '{}', true);
                 $period['class_ID'] = $targetSettings['class_ID'] ?? [];
-                // 解析 allow_file_types JSON（若存在）
-                if (!empty($period['allow_file_types'])) {
-                    $aft = json_decode($period['allow_file_types'], true);
-                    $period['allow_file_types'] = is_array($aft) ? array_values($aft) : [];
-                } else {
-                    $period['allow_file_types'] = [];
-                }
             }
             
             echo json_encode([

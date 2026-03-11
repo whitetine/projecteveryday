@@ -706,7 +706,7 @@ body { overflow-x: hidden !important; }
             // 🔹 【關鍵】只查詢該學生所屬學級（pro_chorot_ID）的時段
             if ($studentCohort_ID) {
                 $periodStmt = $conn->prepare("
-                    SELECT pro_ID, pro_title, pro_start_d, pro_end_d, pro_des, pro_chorot_ID, allow_file_types
+                    SELECT pro_ID, pro_title, pro_start_d, pro_end_d, pro_des, pro_chorot_ID
                     FROM projectdata
                     WHERE pro_status = 1
                       AND pro_chorot_ID = ?
@@ -1406,9 +1406,18 @@ body { overflow-x: hidden !important; }
                             <i class="fa-solid fa-folder-open"></i> 選擇多個檔案
                         </label>
                         <!-- 🔹 確保 input 可訪問，只在唯讀檢視模式禁用，使用固定 id: otherFilesInput -->
-                        <input type="file" id="otherFilesInput" name="other_files[]" multiple accept=".pdf,application/pdf" hidden <?= ($isViewMode || $isFinalLocked) ? 'disabled' : '' ?>>
+                        <input
+                            type="file"
+                            id="otherFilesInput"
+                            name="other_files[]"
+                            multiple
+                            accept=".pdf,application/pdf,.ppt,.pptx,.doc,.docx,.jpg,.jpeg,.png,.gif,.bmp,.webp"
+                            hidden
+                            <?= ($isViewMode || $isFinalLocked) ? 'disabled' : '' ?>>
                     </div>
-                    <small class="form-text text-muted">可同時選擇多個檔案上傳，僅支援 PDF 檔。</small>
+                    <small class="form-text text-muted">
+                        可同時選擇多個檔案上傳，支援 PDF、PPT、Word、圖片等常見檔案格式。
+                    </small>
                     <?php endif; ?>
                     
                     <!-- 已暫存檔案列表（顯示從資料庫載入的已暫存檔案） -->
@@ -1772,18 +1781,8 @@ body { overflow-x: hidden !important; }
     };
     
     <?php
-    // 供學生端與科辦設定同步：將每個時段的 allow_file_types 統一為陣列再輸出
-    $activePeriodsForJs = [];
-    foreach ($activePeriods as $p) {
-        $types = isset($p['allow_file_types']) ? $p['allow_file_types'] : null;
-        if (is_string($types)) {
-            $dec = json_decode($types, true);
-            $p['allow_file_types'] = is_array($dec) ? $dec : [];
-        } elseif (!isset($p['allow_file_types']) || !is_array($p['allow_file_types'])) {
-            $p['allow_file_types'] = [];
-        }
-        $activePeriodsForJs[] = $p;
-    }
+    // 供學生端使用的時段資訊：不再包含 allow_file_types，檔案類型改由副檔名自動判斷
+    $activePeriodsForJs = $activePeriods;
     ?>
     window.PROJECT_UPLOAD_CONFIG = {
         u_ID: '<?= htmlspecialchars($u_ID ?? '', ENT_QUOTES) ?>',
