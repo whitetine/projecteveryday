@@ -41,25 +41,6 @@ $u_ID = $_SESSION['u_ID'] ?? null;
                     <input type="text" class="form-control" name="pro_title" id="pro_title" required>
                 </div>
 
-                <div class="col-md-5">
-                    <label class="form-label d-block">可上傳檔案類型</label>
-                    <div class="d-flex flex-wrap gap-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="fileType_report" value="report">
-                            <label class="form-check-label" for="fileType_report">成果書 (report)</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="fileType_ppt" value="ppt">
-                            <label class="form-check-label" for="fileType_ppt">PPT (ppt)</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="fileType_word" value="word">
-                            <label class="form-check-label" for="fileType_word">Word (word)</label>
-                        </div>
-                    </div>
-                    <small class="text-muted d-block mt-1">若未勾選，視為不限檔案類型。</small>
-                </div>
-
                 <div class="col-md-4">
                     <label class="form-label">屆別</label>
                     <select class="form-select multi-select-list" id="periodCohortSelect" multiple size="6" aria-label="屆別多選">
