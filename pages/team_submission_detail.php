@@ -687,6 +687,12 @@ try {
                                 } elseif (is_array($file)) {
                                     $fileTypeLabels = ['report' => '成果書', 'ppt' => 'PPT', 'word' => 'Word'];
                                     $ftKey = isset($file['file_type']) ? trim((string)$file['file_type']) : '';
+                                    if ($ftKey === '' && isset($file['path'])) {
+                                        $ext = strtolower(pathinfo($file['path'], PATHINFO_EXTENSION));
+                                        if ($ext === 'pdf') $ftKey = 'report';
+                                        elseif (in_array($ext, ['pptx', 'ppt'], true)) $ftKey = 'ppt';
+                                        elseif (in_array($ext, ['docx', 'doc'], true)) $ftKey = 'word';
+                                    }
                                     $ftLabel = isset($fileTypeLabels[$ftKey]) ? $fileTypeLabels[$ftKey] : $ftKey;
                                     // 檢查是否為新格式（包含 name, path, type, uploaded_at, public）
                                     if (isset($file['name']) && isset($file['path']) && isset($file['type']) && isset($file['uploaded_at']) && isset($file['public'])) {
@@ -736,6 +742,12 @@ try {
                                             $isPublic = isset($file['public']) ? (bool)$file['public'] : (isset($file['allow_download']) ? (bool)$file['allow_download'] : true);
                                             $ftLabels = ['report' => '成果書', 'ppt' => 'PPT', 'word' => 'Word'];
                                             $ftKey = isset($file['file_type']) ? trim((string)$file['file_type']) : '';
+                                            if ($ftKey === '' && isset($file['path'])) {
+                                                $ext = strtolower(pathinfo($file['path'], PATHINFO_EXTENSION));
+                                                if ($ext === 'pdf') $ftKey = 'report';
+                                                elseif (in_array($ext, ['pptx', 'ppt'], true)) $ftKey = 'ppt';
+                                                elseif (in_array($ext, ['docx', 'doc'], true)) $ftKey = 'word';
+                                            }
                                             $ftLabel = isset($ftLabels[$ftKey]) ? $ftLabels[$ftKey] : $ftKey;
                                             $otherFiles[] = [
                                                 'name' => $fileNameItem,
@@ -1596,7 +1608,12 @@ try {
                                                     const fileName = file.name || file.original_name || (filePath ? filePath.split('/').pop() : '');
                                                     const fileUrl = filePath ? '../' + filePath : '';
                                                     const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
-                                                    const typeLabel = file.file_type_label || file.file_type || '';
+                                                    let typeLabel = file.file_type_label || file.file_type || '';
+                                                    if (!typeLabel && fileExtension) {
+                                                        if (fileExtension === 'pdf') typeLabel = '成果書';
+                                                        else if (['pptx', 'ppt'].includes(fileExtension)) typeLabel = 'PPT';
+                                                        else if (['docx', 'doc'].includes(fileExtension)) typeLabel = 'Word';
+                                                    }
                                                     let fileIcon = 'fa-file';
                                                     
                                                     // 根據檔案類型選擇圖標

@@ -58,8 +58,8 @@ function json_response($data) {
  * 2. prosub_img（海報）：存海報路徑字串，相對路徑、無前綴
  *    例：uploads/project_posters/poster_24_1769132755_6972d2d355c48.jpg
  *
- * 3. prosub_other（多個檔案）：存多檔的 JSON 陣列
- *    例：[{"path":"uploads/project_other_files/...", "name":"檔名", "file_type":"report", ...}, ...]
+ * 3. prosub_other（多個檔案）：存多檔的 JSON 陣列，file_type 依存檔副檔名：.pdf→成果書(report)、.pptx/.ppt→PPT(ppt)、.docx/.doc→Word(word)
+ *    例：[{"path":"...", "name":"檔名", "file_type":"report", ...}, ...]
  *
  * 若資料表有 prosub_intro 欄位，簡介會優先寫入該欄，否則寫入 content_json['intro']
  */
@@ -582,6 +582,19 @@ try {
         }
     }
 
+    /**
+     * 依副檔名取得檔案類型（存檔類型）：.pdf→成果書(report)、.pptx/.ppt→PPT(ppt)、.docx/.doc→Word(word)
+     * @param string $filenameOrPath 檔名或路徑
+     * @return string 'report'|'ppt'|'word'|''
+     */
+    function fileTypeFromExtension($filenameOrPath) {
+        $ext = strtolower(trim(pathinfo($filenameOrPath, PATHINFO_EXTENSION)));
+        if ($ext === 'pdf') return 'report';
+        if (in_array($ext, ['pptx', 'ppt'], true)) return 'ppt';
+        if (in_array($ext, ['docx', 'doc'], true)) return 'word';
+        return '';
+    }
+
     switch ($do) {
         case 'save_draft':
             // ====== 暫存功能 ======
@@ -723,8 +736,6 @@ try {
                     $fileCount = count($_FILES['new_files']['error']);
                     for ($i = 0; $i < $fileCount; $i++) {
                         if ($_FILES['new_files']['error'][$i] === UPLOAD_ERR_OK) {
-                            $file_type_i = isset($newFileTypes[$i]) ? trim((string)$newFileTypes[$i]) : '';
-                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $file = [
                                 'name' => $_FILES['new_files']['name'][$i],
                                 'type' => $_FILES['new_files']['type'][$i],
@@ -747,6 +758,9 @@ try {
                             }
                             
                             $relPath = 'uploads/project_other_files/' . $filename;
+                            $file_type_i = isset($newFileTypes[$i]) ? trim((string)$newFileTypes[$i]) : '';
+                            if ($file_type_i === '') $file_type_i = fileTypeFromExtension($file['name']);
+                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $otherFiles[] = [
                                 'original_name' => $file['name'],
                                 'name' => $file['name'],
@@ -885,8 +899,6 @@ try {
                     $fileCount = count($_FILES['other_files']['error']);
                     for ($i = 0; $i < $fileCount; $i++) {
                         if ($_FILES['other_files']['error'][$i] === UPLOAD_ERR_OK) {
-                            $file_type_i = isset($fileTypesPost[$i]) ? trim((string)$fileTypesPost[$i]) : '';
-                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $file = [
                                 'name' => $_FILES['other_files']['name'][$i],
                                 'type' => $_FILES['other_files']['type'][$i],
@@ -909,6 +921,9 @@ try {
                             }
                             
                             $relPath = 'uploads/project_other_files/' . $filename;
+                            $file_type_i = isset($fileTypesPost[$i]) ? trim((string)$fileTypesPost[$i]) : '';
+                            if ($file_type_i === '') $file_type_i = fileTypeFromExtension($file['name']);
+                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $otherFiles[] = [
                                 'original_name' => $file['name'],
                                 'name' => $file['name'],
@@ -1610,8 +1625,6 @@ try {
                     $fileCount = count($_FILES[$filesKey]['error']);
                     for ($i = 0; $i < $fileCount; $i++) {
                         if ($_FILES[$filesKey]['error'][$i] === UPLOAD_ERR_OK) {
-                            $file_type_i = isset($submitFileTypes[$i]) ? trim((string)$submitFileTypes[$i]) : '';
-                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                         $file = [
                             'name' => $_FILES[$filesKey]['name'][$i],
                             'type' => $_FILES[$filesKey]['type'][$i],
@@ -1634,6 +1647,9 @@ try {
                         }
                         
                         $relPath = 'uploads/project_other_files/' . $filename;
+                        $file_type_i = isset($submitFileTypes[$i]) ? trim((string)$submitFileTypes[$i]) : '';
+                        if ($file_type_i === '') $file_type_i = fileTypeFromExtension($file['name']);
+                        validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                         $otherFiles[] = [
                             'original_name' => $file['name'],
                             'name' => $file['name'],
@@ -1688,8 +1704,6 @@ try {
                     $fileCount = count($_FILES['new_files']['error']);
                     for ($i = 0; $i < $fileCount; $i++) {
                         if ($_FILES['new_files']['error'][$i] === UPLOAD_ERR_OK) {
-                            $file_type_i = isset($submitNewFileTypes[$i]) ? trim((string)$submitNewFileTypes[$i]) : '';
-                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $file = [
                                 'name' => $_FILES['new_files']['name'][$i],
                                 'type' => $_FILES['new_files']['type'][$i],
@@ -1712,6 +1726,9 @@ try {
                             }
                             
                             $relPath = 'uploads/project_other_files/' . $filename;
+                            $file_type_i = isset($submitNewFileTypes[$i]) ? trim((string)$submitNewFileTypes[$i]) : '';
+                            if ($file_type_i === '') $file_type_i = fileTypeFromExtension($file['name']);
+                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $otherFiles[] = [
                                 'original_name' => $file['name'],
                                 'name' => $file['name'],

@@ -152,8 +152,14 @@ try {
                     $fileSize = isset($file['size']) ? (int)$file['size'] : 0;
                     $fileType = $file['type'] ?? $file['mime'] ?? '';
                 }
-                // 檔案類型標籤（成果書、PPT、Word）供歷屆專題瀏覽顯示
+                // 檔案類型：依存檔類型（副檔名）.pdf→成果書、.pptx/.ppt→PPT、.docx/.doc→Word
                 $fileTypeKey = isset($file['file_type']) ? trim((string)$file['file_type']) : '';
+                if ($fileTypeKey === '' && $filePath) {
+                    $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                    if ($ext === 'pdf') $fileTypeKey = 'report';
+                    elseif (in_array($ext, ['pptx', 'ppt'], true)) $fileTypeKey = 'ppt';
+                    elseif (in_array($ext, ['docx', 'doc'], true)) $fileTypeKey = 'word';
+                }
                 $fileTypeLabels = ['report' => '成果書', 'ppt' => 'PPT', 'word' => 'Word'];
                 $fileTypeLabel = isset($fileTypeLabels[$fileTypeKey]) ? $fileTypeLabels[$fileTypeKey] : $fileTypeKey;
                 
@@ -186,6 +192,12 @@ try {
                     // 只返回允許下載的檔案（allow=1）
                     if ($allow == 1) {
                         $ftKey = isset($file['file_type']) ? trim((string)$file['file_type']) : '';
+                        if ($ftKey === '' && isset($file['path'])) {
+                            $ext = strtolower(pathinfo($file['path'], PATHINFO_EXTENSION));
+                            if ($ext === 'pdf') $ftKey = 'report';
+                            elseif (in_array($ext, ['pptx', 'ppt'], true)) $ftKey = 'ppt';
+                            elseif (in_array($ext, ['docx', 'doc'], true)) $ftKey = 'word';
+                        }
                         $ftLabels = ['report' => '成果書', 'ppt' => 'PPT', 'word' => 'Word'];
                         $ftLabel = isset($ftLabels[$ftKey]) ? $ftLabels[$ftKey] : $ftKey;
                         $downloadableFiles[] = [
