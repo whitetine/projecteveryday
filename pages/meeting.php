@@ -529,12 +529,15 @@
                         <!-- 音檔上傳（語音轉錄） -->
                         <input type="file" id="audioInput" accept="audio/*" multiple>
                         <div id="uploadAudioZone"></div>
+                    </div>
 
-                        <!-- 系統錄音控制（開始 / 停止） -->
-                        <button type="button" id="recordBtn"></button>
-                        <button type="button" id="stopRecordBtn"></button>
-                        <span id="recordingStatus"></span>
-                        <span id="recordingTime"></span>
+                    <!-- 系統錄音控制（開始 / 暫停 / 停止） -->
+                    <div id="recordingControls" style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+                        <button type="button" id="recordBtn" class="action-btn" style="min-width:96px;">開始錄音</button>
+                        <button type="button" id="pauseRecordBtn" class="action-btn" style="min-width:72px;display:none;">暫停</button>
+                        <button type="button" id="stopRecordBtn" class="action-btn" style="min-width:72px;display:none;">停止</button>
+                        <span id="recordingStatus" style="font-size:14px;color:#64748b;display:none;">錄音中...</span>
+                        <span id="recordingTime" style="font-size:14px;color:#0f172a;"></span>
                     </div>
                 </div>
             <?php endif; ?>

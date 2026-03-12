@@ -434,6 +434,7 @@
         btnHistoryBack: document.getElementById('btnHistoryBack'),
         historyTitle: document.getElementById('historyTitle'),
         recordBtn: document.getElementById('recordBtn'),
+        pauseRecordBtn: document.getElementById('pauseRecordBtn'),
         stopRecordBtn: document.getElementById('stopRecordBtn'),
         recordingStatus: document.getElementById('recordingStatus'),
         recordingTime: document.getElementById('recordingTime'),
@@ -510,6 +511,10 @@
 
     let mediaRecorder;
     let audioChunks = [];
+    let isRecording = false;
+    let isPaused = false;
+    let chunkUploadQueue = [];
+    let isUploadingChunk = false;
     let recordingTimer;
     let attendanceRefreshTimer = null;
     let startTime;
@@ -1898,6 +1903,7 @@ function bindTitleInlineEdit(){
 
         // 1. 錄音
         if (elements.recordBtn) elements.recordBtn.onclick = startRecording;
+        if (elements.pauseRecordBtn) elements.pauseRecordBtn.onclick = togglePauseRecording;
         if (elements.stopRecordBtn) elements.stopRecordBtn.onclick = stopRecording;
 
         // 圖片 OCR
@@ -2273,34 +2279,116 @@ function bindTitleInlineEdit(){
             toast('warning', '瀏覽器不支援錄音或未開啟 HTTPS');
             return;
         }
+        if (isRecording) {
+            return;
+        }
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
             audioChunks = [];
-            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-            mediaRecorder.onstop = async () => {
-                const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
-                uploadAudioBlob(blob);
+            chunkUploadQueue = [];
+            isUploadingChunk = false;
+            isRecording = true;
+            isPaused = false;
 
-                stream.getTracks().forEach(t => t.stop());
+            mediaRecorder.ondataavailable = e => {
+                if (!e.data || !e.data.size) return;
+                // 每一段都丟進佇列，做「延遲的逐字稿」
+                chunkUploadQueue.push(e.data);
+                processNextAudioChunk();
             };
-            mediaRecorder.start();
+            mediaRecorder.onstop = () => {
+                isRecording = false;
+                isPaused = false;
+                stopTimer();
+                toggleRecordingUI(false, false);
+                try {
+                    stream.getTracks().forEach(t => t.stop());
+                } catch (_) {}
+            };
+            // 每 8 秒切一段
+            mediaRecorder.start(8000);
             startTimer();
-            toggleRecordingUI(true);
+            toggleRecordingUI(true, false);
         } catch (err) {
             console.error(err);
             toast('error', '無法存取麥克風');
         }
     }
 
-    function stopRecording() {
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
+    function togglePauseRecording() {
+        if (!mediaRecorder || mediaRecorder.state === 'inactive') return;
+        if (!isRecording) return;
+        if (!isPaused) {
+            mediaRecorder.pause();
+            isPaused = true;
             stopTimer();
-            toggleRecordingUI(false);
+            toggleRecordingUI(true, true);
+        } else {
+            mediaRecorder.resume();
+            isPaused = false;
+            startTimer();
+            toggleRecordingUI(true, false);
         }
     }
 
+    function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+        }
+    }
+
+    async function uploadAudioChunk(blob) {
+        if (!ensureMeetingEditable()) return;
+        const formData = new FormData();
+        formData.append('do', 'meeting_transcribe_audio');
+        formData.append('file', blob, 'voice_chunk.webm');
+        formData.append('diarize', '1');
+
+        if (currentMeetingID) formData.append('m_ID', currentMeetingID);
+
+        // 輕量提示，不鎖整個畫面
+        addSystemMessage('語音轉錄中...', true);
+        try {
+            const res = await fetch(API_URL, { method: 'POST', body: formData });
+            const raw = await res.text();
+            let data;
+            try { data = JSON.parse(raw); } catch (e) {
+                console.error('語音轉錄 API 回傳非 JSON:', raw?.substring(0, 500));
+                toast('error', '轉錄失敗：伺服器回傳格式錯誤');
+                return;
+            }
+            removeSystemMessage();
+            if (data.ok) {
+                currentMeetingID = data.m_ID;
+                addSystemMessage(`[語音] ${data.content}`);
+                setUnsavedContentState(true);
+                await refreshContentTypeCounts(currentMeetingID);
+                setActiveContentTab('audio');
+                renderContentKindPanel('audio');
+            } else {
+                toast('error', '轉錄失敗: ' + (data.msg || data.error || '未知錯誤'));
+            }
+        } catch (e) {
+            console.error(e);
+            toast('error', '轉錄失敗：' + (e.message || '上傳錯誤'));
+        }
+    }
+
+    function processNextAudioChunk() {
+        if (isUploadingChunk) return;
+        const blob = chunkUploadQueue.shift();
+        if (!blob) return;
+        isUploadingChunk = true;
+        uploadAudioChunk(blob).finally(() => {
+            isUploadingChunk = false;
+            if (chunkUploadQueue.length) {
+                processNextAudioChunk();
+            }
+        });
+    }
+
+    // 保留原本整段上傳函式，供「上傳音檔」使用
     async function uploadAudioBlob(blob) {
         if (!ensureMeetingEditable()) return;
         const formData = new FormData();
@@ -2729,9 +2817,21 @@ function bindTitleInlineEdit(){
 
 
     // UI 輔助
-    function toggleRecordingUI(active) {
-        if (elements.recordingStatus) elements.recordingStatus.style.display = active ? 'flex' : 'none';
-        if (elements.recordBtn) elements.recordBtn.style.display = active ? 'none' : 'flex';
+    function toggleRecordingUI(active, paused) {
+        if (elements.recordingStatus) {
+            elements.recordingStatus.style.display = active ? 'inline-flex' : 'none';
+            elements.recordingStatus.textContent = paused ? '錄音已暫停' : '錄音中...';
+        }
+        if (elements.recordBtn) {
+            elements.recordBtn.style.display = active ? 'none' : 'inline-flex';
+        }
+        if (elements.pauseRecordBtn) {
+            elements.pauseRecordBtn.style.display = active ? 'inline-flex' : 'none';
+            elements.pauseRecordBtn.textContent = paused ? '繼續' : '暫停';
+        }
+        if (elements.stopRecordBtn) {
+            elements.stopRecordBtn.style.display = active ? 'inline-flex' : 'none';
+        }
     }
 
     function startTimer() {
