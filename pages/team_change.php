@@ -75,7 +75,7 @@ if (!$is_ajax) {
                     <button id="applyChangeDropdownBtn" class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">新增申請</button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li v-for="f in availableChangeForms" :key="f.tcf_ID + '-' + f.tcf_change_type">
-                            <a class="dropdown-item" href="javascript:void(0)" @click="openApplyModal(f.tcf_change_type, f.tcf_name)">{{ f.tcf_name }}</a>
+                            <a class="dropdown-item" href="javascript:void(0)" @click="openApplyModal(f.tcf_change_type, f.tcf_name, f.tcf_ID)">{{ f.tcf_name }}</a>
                         </li>
                         <li v-if="!availableChangeForms.length" class="dropdown-item text-muted">目前無開放中的申請單</li>
                     </ul>
@@ -109,6 +109,85 @@ if (!$is_ajax) {
                 <input v-model="filters.team_search" @input="debounceLoad" @keydown.enter="loadData" class="changelog-input" placeholder="搜尋 組別 / 建立者 / 老師 / 組名" />
             </div>
             <button @click="loadData" class="changelog-btn" type="button">搜尋</button>
+        </div>
+
+        <!-- 系辦/主任：開放中的申請單、申請單要填什麼、類型說明 -->
+        <div v-if="isOfficeOrDirector" class="changelog-office-info mb-4">
+            <div class="changelog-card mb-3">
+                <div class="changelog-card-hd">
+                    <span class="fw-bold">開放中的申請單</span>
+                    <small class="text-muted ms-2">（依上方屆別篩選）</small>
+                </div>
+                <div class="changelog-tableWrap">
+                    <table class="changelog-table" v-if="officeChangeForms.length">
+                        <thead>
+                            <tr>
+                                <th>屆別</th>
+                                <th>申請單名稱</th>
+                                <th>類型</th>
+                                <th>開放期間</th>
+                                <th>狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="f in officeChangeForms" :key="f.tcf_ID">
+                                <td>{{ f.cohort_label || f.tcf_cohort_ID }}</td>
+                                <td>{{ f.tcf_name }}</td>
+                                <td>{{ f.type_label }}</td>
+                                <td>{{ formatFormPeriod(f.tcf_open_d, f.tcf_close_d) }}</td>
+                                <td><span class="badge bg-success">啟用</span></td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" @click.stop="openEditFormModal(f)" title="編輯申請單">編輯</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p v-else class="mb-0 p-3 text-muted">目前沒有開放中的申請單。請點選右上角「新增申請單」建立。</p>
+                </div>
+            </div>
+            <div class="changelog-card">
+                <div class="changelog-card-hd fw-bold">申請單要填什麼／類型說明</div>
+                <div class="changelog-card-bd small">
+                    <p class="mb-2"><strong>類型說明：</strong></p>
+                    <ul class="mb-3">
+                        <li><strong>組名變更</strong>：專題題目（組名）變更時使用。</li>
+                        <li><strong>指導老師變更</strong>：更換組別指導老師時使用。</li>
+                        <li><strong>成員新增</strong>：新增組員時使用。</li>
+                        <li><strong>成員移除</strong>：組員退組時使用。</li>
+                        <li><strong>成員異動</strong>：同時涉及新增/移除等成員變更時使用。</li>
+                    </ul>
+                    <p class="mb-2"><strong>各類型需填寫內容：</strong></p>
+                    <ul class="mb-0">
+                        <li>組名變更：新專題題目、變更原因（選填）、附件（選填）。</li>
+                        <li>指導老師變更：新指導老師、變更原因（選填）、附件（選填）。</li>
+                        <li>成員新增／移除／異動：異動成員、變更原因（選填）、附件（選填）。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 學生：申請單要填什麼／類型說明（字體較大） -->
+        <div v-if="isStudent" class="changelog-office-info mb-4">
+            <div class="changelog-card changelog-card-student-desc">
+                <div class="changelog-card-hd fw-bold">申請單要填什麼／類型說明</div>
+                <div class="changelog-card-bd changelog-student-desc-bd">
+                    <p class="mb-2"><strong>類型說明：</strong></p>
+                    <ul class="mb-3">
+                        <li><strong>組名變更</strong>：專題題目（組名）變更時使用。</li>
+                        <li><strong>指導老師變更</strong>：更換組別指導老師時使用。</li>
+                        <li><strong>成員新增</strong>：新增組員時使用。</li>
+                        <li><strong>成員移除</strong>：組員退組時使用。</li>
+                        <li><strong>成員異動</strong>：同時涉及新增/移除等成員變更時使用。</li>
+                    </ul>
+                    <p class="mb-2"><strong>各類型需填寫內容：</strong></p>
+                    <ul class="mb-0">
+                        <li>組名變更：新專題題目、變更原因（選填）、附件（選填）。</li>
+                        <li>指導老師變更：新指導老師、變更原因（選填）、附件（選填）。</li>
+                        <li>成員新增／移除／異動：異動成員、變更原因（選填）、附件（選填）。</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div v-if="!isStudent && stats" class="changelog-stats">
@@ -169,7 +248,7 @@ if (!$is_ajax) {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="c in paginatedChanges" :key="c.tc_ID">
+                            <tr v-for="c in paginatedChanges" :key="c.tc_ID" @click="openDetail(c)">
                                 <td>
                                     <span class="changelog-typeTag">
                                         <span class="changelog-dot" :style="{background: typeDotColor(c.change_type)}"></span>
@@ -277,9 +356,11 @@ if (!$is_ajax) {
                         <div class="mb-3">
                             <label class="form-label fw-bold">狀態</label>
                             <select v-model="editForm.status" class="form-select" required>
-                                <option value="1">審核中</option>
-                                <option value="3">通過</option>
                                 <option value="0">退件</option>
+                                <option value="1">申請</option>
+                                <option value="2">等待老師簽名</option>
+                                <option value="3">通過</option>
+                                <option value="4">暫存</option>
                             </select>
                             <small class="text-muted">改為「通過」時，系統會套用異動至組別；改為「退件」則不套用。</small>
                         </div>
@@ -372,6 +453,10 @@ if (!$is_ajax) {
                 <div class="modal-body">
                     <form id="createFormForm" @submit.prevent="submitCreateForm">
                         <div class="mb-3">
+                            <label class="form-label fw-bold">申請單名稱</label>
+                            <input type="text" v-model="createForm.tcf_name" class="form-control" placeholder="留空則使用預設名稱">
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label fw-bold">屆別 <span class="text-danger">*</span></label>
                             <select v-model="createForm.tcf_cohort_ID" class="form-select" required>
                                 <option value="">請選擇</option>
@@ -390,10 +475,6 @@ if (!$is_ajax) {
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">申請單名稱</label>
-                            <input type="text" v-model="createForm.tcf_name" class="form-control" placeholder="留空則使用預設名稱">
-                        </div>
-                        <div class="mb-3">
                             <label class="form-label fw-bold">開放填寫時間</label>
                             <input type="datetime-local" v-model="createForm.tcf_open_d" class="form-control">
                             <small class="text-muted">留空表示立即開放</small>
@@ -410,6 +491,51 @@ if (!$is_ajax) {
                     <button type="submit" form="createFormForm" class="btn btn-primary" :disabled="createFormSubmitting">
                         <span v-if="createFormSubmitting"><span class="spinner-border spinner-border-sm me-1"></span>建立中...</span>
                         <span v-else>建立</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 系辦：編輯申請單 Modal -->
+    <div class="modal fade" id="editFormModal" tabindex="-1" aria-labelledby="editFormModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editFormModalLabel">編輯申請單</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" v-if="editFormTarget">
+                    <form id="editFormForm" @submit.prevent="submitEditForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">申請單名稱</label>
+                            <input type="text" v-model="editFormName" class="form-control" placeholder="留空則使用預設名稱">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">屆別</label>
+                            <input type="text" class="form-control" :value="editFormTarget.cohort_label || editFormTarget.tcf_cohort_ID" readonly disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">類型</label>
+                            <input type="text" class="form-control" :value="editFormTarget.type_label" readonly disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">開放填寫時間</label>
+                            <input type="datetime-local" v-model="editFormOpenD" class="form-control">
+                            <small class="text-muted">留空表示立即開放</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">截止時間</label>
+                            <input type="datetime-local" v-model="editFormCloseD" class="form-control">
+                            <small class="text-muted">留空表示無截止</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" form="editFormForm" class="btn btn-primary" :disabled="editFormSubmitting">
+                        <span v-if="editFormSubmitting"><span class="spinner-border spinner-border-sm me-1"></span>儲存中...</span>
+                        <span v-else>儲存</span>
                     </button>
                 </div>
             </div>
@@ -478,36 +604,25 @@ if (!$is_ajax) {
                             <label class="form-label fw-bold">{{ applyType === 'MEMBER_ADD' || applyType === 'MEMBER_CHANGE' ? '新增原因' : applyType === 'MEMBER_REMOVE' ? '退出原因' : '變更原因' }}</label>
                             <textarea v-model="applyForm.reason" class="form-control" rows="3" placeholder="請說明變更原因（選填）"></textarea>
                         </div>
-
-                        <!-- 圖片上傳 -->
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">圖片上傳 <span class="text-muted">(選填)</span></label>
-                            <div class="border rounded p-3 bg-light">
-                                <input type="file" class="form-control" accept="image/*" @change="onApplyAttachmentChange" ref="applyAttachmentInput">
-                                <div v-if="applyForm.attachmentPreview" class="mt-2">
-                                    <img :src="applyForm.attachmentPreview" alt="預覽" class="img-thumbnail" style="max-height:120px;max-width:200px;">
-                                    <button type="button" class="btn btn-sm btn-outline-danger ms-2" @click="clearApplyAttachment">移除</button>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- 圖片上傳改為之後在列表中批次繳交，這裡先不顯示上傳區塊 -->
                     </form>
                 </div>
-                <div class="modal-footer d-flex justify-content-between flex-wrap gap-2">
-                    <div class="d-flex gap-2">
+                <div class="modal-footer d-flex justify-content-end flex-wrap gap-2">
+                    <button type="button" class="btn btn-success" @click="saveAndShowDownload" :disabled="applySubmitting">
+                        <i class="fa-solid fa-save me-1"></i>暫存並下載
+                    </button>
+                    <template v-if="showDownloadButtons">
                         <button type="button" class="btn btn-outline-danger" @click="downloadFormPDF" :disabled="applySubmitting">
                             <i class="fa-solid fa-file-pdf me-1"></i>下載 PDF
                         </button>
                         <button type="button" class="btn btn-outline-primary" @click="downloadFormWord" :disabled="applySubmitting">
                             <i class="fa-solid fa-file-word me-1"></i>下載 Word
                         </button>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                        <button type="submit" form="applyForm" class="btn btn-primary" :disabled="applySubmitting">
-                            <span v-if="applySubmitting"><span class="spinner-border spinner-border-sm me-1"></span>送出中...</span>
-                            <span v-else>送出申請</span>
+                        <button type="button" class="btn btn-outline-secondary" @click="printForm">
+                            <i class="fa-solid fa-print me-1"></i>列印
                         </button>
-                    </div>
+                    </template>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                 </div>
             </div>
         </div>

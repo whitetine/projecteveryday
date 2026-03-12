@@ -141,12 +141,15 @@ switch (true) {
         'get_changelog_filter_options',
         'update_changelog_status',
         'edit_changelog',
+        'save_change_draft',
         'submit_change_application',
         'reapply_changelog',
         'get_available_students_for_add',
         'get_available_change_forms',
         'create_team_change_form',
-        'get_active_cohorts_for_form'
+        'get_active_cohorts_for_form',
+        'get_office_change_forms',
+        'update_team_change_form'
     ]):
         require __DIR__ . '/modules/team_change.php';
         break;

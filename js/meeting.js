@@ -1524,6 +1524,41 @@
         return null;
     }
 
+    function getCreateFlagFromLocation() {
+        try {
+            const qs = new URLSearchParams(window.location.search || '');
+            const c = qs.get('create');
+            if (c === '1' || c === 'true') return true;
+        } catch (_) { }
+        try {
+            const hash = window.location.hash || '';
+            const qpos = hash.indexOf('?');
+            if (qpos >= 0) {
+                const hashQs = new URLSearchParams(hash.slice(qpos + 1));
+                const c = hashQs.get('create');
+                return c === '1' || c === 'true';
+            }
+        } catch (_) { }
+        return false;
+    }
+
+    function updateHashToMeeting(teamId, mId) {
+        const base = (window.location.hash || '').split('?')[0] || '#pages/meeting.php';
+        const qs = new URLSearchParams();
+        if (teamId > 0) qs.set('team_ID', String(teamId));
+        if (mId > 0) qs.set('m_ID', String(mId));
+        const newHash = base + '?' + qs.toString();
+        if (window.history && window.history.replaceState) {
+            try {
+                window.history.replaceState(null, '', window.location.pathname + window.location.search + newHash);
+            } catch (_) {
+                window.location.hash = newHash;
+            }
+        } else {
+            window.location.hash = newHash;
+        }
+    }
+
 
     function renderFilesList(files, m_ID) {
         elements.meetingFiles.innerHTML = files.map(f => `
@@ -1582,7 +1617,7 @@
     }
 
     // --- 啟動函式 ---
-    function initMeetingPage() {
+    async function initMeetingPage() {
         console.log("初始化會議功能...");
 
         // 檢查元素是否存在，避免報錯
@@ -1599,8 +1634,37 @@
         bindToolCollapse();
         bindHistoryCollapse();
 
-        // 從會議列表帶 m_ID 進來時，優先直接開該歷史會議
-        const initialMid = getInitialMeetingId();
+        let initialMid = getInitialMeetingId();
+        // 從會議總覽點「+新增」進入 meeting.php?team_ID=X&create=1 時，自動建立會議並開啟
+        if (getCreateFlagFromLocation() && CURRENT_TEAM_ID && !initialMid) {
+            setBusy(true, '建立會議中...', '請稍候');
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        do: 'create_meeting',
+                        team_ID: CURRENT_TEAM_ID,
+                        title: '新會議'
+                    })
+                });
+                const data = await res.json();
+                setBusy(false);
+                if (data.ok && data.m_ID) {
+                    initialMid = data.m_ID;
+                    currentMeetingID = data.m_ID;
+                    lastKnownLatestMid = data.m_ID;
+                    updateHashToMeeting(CURRENT_TEAM_ID, data.m_ID);
+                    if (data.m_date) updateDateBadges(data);
+                    if (elements.meetingTitle) elements.meetingTitle.innerText = '新會議';
+                }
+            } catch (e) {
+                setBusy(false);
+                console.error(e);
+            }
+        }
+
+        // 從會議列表帶 m_ID 進來時，優先直接開該歷史會議（或剛由 create=1 建立的會議）
         if (initialMid) {
             currentMeetingID = initialMid;
             lastKnownLatestMid = initialMid;
@@ -2639,7 +2703,7 @@ function bindTitleInlineEdit(){
             `;
         }).join('');
 
-        const noMeetingHint = noMeeting ? `<div style="font-size:11px;color:#94a3b8;padding:6px 0;margin-top:4px;">尚無會議，請點擊上方「新增會議」建立</div>` : '';
+        const noMeetingHint = noMeeting ? `<div style="font-size:11px;color:#94a3b8;padding:6px 0;margin-top:4px;">尚無會議</div>` : '';
         elements.attendanceList.innerHTML = `
             <div class="attendance-table">
                 <div class="attendance-table-head">

@@ -175,6 +175,39 @@
   min-width: 0;
 }
 
+.changelog-card-hd {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--changelog-line);
+  background: #f8f9fa;
+}
+
+.changelog-card-bd {
+  padding: 12px;
+}
+
+.changelog-office-info .changelog-tableWrap {
+  min-height: 0;
+}
+
+.changelog-office-info .changelog-table thead th {
+  font-size: 13px;
+}
+
+/* 學生頁：申請單要填什麼／類型說明，字體較大 */
+.changelog-card-student-desc .changelog-card-hd {
+  font-size: 1.15rem;
+}
+.changelog-student-desc-bd {
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+.changelog-student-desc-bd ul {
+  padding-left: 1.25rem;
+}
+.changelog-student-desc-bd li {
+  margin-bottom: 0.35rem;
+}
+
 .changelog-tableWrap {
   overflow: auto;
 }
