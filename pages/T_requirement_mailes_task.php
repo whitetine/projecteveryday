@@ -61,10 +61,10 @@
             </div>
             <div class="filter-controls">
                 <button class="req-filter-btn" :class="{ active: filter.task_filter === 'status' }"
-                    @click="filter.task_filter = 'status'">狀態</button>
+                    @click="filter.task_filter = 'status'">三種狀態</button>
 
                 <button class="req-filter-btn" :class="{ active: filter.task_filter === '' }"
-                    @click="filter.task_filter = ''">標籤</button>
+                    @click="filter.task_filter = ''">五種標籤</button>
 
                 <button class="req-filter-btn" :class="{ active: filter.task_filter === 'people' }"
                     @click="filter.task_filter = 'people'">組員</button>
