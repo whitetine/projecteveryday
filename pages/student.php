@@ -14,7 +14,7 @@ if (!isset($_SESSION['u_ID'])) {
   <div class="team-group-wrapper">
     <div class="project-summary-header">
       <i class="fas fa-users"></i>
-      <span class="project-summary-title" id="student-team-name">專題日總彙</span>
+      <span class="project-summary-title" id="student-team-name">組別名稱載入中…</span>
     </div>
     <div id="members-container" class="team-members-container">
       <div class="text-center p-5 text-muted">
