@@ -110,13 +110,13 @@ $statusDisplayMap = [
                             </div>
                             <div class="um-filter-advanced">
                                 <button type="button" class="um-advanced-toggle" id="toggleAdvancedFilters">
-                                    <i class="fa-solid fa-chevron-down"></i> 進階篩選
+                                    <i class="fa-solid fa-chevron-down"></i> 屆別
                                 </button>
                                 <div class="um-advanced-filters um-advanced-hidden" id="advancedFilters">
                                     <div class="um-filter-field">
-                                        <label for="filterCohort" class="um-filter-label">學級</label>
+                                        <label for="filterCohort" class="um-filter-label">屆別</label>
                                         <select id="filterCohort" name="cohort_filter" class="um-select">
-                                            <option value="">全部學級</option>
+                                            <option value="">全部屆別</option>
                                         </select>
                                     </div>
                                 </div>

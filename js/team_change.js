@@ -48,11 +48,13 @@
           debounceTimer: null,
           applyType: '',
           applyFormTitleCustom: '',
+          applyFormTcfId: null,
           availableChangeForms: [],
           applyForm: { tc_team_name_new: '', tc_teacher_new: '', tc_member: '', reason: '', attachmentFile: null, attachmentPreview: '' },
           formData: { team_project_name: '', teacher: null, members: [], teachers: [] },
           availableStudents: [],
           applySubmitting: false,
+          showDownloadButtons: false,
           applyModal: null,
           editTarget: null,
           editForm: { status: '1', tc_u_reason: '' },
@@ -65,7 +67,14 @@
           formCohorts: [],
           createForm: { tcf_cohort_ID: '', tcf_change_type: '', tcf_name: '', tcf_open_d: '', tcf_close_d: '' },
           createFormSubmitting: false,
-          createFormModal: null
+          createFormModal: null,
+          officeChangeForms: [],
+          editFormTarget: null,
+          editFormName: '',
+          editFormOpenD: '',
+          editFormCloseD: '',
+          editFormSubmitting: false,
+          editFormModal: null
         };
       },
       computed: {
@@ -98,34 +107,18 @@
         }
       },
       async mounted() {
-        const modalEl = document.getElementById('applyModal');
-        if (modalEl) {
-          if (modalEl.parentNode && modalEl.parentNode !== document.body) {
-            document.body.appendChild(modalEl);
-          }
-          this.applyModal = new bootstrap.Modal(modalEl);
-        }
-        const editModalEl = document.getElementById('editChangelogModal');
-        if (editModalEl) {
-          if (editModalEl.parentNode && editModalEl.parentNode !== document.body) {
-            document.body.appendChild(editModalEl);
-          }
-          this.editModal = new bootstrap.Modal(editModalEl);
-        }
-        const reapplyModalEl = document.getElementById('reapplyModal');
-        if (reapplyModalEl) {
-          if (reapplyModalEl.parentNode && reapplyModalEl.parentNode !== document.body) {
-            document.body.appendChild(reapplyModalEl);
-          }
-          this.reapplyModal = new bootstrap.Modal(reapplyModalEl);
-        }
-        const createFormModalEl = document.getElementById('createFormModal');
-        if (createFormModalEl) {
-          if (createFormModalEl.parentNode && createFormModalEl.parentNode !== document.body) {
-            document.body.appendChild(createFormModalEl);
-          }
-          this.createFormModal = new bootstrap.Modal(createFormModalEl);
-        }
+        const createModal = (el) => {
+          if (!el || typeof bootstrap === 'undefined' || !bootstrap.Modal) return null;
+          try {
+            if (el.parentNode && el.parentNode !== document.body) document.body.appendChild(el);
+            return new bootstrap.Modal(el);
+          } catch (e) { console.warn('Bootstrap.Modal init failed', e); return null; }
+        };
+        this.applyModal = createModal(document.getElementById('applyModal'));
+        this.editModal = createModal(document.getElementById('editChangelogModal'));
+        this.reapplyModal = createModal(document.getElementById('reapplyModal'));
+        this.createFormModal = createModal(document.getElementById('createFormModal'));
+        this.editFormModal = createModal(document.getElementById('editFormModal'));
         if (this.isStudent) {
           if (this.team_ID > 0) {
             await this.loadStudentChanges();
@@ -135,6 +128,7 @@
           await this.loadFilterOptions();
           await this.loadData();
           if (this.isOffice) await this.loadFormCohorts();
+          if (this.isOfficeOrDirector) await this.loadOfficeChangeForms();
         }
       },
       methods: {
@@ -162,6 +156,57 @@
             const data = await res.json();
             if (data.ok && data.cohorts) this.formCohorts = data.cohorts;
           } catch (e) { this.formCohorts = []; }
+        },
+        async loadOfficeChangeForms() {
+          try {
+            const q = new URLSearchParams({ do: 'get_office_change_forms' });
+            if (this.filters.cohort_ID) q.set('cohort_ID', this.filters.cohort_ID);
+            const res = await fetch(this.apiPath() + '?' + q.toString());
+            const data = await res.json();
+            this.officeChangeForms = (data.ok && data.forms) ? data.forms : [];
+          } catch (e) { this.officeChangeForms = []; }
+        },
+        formatFormPeriod(openD, closeD) {
+          const o = openD ? String(openD).slice(0, 16).replace('T', ' ') : '—';
+          const c = closeD ? String(closeD).slice(0, 16).replace('T', ' ') : '無截止';
+          return o === '—' && c === '無截止' ? '立即開放' : (o + ' ～ ' + c);
+        },
+        toDatetimeLocal(val) {
+          if (!val) return '';
+          const s = String(val).trim().replace(' ', 'T').slice(0, 16);
+          return s;
+        },
+        openEditFormModal(f) {
+          this.editFormTarget = f;
+          this.editFormName = f.tcf_name || '';
+          this.editFormOpenD = this.toDatetimeLocal(f.tcf_open_d);
+          this.editFormCloseD = this.toDatetimeLocal(f.tcf_close_d);
+          this.$nextTick(() => {
+            if (this.editFormModal) this.editFormModal.show();
+            else console.warn('editFormModal 未初始化，請確認 Bootstrap 已載入');
+          });
+        },
+        async submitEditForm() {
+          if (!this.editFormTarget) return;
+          this.editFormSubmitting = true;
+          try {
+            const fd = new FormData();
+            fd.append('tcf_ID', this.editFormTarget.tcf_ID);
+            fd.append('tcf_name', this.editFormName || '');
+            fd.append('tcf_open_d', this.editFormOpenD || '');
+            fd.append('tcf_close_d', this.editFormCloseD || '');
+            const res = await fetch(this.apiPath() + '?do=update_team_change_form', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.ok) {
+              if (this.editFormModal) this.editFormModal.hide();
+              if (typeof Swal !== 'undefined') Swal.fire({ icon: 'success', title: data.message || '已儲存' });
+              else alert(data.message || '已儲存');
+              await this.loadOfficeChangeForms();
+            } else {
+              alert(data.msg || '儲存失敗');
+            }
+          } catch (e) { alert('儲存失敗'); }
+          finally { this.editFormSubmitting = false; }
         },
         async openCreateFormModal() {
           this.createForm = { tcf_cohort_ID: '', tcf_change_type: '', tcf_name: '', tcf_open_d: '', tcf_close_d: '' };
@@ -206,6 +251,7 @@
           this.filters.team_ID = '';
           await this.loadFilterOptions();
           await this.loadData();
+          if (this.isOfficeOrDirector) await this.loadOfficeChangeForms();
         },
         async loadData() {
           this.loading = true;
@@ -232,7 +278,7 @@
           const map = { 'TEAM_RENAME': '組名變更', 'TEACHER_CHANGE': '指導老師變更', 'MEMBER_ADD': '成員新增', 'MEMBER_REMOVE': '成員移除', 'MEMBER_CHANGE': '成員異動' };
           return map[type] || type;
         },
-        statusLabel(s) { const map = { 0: '退件', 1: '審核中', 3: '通過' }; return map[String(s)] || '審核中'; },
+        statusLabel(s) { const map = { 0: '退件', 1: '申請', 2: '等待老師簽名', 3: '通過', 4: '暫存' }; return map[String(s)] || '—'; },
         typeDotColor(t) {
           if (t === 'TEAM_RENAME') return '#1d4ed8';
           if (t === 'TEACHER_CHANGE') return '#0f766e';
@@ -341,6 +387,7 @@
           };
           this.$nextTick(() => {
             if (this.editModal) this.editModal.show();
+            else console.warn('editModal 未初始化，請確認 Bootstrap 已載入');
           });
         },
         async saveEdit() {
@@ -386,10 +433,12 @@
           } catch (e) { alert('儲存失敗'); }
           finally { this.editSubmitting = false; }
         },
-        async openApplyModal(type, customTitle) {
+        async openApplyModal(type, customTitle, tcfId) {
           this.applyType = type;
           this.applyFormTitleCustom = customTitle || '';
+          this.applyFormTcfId = (tcfId != null && tcfId !== '') ? Number(tcfId) : null;
           this.applyForm = { tc_team_name_new: '', tc_teacher_new: '', tc_member: '', reason: '', attachmentFile: null, attachmentPreview: '' };
+          this.showDownloadButtons = false;
           const dd = document.getElementById('applyChangeDropdownBtn');
           if (dd) {
             const instance = bootstrap.Dropdown.getInstance(dd);
@@ -412,6 +461,39 @@
               if (this.applyModal) this.applyModal.show();
             }, 50);
           });
+        },
+        async saveAndShowDownload() {
+          // 先呼叫暫存 API，寫入 DB（tc_status=4），列表會出現該筆
+          this.applySubmitting = true;
+          try {
+            const fd = new FormData();
+            fd.append('team_ID', this.team_ID);
+            fd.append('change_type', this.applyType);
+            if (this.applyFormTcfId != null && this.applyFormTcfId !== '') fd.append('tcf_ID', this.applyFormTcfId);
+            if (this.applyType === 'TEAM_RENAME') fd.append('tc_team_name_new', this.applyForm.tc_team_name_new);
+            if (this.applyType === 'TEACHER_CHANGE') fd.append('tc_teacher_new', this.applyForm.tc_teacher_new);
+            if (this.applyType === 'MEMBER_ADD' || this.applyType === 'MEMBER_REMOVE' || this.applyType === 'MEMBER_CHANGE') fd.append('tc_member', this.applyForm.tc_member);
+            fd.append('reason', this.applyForm.reason || '');
+            if (this.applyForm.attachmentFile) fd.append('attachment', this.applyForm.attachmentFile);
+            const res = await fetch(this.apiPath() + '?do=save_change_draft', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (!data.ok) {
+              alert(data.msg || '暫存失敗');
+              return;
+            }
+            this.showDownloadButtons = true;
+            await this.loadStudentChanges();
+            if (typeof Swal !== 'undefined') {
+              Swal.fire({ icon: 'success', title: '已暫存', text: '資料已出現在列表中；可下載 PDF/Word 或列印。', timer: 2500, showConfirmButton: false });
+            } else {
+              alert('已暫存，資料已出現在列表中。');
+            }
+            if (typeof html2pdf !== 'undefined') this.downloadFormPDF();
+          } catch (e) {
+            alert('暫存失敗，請稍後再試');
+          } finally {
+            this.applySubmitting = false;
+          }
         },
         getFormExportHtml() {
           // 確保使用最新表單資料（Vue 可能尚未 flush）
@@ -441,23 +523,29 @@
             rows += `<tr><td style="padding:8px;font-weight:bold;">附件圖片</td><td style="padding:8px;"><img src="${form.attachmentPreview}" alt="附件" style="max-width:200px;max-height:150px;" /></td></tr>`;
           }
           rows += `<tr><td style="padding:8px;font-weight:bold;">申請日期</td><td style="padding:8px;">${new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td></tr>`;
+          const signatureBlock = `<div class="tc-print-signature" style="margin-top:24px;padding-top:16px;border-top:1px solid #333;font-size:16px;">
+                <p style="margin:8px 0;">指導老師簽名：________________　　日期：____年____月____日</p>
+              </div>`;
           return `<div style="font-family:Microsoft JhengHei,sans-serif;padding:24px;max-width:600px;">
             <table border="1" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;font-size:16px;">
             ${rows}
             </table>
+            ${signatureBlock}
           </div>`;
         },
         downloadFormPDF() {
           if (typeof html2pdf === 'undefined') { alert('PDF 功能載入中，請稍後再試'); return; }
           this.$nextTick(() => {
             const html = this.getFormExportHtml();
-            const wrapper = document.createElement('div');
-            wrapper.style.cssText = 'position:fixed;top:0;left:0;width:210mm;min-height:297mm;background:#fff;z-index:-9999;opacity:0;pointer-events:none;';
-            wrapper.innerHTML = html;
-            document.body.appendChild(wrapper);
             const typeNames = { 'TEAM_RENAME': '專題題目變更', 'TEACHER_CHANGE': '指導老師變更', 'MEMBER_ADD': '組員新增', 'MEMBER_REMOVE': '組員退組', 'MEMBER_CHANGE': '組員異動' };
             const fname = `${typeNames[this.applyType] || '變更'}_${(this.formData.team_project_name || '申請單').substring(0, 20)}_${new Date().toISOString().slice(0, 10)}.pdf`;
-            html2pdf().set({ margin: 10, filename: fname, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(wrapper).save().then(() => { if (wrapper.parentNode) wrapper.remove(); }).catch(() => { if (wrapper.parentNode) wrapper.remove(); });
+            html2pdf().set({
+              margin: 10,
+              filename: fname,
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2 },
+              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(html).save();
           });
         },
         downloadFormWord() {
@@ -470,6 +558,22 @@
             a.download = `${typeNames[this.applyType] || '變更'}_${(this.formData.team_project_name || '申請單').substring(0, 20)}_${new Date().toISOString().slice(0, 10)}.doc`;
             a.click();
             URL.revokeObjectURL(a.href);
+          });
+        },
+        printForm() {
+          this.$nextTick(() => {
+            const html = this.getFormExportHtml();
+            const printWin = window.open('', '_blank');
+            if (!printWin) { alert('無法開啟列印視窗，請允許彈出視窗後再試'); return; }
+            printWin.document.write(
+              '<!DOCTYPE html><html><head><meta charset="utf-8"><title>列印 - ' + this.applyFormTitle + '</title>' +
+              '<style type="text/css">body{ margin:0; padding:16px; font-family:Microsoft JhengHei,sans-serif; } @media print{ body{ padding:0; } }</style></head><body>' +
+              html +
+              '</body></html>'
+            );
+            printWin.document.close();
+            printWin.focus();
+            setTimeout(function() { printWin.print(); printWin.close(); }, 300);
           });
         },
         onApplyAttachmentChange(e) {

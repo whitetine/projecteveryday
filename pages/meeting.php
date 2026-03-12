@@ -162,10 +162,10 @@
                             $attendanceRateMap[$tid] = $total > 0 ? (int)round(($ok / $total) * 100) : null;
                         }
 
-                        // 3) 成員名單（頭像群組 + Tooltip）
+                        // 3) 成員名單（頭像群組 + Tooltip）+ 之後要用來算每位成員平均出席率
                         $memberMap = [];
                         $qMember = $conn->prepare("
-                            SELECT tm.team_ID, COALESCE(NULLIF(TRIM(u.u_name),''), tm.$tm_col) AS u_name
+                            SELECT tm.team_ID, tm.$tm_col AS u_id, COALESCE(NULLIF(TRIM(u.u_name),''), tm.$tm_col) AS u_name
                             FROM teammember tm
                             LEFT JOIN userdata u ON u.u_ID = tm.$tm_col
                             WHERE tm.team_ID IN ($idPlaceholders)
@@ -176,17 +176,86 @@
                         foreach ($qMember->fetchAll(PDO::FETCH_ASSOC) as $row) {
                             $tid = (int)$row['team_ID'];
                             if (!isset($memberMap[$tid])) $memberMap[$tid] = [];
-                            $memberMap[$tid][] = (string)$row['u_name'];
+                            $memberMap[$tid][] = [
+                                'u_id' => (string)($row['u_id'] ?? ''),
+                                'u_name' => (string)$row['u_name'],
+                            ];
+                        }
+
+                        // 4) 每位成員的平均出席率（跨所有會議）
+                        $memberAttendAgg = [];
+                        $qAllCheck = $conn->prepare("
+                            SELECT m_team_ID, m_check
+                            FROM meetingdata
+                            WHERE m_team_ID IN ($idPlaceholders)
+                              AND (m_status IS NULL OR m_status = 1)
+                        ");
+                        $qAllCheck->execute($teamIds);
+                        foreach ($qAllCheck->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                            $tid = (int)$row['m_team_ID'];
+                            $raw = (string)($row['m_check'] ?? '');
+                            if ($raw === '') continue;
+                            $decoded = json_decode($raw, true);
+                            $statusMap = [];
+                            if (is_array($decoded) && isset($decoded['status_map']) && is_array($decoded['status_map'])) {
+                                $statusMap = $decoded['status_map'];
+                            } elseif (is_array($decoded)) {
+                                foreach ($decoded as $k => $v) {
+                                    if (in_array($v, ['ok', 'no'], true)) {
+                                        $statusMap[(string)$k] = $v;
+                                    }
+                                }
+                            }
+                            if (!$statusMap) continue;
+                            foreach ($statusMap as $uid => $st) {
+                                $uid = (string)$uid;
+                                if (!isset($memberAttendAgg[$tid][$uid])) {
+                                    $memberAttendAgg[$tid][$uid] = ['ok' => 0, 'no' => 0];
+                                }
+                                if ($st === 'ok')      $memberAttendAgg[$tid][$uid]['ok']++;
+                                elseif ($st === 'no') $memberAttendAgg[$tid][$uid]['no']++;
+                            }
                         }
 
                         // 寫回 teams
                         foreach ($teams as &$t) {
                             $tid = (int)$t['team_ID'];
-                            $names = $memberMap[$tid] ?? [];
-                            $t['member_names'] = $names;
-                            $t['member_count'] = count($names);
+                            $members = $memberMap[$tid] ?? [];
+
+                            // 顯示成員名稱（原本欄位）
+                            $nameList = array_map(static fn($m) => (string)$m['u_name'], $members);
+                            $t['member_names'] = $nameList;
+                            $t['member_count'] = count($members);
+
                             $t['meeting_count'] = (int)($meetingCountMap[$tid] ?? 0);
-                                $t['attendance_rate'] = $attendanceRateMap[$tid] ?? null;
+                            $t['attendance_rate'] = $attendanceRateMap[$tid] ?? null;
+
+                            // 每位成員平均出席率
+                            $avgList = [];
+                            $teamOk = 0;
+                            $teamNo = 0;
+                            foreach ($members as $m) {
+                                $uid = (string)($m['u_id'] ?? '');
+                                $name = (string)($m['u_name'] ?? '');
+                                if ($uid === '' || $name === '') continue;
+                                $agg = $memberAttendAgg[$tid][$uid] ?? null;
+                                if ($agg) {
+                                    $teamOk += (int)($agg['ok'] ?? 0);
+                                    $teamNo += (int)($agg['no'] ?? 0);
+                                }
+                                if (!$agg) {
+                                    $avgList[] = $name . ' —';
+                                    continue;
+                                }
+                                $ok = (int)($agg['ok'] ?? 0);
+                                $no = (int)($agg['no'] ?? 0);
+                                $total = $ok + $no;
+                                $rate = $total > 0 ? (int)round(($ok / $total) * 100) : null;
+                                $avgList[] = $name . ' ' . ($rate !== null ? ($rate . '%') : '—');
+                            }
+                            $t['member_avg_rates'] = $avgList;
+                            $teamTotal = $teamOk + $teamNo;
+                            $t['team_avg_rate'] = $teamTotal > 0 ? (int)round(($teamOk / $teamTotal) * 100) : null;
                         }
                         unset($t);
                     }
@@ -217,42 +286,60 @@
                 <table class="team-overview-table">
                     <thead>
                         <tr>
-                            <th style="width:10%;">屆別</th>
-                            <th style="width:23%;">專題名稱</th>
-                            <th style="width:37%;">成員</th>
-                            <th style="width:120px;">會議次數</th>
-                            <th style="width:200px;">出席率</th>
-                            <th style="width:180px;">操作</th>
+                            <th style="width:22%;">專題名稱</th>
+                            <th style="width:28%;">成員</th>
+                            <th style="width:12%;">組別平均出席率</th>
+                            <th style="width:22%;">每位成員出席率</th>
+                            <th style="width:100px;">會議次數</th>
+                            <th style="width:220px;">操作</th>
                         </tr>
                     </thead>
                     <tbody>
                     <?php foreach ($teams as $t): ?>
                         <?php
                             $memberNames = is_array($t['member_names'] ?? null) ? $t['member_names'] : [];
+                            $memberAvg   = is_array($t['member_avg_rates'] ?? null) ? $t['member_avg_rates'] : [];
                             $memberCount = (int)($t['member_count'] ?? count($memberNames));
                             $memberTitle = !empty($memberNames) ? implode('、', $memberNames) : '尚無成員資料';
                             $memberInline = !empty($memberNames) ? implode('、', $memberNames) : '尚無成員';
                             $meetingCount = (int)($t['meeting_count'] ?? 0);
-                            $rate = isset($t['attendance_rate']) && $t['attendance_rate'] !== null ? (int)$t['attendance_rate'] : null;
-                            $rateWidth = $rate !== null ? max(0, min(100, $rate)) : 0;
                         ?>
                         <tr>
-                            <td><span class="col-cohort"><?= htmlspecialchars($current_cohort_name) ?></span></td>
                             <td><span class="col-project"><?= htmlspecialchars($t['team_project_name'] ?: ('組別 '.(int)$t['team_ID'])) ?></span></td>
                             <td title="<?= htmlspecialchars($memberTitle) ?>">
                                 <div class="member-names"><?= htmlspecialchars($memberInline) ?></div>
                                 <div class="member-hint">共 <?= $memberCount ?> 人</div>
                             </td>
-                            <td><span class="meeting-count-text"><?= $meetingCount ?> 次</span></td>
                             <td>
-                                <div class="rate-wrap">
-                                    <div class="rate-bar"><span style="width:<?= $rateWidth ?>%;"></span></div>
-                                    <div class="rate-text"><?= $rate !== null ? ($rate.'%') : '尚無資料' ?></div>
-                                </div>
+                                <?php
+                                    $teamAvgRate = isset($t['team_avg_rate']) && $t['team_avg_rate'] !== null ? (int)$t['team_avg_rate'] : null;
+                                ?>
+                                <?php if ($teamAvgRate !== null): ?>
+                                    <span class="member-avg-team-rate-only"><?= $teamAvgRate ?>%</span>
+                                <?php else: ?>
+                                    <span class="member-avg-empty">—</span>
+                                <?php endif; ?>
                             </td>
+                            <td>
+                                <?php if (!empty($memberAvg)): ?>
+                                    <div class="member-avg-wrap member-avg-two-col">
+                                        <?php for ($i = 0; $i < count($memberAvg); $i += 2): ?>
+                                            <div class="member-avg-row">
+                                                <span class="member-avg-item"><?= htmlspecialchars($memberAvg[$i]) ?></span>
+                                                <?php if ($i + 1 < count($memberAvg)): ?>
+                                                    <span class="member-avg-item"><?= htmlspecialchars($memberAvg[$i + 1]) ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endfor; ?>
+                                    </div>
+                                <?php else: ?>
+                                    <span class="member-avg-empty">尚無資料</span>
+                                <?php endif; ?>
+                            </td>
+                            <td><span class="meeting-count-text"><?= $meetingCount ?> 次</span></td>
                             <td style="text-align:right;">
-                                <a class="btn btn-sm btn-primary ajax-link" href="#pages/meeting.php?team_ID=<?= (int)$t['team_ID'] ?>" style="margin-right:6px; padding:6px 10px; border-radius:6px;">進入</a>
-                                <a class="btn btn-sm btn-outline-secondary ajax-link" href="#pages/meeting_list.php?team_ID=<?= (int)$t['team_ID'] ?>" style="padding:6px 10px; border-radius:6px;">紀錄</a>
+                                <a class="btn btn-sm btn-primary meeting-overview-action-btn ajax-link" href="#pages/meeting.php?team_ID=<?= (int)$t['team_ID'] ?>"><i class="fa-solid fa-door-open"></i> 進入</a>
+                                <a class="btn btn-sm btn-outline-secondary meeting-overview-action-btn ajax-link" href="#pages/meeting_list.php?team_ID=<?= (int)$t['team_ID'] ?>"><i class="fa-solid fa-list"></i> 紀錄</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -294,11 +381,6 @@
                     <div class="attendance-card-header">
                         <div class="attendance-card-header-left">
                         <h4 class="attendance-card-title">會議出席紀錄</h4>
-                            <?php if (!empty($selected_team) && empty($selected_meeting_id)): ?>
-                            <a href="#pages/meeting_list.php?team_ID=<?= (int)$selected_team ?>" class="attendance-add-meeting-btn ajax-link" title="新增會議">
-                                <i class="fa-solid fa-plus"></i> 新增會議
-                            </a>
-                            <?php endif; ?>
                         </div>
                         <div id="attendanceStats" class="attendance-stats"></div>
                     </div>
@@ -350,9 +432,9 @@
                 </div>
 
                 <div class="doc-actions">
-                    <?php if (!empty($selected_team) && empty($selected_meeting_id)): ?>
-                        <a href="#pages/meeting_list.php?team_ID=<?= (int)$selected_team ?>" class="action-btn ajax-link" title="新增會議" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">
-                            <i class="fa-solid fa-plus"></i> 新增會議
+                    <?php if (!empty($selected_team)): ?>
+                        <a href="#pages/meeting_list.php?team_ID=<?= (int)$selected_team ?>" class="action-btn ajax-link" title="回上一頁" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">
+                            <i class="fa-solid fa-arrow-left"></i> 回上一頁
                         </a>
                     <?php endif; ?>
                     <?php if ($is_teacher): ?>
