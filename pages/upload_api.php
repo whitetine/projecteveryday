@@ -49,6 +49,21 @@ function json_response($data) {
     exit;
 }
 
+/**
+ * prosubdata 欄位儲存格式（應依此寫入）：
+ *
+ * 1. content_json（備用 JSON 欄位）：存「簡介」等
+ *    例：{"intro":"專題簡介文字...", "poster_original_name":"原始檔名", "history_status":1, "history":[...]}
+ *
+ * 2. prosub_img（海報）：存海報路徑字串，相對路徑、無前綴
+ *    例：uploads/project_posters/poster_24_1769132755_6972d2d355c48.jpg
+ *
+ * 3. prosub_other（多個檔案）：存多檔的 JSON 陣列
+ *    例：[{"path":"uploads/project_other_files/...", "name":"檔名", "file_type":"report", ...}, ...]
+ *
+ * 若資料表有 prosub_intro 欄位，簡介會優先寫入該欄，否則寫入 content_json['intro']
+ */
+
 // 檢查權限（只有學生 role_ID = 6 可以訪問）
 $role_ID = $_SESSION['role_ID'] ?? null;
 $u_ID = $_SESSION['u_ID'] ?? null;
@@ -1357,7 +1372,9 @@ try {
             $hasOtherFiles = false;
             
             // 1. 檢查是否有新上傳的檔案（multi_files[]）
-            if (isset($_FILES['multi_files']) && is_array($_FILES['multi_files']['error']) && !empty($_FILES['multi_files']['name'][0])) {
+            $hasMultiFiles = (isset($_FILES['multi_files']) && is_array($_FILES['multi_files']['error']) && !empty($_FILES['multi_files']['name'][0]))
+                || (isset($_FILES['multi_files[]']) && is_array($_FILES['multi_files[]']['error']) && !empty($_FILES['multi_files[]']['name'][0]));
+            if ($hasMultiFiles) {
                 $hasOtherFiles = true;
             }
             // 2. 檢查是否有已暫存的檔案（kept_files_json）- 非編輯模式
@@ -1559,15 +1576,14 @@ try {
             // 🔹 【關鍵修復】處理多個檔案上傳（優先使用 multi_files[]，向後兼容 other_files[]）
             $otherFiles = [];
             
-            // 優先處理新格式：multi_files[]
-            $filesKey = 'multi_files';
-            if (!isset($_FILES['multi_files']) || !is_array($_FILES['multi_files']['error'])) {
-                // 向後兼容：檢查舊格式 other_files[]
-                if (isset($_FILES['other_files']) && is_array($_FILES['other_files']['error'])) {
-                    $filesKey = 'other_files';
-                } else {
-                    $filesKey = null;
-                }
+            // 優先處理新格式：multi_files 或 multi_files[]（FormData 可能送 multi_files[]）
+            $filesKey = null;
+            if (isset($_FILES['multi_files']) && is_array($_FILES['multi_files']['error'])) {
+                $filesKey = 'multi_files';
+            } elseif (isset($_FILES['multi_files[]']) && is_array($_FILES['multi_files[]']['error'])) {
+                $filesKey = 'multi_files[]';
+            } elseif (isset($_FILES['other_files']) && is_array($_FILES['other_files']['error'])) {
+                $filesKey = 'other_files';
             }
             
                 $allAllowedTypes = getUnionOfAllowedFileTypes($conn, $cohort_ID, $class_ID);
@@ -1954,7 +1970,9 @@ try {
                 // 新增模式且沒有簡介，設為空字串
                 $contentJson['intro'] = $project_intro ?? '';
             }
-            
+            // 提交時 content_json 寫入 history_status: 1（與預期儲存格式一致）
+            $contentJson['history_status'] = 1;
+
             // 檢查是否是從退件狀態修改提交（狀態 0）
             $isResubmit = false;
             if ($isEditMode && $originalData && $originalData['prosub_status'] == 0) {

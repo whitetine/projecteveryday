@@ -152,6 +152,10 @@ try {
                     $fileSize = isset($file['size']) ? (int)$file['size'] : 0;
                     $fileType = $file['type'] ?? $file['mime'] ?? '';
                 }
+                // 檔案類型標籤（成果書、PPT、Word）供歷屆專題瀏覽顯示
+                $fileTypeKey = isset($file['file_type']) ? trim((string)$file['file_type']) : '';
+                $fileTypeLabels = ['report' => '成果書', 'ppt' => 'PPT', 'word' => 'Word'];
+                $fileTypeLabel = isset($fileTypeLabels[$fileTypeKey]) ? $fileTypeLabels[$fileTypeKey] : $fileTypeKey;
                 
                 // 只返回有有效路徑且允許下載的檔案（allow_download = 1）
                 if ($filePath && $allow_download == 1) {
@@ -161,7 +165,9 @@ try {
                         'path' => $filePath,
                         'type' => $fileType,
                         'size' => $fileSize,
-                        'uploaded_at' => $uploadTime
+                        'uploaded_at' => $uploadTime,
+                        'file_type' => $fileTypeKey,
+                        'file_type_label' => $fileTypeLabel
                     ];
                 }
             }
@@ -179,13 +185,18 @@ try {
                     
                     // 只返回允許下載的檔案（allow=1）
                     if ($allow == 1) {
+                        $ftKey = isset($file['file_type']) ? trim((string)$file['file_type']) : '';
+                        $ftLabels = ['report' => '成果書', 'ppt' => 'PPT', 'word' => 'Word'];
+                        $ftLabel = isset($ftLabels[$ftKey]) ? $ftLabels[$ftKey] : $ftKey;
                         $downloadableFiles[] = [
                             'fid' => 'file_' . $fileIndex,
                             'name' => $file['name'] ?? basename($file['path']),
                             'path' => $file['path'],
                             'type' => $file['type'] ?? $file['mime'] ?? '',
                             'size' => isset($file['size']) ? (int)$file['size'] : 0,
-                            'uploaded_at' => $file['uploaded_at'] ?? ''
+                            'uploaded_at' => $file['uploaded_at'] ?? '',
+                            'file_type' => $ftKey,
+                            'file_type_label' => $ftLabel
                         ];
                         $fileIndex++;
                     }

@@ -545,11 +545,13 @@ const canDownloadFiles = role_ID === 6 || role_ID === 1 || role_ID === 2; // 學
                                                 <div class="downloadable-files-section" style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e9ecef;">
                                                     <div class="files-title" style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
                                                         <i class="fa-solid fa-file" style="color: #667eea; font-size: 18px;"></i>
-                                                        <span>可下載檔案 (${downloadableFiles.length})</span>
+                                                        <span>開放檔案 (${downloadableFiles.length})</span>
                                                     </div>
                                                      <div class="files-list" style="display: flex; flex-direction: column; gap: 8px;">
                                                          ${downloadableFiles.map(file => {
                                                              const downloadUrl = `download.php?prosub_ID=${prosub_ID}&fid=${encodeURIComponent(file.fid)}`;
+                                                             const typeLabel = file.file_type_label || file.file_type || '';
+                                                             const typeBadge = typeLabel ? `<span class="file-type-badge" style="flex-shrink: 0; font-size: 12px; font-weight: 600; color: #667eea; background: #e8ecff; padding: 2px 8px; border-radius: 6px;">${escapeHtml(typeLabel)}</span>` : '';
                                                              return `
                                                                  <a href="${downloadUrl}" 
                                                                     class="file-download-link" 
@@ -559,6 +561,7 @@ const canDownloadFiles = role_ID === 6 || role_ID === 1 || role_ID === 2; // 學
                                                                     target="_blank"
                                                                     title="點擊下載：${escapeHtml(file.name || '未知檔案')}">
                                                                      <i class="fa-solid fa-file" style="color: #667eea; font-size: 16px;"></i>
+                                                                     ${typeBadge}
                                                                      <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(file.name || '未知檔案')}</span>
                                                                  </a>
                                                              `;
