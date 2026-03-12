@@ -327,6 +327,7 @@ foreach ($rows as $r) {
   $t = strtoupper(trim($r['event_type'] ?? ''));
   if ($t) $typeCounts[$t] = ($typeCounts[$t] ?? 0) + 1;
 }
+$totalEvents = count($rows);
 ?>
 <style>
 /* Timeline：左右交替 + 中央線 */
@@ -377,6 +378,47 @@ foreach ($rows as $r) {
 }
 .timeline-type-summary .type-badge.active .type-count{
   color: #2563eb;
+}
+
+.timeline-search-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:.75rem;
+  flex-wrap:wrap;
+}
+.timeline-search-input{
+  flex:1;
+  min-width:220px;
+  max-width:360px;
+}
+.timeline-search-input input{
+  width:100%;
+  padding:8px 10px;
+  border-radius:6px;
+  border:1px solid #d1d5db;
+  font-size:14px;
+}
+.timeline-pager{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:6px;
+  margin-top:10px;
+  font-size:13px;
+}
+.timeline-page-btn{
+  border:1px solid #d1d5db;
+  background:#fff;
+  border-radius:999px;
+  padding:2px 8px;
+  cursor:pointer;
+}
+.timeline-page-btn.active{
+  background:#2563eb;
+  border-color:#2563eb;
+  color:#fff;
 }
 
 .timeline{
@@ -473,15 +515,26 @@ foreach ($rows as $r) {
     </div>
   </div>
 
-  <?php if (!empty($typeCounts)): ?>
-  <div class="timeline-type-summary" id="timelineTypeSummary">
-    <?php foreach ($typeCounts as $t => $cnt): ?>
-      <?php $typeClass = 'type-' . strtolower(preg_replace('/[^a-z0-9]/i', '', $t) ?: 'other'); ?>
-      <span class="type-badge <?= htmlspecialchars($typeClass) ?>" role="button" tabindex="0" data-filter-type="<?= htmlspecialchars($t) ?>" title="點擊篩選此類型，再點一次取消">
-        <?= htmlspecialchars($t) ?>
-        <span class="type-count"><?= (int)$cnt ?></span>
-      </span>
-    <?php endforeach; ?>
+  <?php if (!empty($rows)): ?>
+  <div class="timeline-search-row">
+    <div class="timeline-type-summary" id="timelineTypeSummary">
+      <?php if ($totalEvents > 0): ?>
+        <span class="type-badge type-all active" role="button" tabindex="0" data-filter-type="" title="顯示全部事件">
+          全部
+          <span class="type-count"><?= (int)$totalEvents ?></span>
+        </span>
+      <?php endif; ?>
+      <?php foreach ($typeCounts as $t => $cnt): ?>
+        <?php $typeClass = 'type-' . strtolower(preg_replace('/[^a-z0-9]/i', '', $t) ?: 'other'); ?>
+        <span class="type-badge <?= htmlspecialchars($typeClass) ?>" role="button" tabindex="0" data-filter-type="<?= htmlspecialchars($t) ?>" title="點擊只看此類型">
+          <?= htmlspecialchars($t) ?>
+          <span class="type-count"><?= (int)$cnt ?></span>
+        </span>
+      <?php endforeach; ?>
+    </div>
+    <div class="timeline-search-input">
+      <input type="text" id="timelineSearchInput" placeholder="搜尋事件標題 / 說明 / ref..." />
+    </div>
   </div>
   <?php endif; ?>
 
@@ -521,33 +574,127 @@ foreach ($rows as $r) {
         </div>
       <?php endforeach; ?>
     </div>
+    <div class="timeline-pager" id="timelinePager" style="display:none;"></div>
   <?php endif; ?>
 </div>
 <script>
 (function(){
   var summary = document.getElementById('timelineTypeSummary');
   var list = document.getElementById('timelineList');
-  if (!summary || !list) return;
-  var items = list.querySelectorAll('.t-item');
-  var badges = summary.querySelectorAll('.type-badge[data-filter-type]');
+  var pager = document.getElementById('timelinePager');
+  if (!list) return;
+  var items = Array.prototype.slice.call(list.querySelectorAll('.t-item'));
+  if (!items.length) return;
+
+  var badges = summary ? summary.querySelectorAll('.type-badge[data-filter-type]') : [];
+  var searchInput = document.getElementById('timelineSearchInput');
   var currentFilter = '';
+  var currentSearch = '';
+  var pageSize = 15;
+  var currentPage = 1;
+
+  function getItemText(el){
+    var title = el.querySelector('.t-link');
+    var desc = el.querySelector('.t-desc');
+    var meta = el.querySelector('.small');
+    return [
+      title ? title.textContent : '',
+      desc ? desc.textContent : '',
+      meta ? meta.textContent : ''
+    ].join(' ').toLowerCase();
+  }
+
+  var cacheText = new Map();
+  items.forEach(function(it){ cacheText.set(it, getItemText(it)); });
+
+  function applyFilter(){
+    var filtered = [];
+    var typeUpper = (currentFilter || '').toUpperCase();
+    var kw = (currentSearch || '').trim().toLowerCase();
+
+    items.forEach(function(el){
+      var t = (el.getAttribute('data-event-type') || '').toUpperCase();
+      var okType = !typeUpper || t === typeUpper;
+      var okSearch = !kw || (cacheText.get(el) || '').indexOf(kw) !== -1;
+      if (okType && okSearch) filtered.push(el);
+    });
+
+    var totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    items.forEach(function(el){ el.style.display = 'none'; });
+    filtered.forEach(function(el, idx){
+      var p = Math.floor(idx / pageSize) + 1;
+      if (p === currentPage) el.style.display = '';
+    });
+
+    if (pager) {
+      if (filtered.length <= pageSize) {
+        pager.style.display = 'none';
+        pager.innerHTML = '';
+      } else {
+        pager.style.display = 'flex';
+        var html = '';
+        if (currentPage > 1) {
+          html += '<button class="timeline-page-btn" data-page="' + (currentPage-1) + '">‹</button>';
+        }
+        var start = Math.max(1, currentPage - 2);
+        var end = Math.min(totalPages, start + 4);
+        for (var p = start; p <= end; p++) {
+          html += '<button class="timeline-page-btn' + (p===currentPage?' active':'') + '" data-page="' + p + '">' + p + '</button>';
+        }
+        if (currentPage < totalPages) {
+          html += '<button class="timeline-page-btn" data-page="' + (currentPage+1) + '">›</button>';
+        }
+        pager.innerHTML = html;
+      }
+    }
+  }
 
   function setFilter(type) {
     currentFilter = type;
-    badges.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-filter-type') === type); });
-    items.forEach(function(el){
-      var t = (el.getAttribute('data-event-type') || '').toUpperCase();
-      var match = !currentFilter || t === (currentFilter || '').toUpperCase();
-      el.style.display = match ? '' : 'none';
+    if (badges && badges.length) {
+      badges.forEach(function(b){
+        b.classList.toggle('active', (b.getAttribute('data-filter-type') || '') === type);
+      });
+    }
+    currentPage = 1;
+    applyFilter();
+  }
+
+  if (badges && badges.length) {
+    badges.forEach(function(b){
+      b.addEventListener('click', function(){
+        var type = b.getAttribute('data-filter-type') || '';
+        setFilter(type);
+      });
+      b.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.click(); } });
     });
   }
 
-  badges.forEach(function(b){
-    b.addEventListener('click', function(){
-      var type = b.getAttribute('data-filter-type') || '';
-      setFilter(type === currentFilter ? '' : type);
+  if (searchInput) {
+    var timer = null;
+    searchInput.addEventListener('input', function(){
+      currentSearch = searchInput.value || '';
+      clearTimeout(timer);
+      timer = setTimeout(function(){
+        currentPage = 1;
+        applyFilter();
+      }, 250);
     });
-    b.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.click(); } });
-  });
+  }
+
+  if (pager) {
+    pager.addEventListener('click', function(e){
+      var btn = e.target.closest('.timeline-page-btn');
+      if (!btn) return;
+      var p = parseInt(btn.getAttribute('data-page') || '1', 10);
+      if (!p || p === currentPage) return;
+      currentPage = p;
+      applyFilter();
+    });
+  }
+
+  applyFilter();
 })();
 </script>
