@@ -8,6 +8,8 @@ if (!$u_ID) {
     json_err('請先登入');
 }
 
+require_once __DIR__ . '/team_timeline_helper.php';
+
 // Gmail 發送（與 forgot_password / suggest_schedule 相同 GAS 端點）
 if (!function_exists('sendMailViaGas')) {
     function sendMailViaGas(string $to, string $subject, string $message): array {
@@ -471,6 +473,30 @@ switch ($do) {
 
         // 通過/退件：通知該組別、指導老師、班導（系統通知 + Gmail）
         team_change_notify_status_result($conn, $changelog, $status, $tmCol, $urCol, $u_ID);
+
+        // 寫入時間軸：審核結果
+        $team_ID = (int)($changelog['tc_team_ID'] ?? 0);
+        $typeLabels = ['TEAM_RENAME' => '專題題目變更', 'TEACHER_CHANGE' => '指導老師變更', 'MEMBER_ADD' => '組員新增', 'MEMBER_REMOVE' => '組員退組', 'MEMBER_CHANGE' => '組員異動'];
+        $typeLabel = $typeLabels[trim($changelog['change_type'] ?? '')] ?? '異動';
+        $actionLabel = $status === 3 ? '通過' : '退件';
+        $reasonForTimeline = $hasTcUReason ? ($tc_u_reason ?: ($changelog['tc_u_reason'] ?? '')) : ($changelog['tc_reason'] ?? '');
+
+        if ($team_ID > 0) {
+            team_timeline_add_event(
+                $conn,
+                $team_ID,
+                '組別異動',
+                "審核{$actionLabel}",
+                $typeLabel,
+                "{$typeLabel} {$actionLabel}",
+                (string)$reasonForTimeline,
+                'teamchangelog',
+                $tc_ID,
+                'team_change',
+                null,
+                $u_ID
+            );
+        }
 
         json_ok(['message' => $status === 3 ? '已通過' : '已退件']);
         break;
@@ -980,6 +1006,8 @@ switch ($do) {
             $stmt->execute([$cohort_ID, $team_ID, $change_type, $tc_team_name_old, $tc_team_name_new, $tc_teacher_old, $tc_teacher_new, $tc_member, $tc_reason, $u_ID]);
         }
 
+        $newTcId = (int)$conn->lastInsertId();
+
         $typeLabels = ['TEAM_RENAME' => '專題題目變更', 'TEACHER_CHANGE' => '指導老師變更', 'MEMBER_ADD' => '組員新增', 'MEMBER_REMOVE' => '組員退組', 'MEMBER_CHANGE' => '組員異動'];
         $typeLabel = $typeLabels[$change_type] ?? '異動';
         $creatorStmt = $conn->prepare("SELECT u_name FROM userdata WHERE u_ID = ? LIMIT 1");
@@ -1036,6 +1064,22 @@ switch ($do) {
                 usleep(200000);
             }
         }
+
+        // 寫入時間軸：送出組別異動申請
+        team_timeline_add_event(
+            $conn,
+            $team_ID,
+            '組別異動',
+            '送出申請',
+            $typeLabel,
+            "送出{$typeLabel}申請",
+            $tc_reason,
+            'teamchangelog',
+            $newTcId,
+            'team_change',
+            null,
+            $u_ID
+        );
 
         json_ok(['message' => '申請已送出，請等待審核。組別成員、科辦、主任、班導與指導老師將收到通知。']);
         break;

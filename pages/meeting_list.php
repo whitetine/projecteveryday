@@ -106,6 +106,11 @@ $cssBase = 'css/meeting.css';
             <?php endif; ?>
         </div>
         <div style="flex:1"></div>
+        <?php if ($is_student): ?>
+        <button type="button" class="btn-create" onclick="openCreateModal()">
+            <i class="fa-solid fa-plus"></i> 建立會議
+        </button>
+        <?php endif; ?>
     </div>
 
     <div id="meetingStats" class="meeting-stat-cards" style="display:none;"></div>
