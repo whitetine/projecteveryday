@@ -1924,6 +1924,9 @@ try {
 
         case 'get_cohort_file_types':
             // ====== 整屆下載設定：取得該屆所有出現的檔案類型及開放數量 ======
+            header('Cache-Control: no-cache, no-store, must-revalidate');
+            header('Pragma: no-cache');
+            header('Expires: 0');
             $cohort_ID = isset($_GET['cohort_ID']) ? (int)$_GET['cohort_ID'] : 0;
             if ($cohort_ID <= 0) {
                 echo json_encode(['success' => false, 'message' => '請選擇學年度', 'data' => []]);
@@ -2030,9 +2033,18 @@ try {
                     $changed = true;
                 }
                 if ($changed) {
+                    $json = json_encode($other, JSON_UNESCAPED_UNICODE);
+                    if ($json === false) {
+                        error_log('[batch_set_download] json_encode failed for prosub_ID=' . $row['prosub_ID']);
+                        continue;
+                    }
                     $upd = $conn->prepare("UPDATE prosubdata SET prosub_other = ?, prosub_update_d = NOW() WHERE prosub_ID = ?");
-                    $upd->execute([json_encode($other, JSON_UNESCAPED_UNICODE), $row['prosub_ID']]);
-                    $updated++;
+                    $ok = $upd->execute([$json, (int)$row['prosub_ID']]);
+                    if ($ok && $upd->rowCount() > 0) {
+                        $updated++;
+                    } else {
+                        error_log('[batch_set_download] UPDATE failed or 0 rows for prosub_ID=' . $row['prosub_ID']);
+                    }
                 }
             }
             echo json_encode([

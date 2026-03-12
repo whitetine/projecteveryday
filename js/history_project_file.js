@@ -89,7 +89,7 @@
         listEl.innerHTML = '<span class="text-muted"><i class="fa-solid fa-spinner fa-spin"></i> 載入中…</span>';
         container.style.display = 'block';
         try {
-            const response = await fetch(`${API_BASE}?do=get_cohort_file_types&cohort_ID=${cohort_ID}`);
+            const response = await fetch(`${API_BASE}?do=get_cohort_file_types&cohort_ID=${cohort_ID}&_t=${Date.now()}`, { cache: 'no-store' });
             const data = await response.json();
             if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
                 listEl.innerHTML = '<span class="text-muted">此屆尚無多檔案資料</span>';
@@ -212,8 +212,9 @@
                 
                 showMessage(data.message || (allow_download ? '已一併開放' : '已一併不開放'), 'success');
                 
-                // 仍需更新下方專題列表以反映變更（若已載入）
-                // 為了避免大閃爍，可以使用靜默載入或延遲
+                // 從伺服器重新載入整屆檔案類型，確保與 DB 一致（避免切頁後狀態跑回開放）
+                setTimeout(() => { loadCohortFileTypes(cohort_ID); }, 400);
+                
                 if (typeof loadProjects === 'function') {
                     loadProjects(true); 
                 }
@@ -1002,17 +1003,31 @@
             });
         }
 
-        // 整屆下載設定：選擇學年度後載入該屆檔案類型
+        // 整屆下載設定：選擇學年度後載入該屆檔案類型（每次從伺服器取最新狀態，不依賴快取）
         const cohortDownloadSelect = document.getElementById('cohortDownloadSelect');
         if (cohortDownloadSelect) {
             cohortDownloadSelect.addEventListener('change', function() {
                 const cid = this.value ? parseInt(this.value, 10) : 0;
-                if (cid > 0) loadCohortFileTypes(cid);
-                else {
-                    document.getElementById('cohortDownloadFileTypes').style.display = 'none';
-                    document.getElementById('cohortDownloadFileTypesList').innerHTML = '';
+                if (cid > 0) {
+                    try { sessionStorage.setItem('history_project_file_cohort', String(cid)); } catch (e) {}
+                    loadCohortFileTypes(cid);
+                } else {
+                    try { sessionStorage.removeItem('history_project_file_cohort'); } catch (e) {}
+                    const container = document.getElementById('cohortDownloadFileTypes');
+                    const listEl = document.getElementById('cohortDownloadFileTypesList');
+                    if (container) container.style.display = 'none';
+                    if (listEl) listEl.innerHTML = '';
                 }
             });
+            // 切回本頁時還原上次選的學年度並從伺服器重載狀態，避免顯示成舊的「開放」
+            const savedCohort = (function() { try { return sessionStorage.getItem('history_project_file_cohort'); } catch (e) { return null; } })();
+            if (savedCohort && parseInt(savedCohort, 10) > 0) {
+                const opt = cohortDownloadSelect.querySelector('option[value="' + savedCohort + '"]');
+                if (opt) {
+                    cohortDownloadSelect.value = savedCohort;
+                    loadCohortFileTypes(parseInt(savedCohort, 10));
+                }
+            }
         }
 
         // Enter 鍵搜尋
