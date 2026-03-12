@@ -298,13 +298,39 @@ $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // ---------- 4) 連結 mapping（A: 程式內寫死版） ----------
 function buildLink($route_key, $ref_table, $ref_ID) {
-  // 你現在是 SPA hash 路由就用 main.php#...
-  // 如果你是一般頁，就改成 main.php?page=...
-  // 下面提供「通用 router」格式：
-  $rk = urlencode($route_key);
-  $tb = urlencode($ref_table);
-  $id = intval($ref_ID);
-  return "main.php#view?rk={$rk}&table={$tb}&id={$id}";
+  global $team_ID;
+
+  $id = (int)$ref_ID;
+  $rk = trim((string)$route_key);
+  $tb = trim((string)$ref_table);
+
+  // 1) 會議：直接帶到該組、該次會議的會議頁
+  if ($tb === 'meetingdata' || $rk === 'meeting') {
+    $tid = (int)$team_ID;
+    if ($tid > 0 && $id > 0) {
+      return "main.php#pages/meeting.php?team_ID={$tid}&m_ID={$id}";
+    }
+  }
+
+  // 2) 組別異動：帶到組別異動頁（該頁本身已有列表與詳細）
+  if ($tb === 'teamchangelog' || $rk === 'team_change') {
+    return "main.php#pages/team_change.php";
+  }
+
+  // 3) 專題申請：帶到審核頁（系辦）或學生申請頁；這裡先統一帶審核頁
+  if ($tb === 'teamapply' || $rk === 'team_apply') {
+    return "main.php#pages/team_apply_review.php";
+  }
+
+  // 4) 待辦事項：帶到學生版待辦事項頁（S_requirement_mailes_task.php）
+  if ($tb === 'taskdata' || $rk === 'view_task') {
+    return "main.php#pages/S_requirement_mailes_task.php";
+  }
+
+  // 5) 其他：保留原本通用 router
+  $rkEnc = urlencode($rk);
+  $tbEnc = urlencode($tb);
+  return "main.php#view?rk={$rkEnc}&table={$tbEnc}&id={$id}";
 }
 
 // ---------- 5) 樣式類別 ----------
