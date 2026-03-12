@@ -72,7 +72,9 @@ $cssBase = 'css/meeting.css';
         .attendance-member-line { display: flex; gap: 16px; margin-bottom: 4px; }
         .attendance-member { font-size: 18px; }
         .attendance-member strong { font-weight: 600; }
-        .attendance-member-rate { margin-left: 4px; font-weight: 600; }
+.attendance-member-rate { margin-left: 4px; font-weight: 600; }
+.attendance-member-rate.ok { color: #16a34a; }   /* 出席：綠色 */
+.attendance-member-rate.no { color: #dc2626; }   /* 未出席：紅色 */
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-box { background: #fff; padding: 24px; border-radius: 12px; width: 400px; border: 1px solid var(--meeting-border, #e2e8f0); }
@@ -251,9 +253,6 @@ async function loadMeetings() {
                     : 'meeting.php?team_ID=' + resolvedTeamId + '&m_ID=' + m.m_ID;
 
                 let attendanceHtml = '';
-                if (m.attendance_rate !== null && m.attendance_rate !== undefined) {
-                    attendanceHtml = '<span class="attendance-rate-badge">' + m.attendance_rate + '%</span>';
-                }
                 const memberLines = [];
                 if (m.member_attendance && m.member_attendance.length > 0) {
                     for (let i = 0; i < m.member_attendance.length; i += 2) {
@@ -261,9 +260,10 @@ async function loadMeetings() {
                         const lineHtml = lineMembers.map(ma => {
                             const baseName = ma.u_name || '';
                             let statusText = '—';
-                            if (ma.status === 'ok') statusText = '出席';
-                            else if (ma.status === 'no') statusText = '未出席';
-                            return `<span class="attendance-member"><strong>${escapeHtml(baseName)}</strong><span class="attendance-member-rate">${statusText}</span></span>`;
+                            let statusClass = '';
+                            if (ma.status === 'ok') { statusText = '出席'; statusClass = 'ok'; }
+                            else if (ma.status === 'no') { statusText = '未出席'; statusClass = 'no'; }
+                            return `<span class="attendance-member"><strong>${escapeHtml(baseName)}</strong><span class="attendance-member-rate ${statusClass}">${statusText}</span></span>`;
                         }).join('');
                         memberLines.push(`<div class="attendance-member-line">${lineHtml}</div>`);
                     }
