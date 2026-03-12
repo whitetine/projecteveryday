@@ -894,9 +894,9 @@ if (!isset($_SESSION['u_ID'])) {
     <a class="nav-link ajax-link" href="pages/meeting_list.php">
       <i class="fa-solid fa-users"></i><span>會議紀錄</span>
     </a>
-    <a class="nav-link ajax-link" href="pages/apply.php">
+    <!-- <a class="nav-link ajax-link" href="pages/apply.php">
       <i class="fa-solid fa-file"></i><span>申請文件上傳</span>
-    </a>
+    </a> -->
     <a class="nav-link ajax-link" href="pages/apply_test.php">
       <i class="fa-solid fa-file-import"></i><span>資料申請</span>
     </a>

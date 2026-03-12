@@ -206,7 +206,7 @@ try {
                         <small class="text-muted">此說明文字會顯示在學生端補充附件區塊下方，說明該補充檔案應包含的內容。</small>
                     </div>
                 </div>
-                <div class="form-section" style="margin-top: 1rem;">
+                <!-- <div class="form-section" style="margin-top: 1rem;">
                     <div
                         style="padding: 0.75rem 1rem; border-radius: 6px; background: #f8fafc; border: 1px solid #e2e8f0;">
                         <label
@@ -215,7 +215,7 @@ try {
                             <span>學生繳交該表單時，必須完成專題預期成果表。</span>
                         </label>
                     </div>
-                </div>
+                </div> -->
             </form>
         </div>
         <div class="modal-footer">
