@@ -16,7 +16,7 @@ session_start();
 require '../includes/pdo.php';
 require '../config/path.php'; // 引入 BASE_PATH 常量
 
-// 清除輸出緩衝區中的任何內容（包括可能的警告）
+// 清除輸出緩衝區中的任何內容
 ob_clean();
 
 // 輔助函數：清除緩衝區並輸出 JSON（強制只回傳 JSON）
