@@ -6,6 +6,7 @@ ini_set('memory_limit', '1024M');
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../includes/pdo.php';
+require_once __DIR__ . '/team_timeline_helper.php';
 $ai_config = require __DIR__ . '/../includes/ai_config.php';
 
 $pdo = $conn ?? null;
@@ -753,6 +754,23 @@ try {
       $createdD = date('Y-m-d H:i:s');
       $ins->execute([$title, $team_ID, $startD]);
       $newMid = (int)$pdo->lastInsertId();
+
+      // 寫入時間軸：新增會議
+      team_timeline_add_event(
+        $pdo,
+        $team_ID,
+        '會議',
+        '新增會議',
+        $title,
+        '新增會議：' . $title,
+        '',
+        'meetingdata',
+        $newMid,
+        'meeting',
+        $startD,
+        (string)$my_uid
+      );
+
       jexit(['ok'=>true,'m_ID'=>$newMid,'m_start_d'=>$startD,'m_created_d'=>$createdD]);
     }
 
@@ -1578,6 +1596,30 @@ case 'meeting_update_meta': {
       if (hasColumn($pdo, 'meetingdata', 'meeting_status')) {
         $pdo->prepare("UPDATE meetingdata SET meeting_status=3 WHERE m_ID=?")->execute([$mid]);
       }
+
+      // 讀取會議標題，供時間軸顯示
+      $mt = $pdo->prepare("SELECT m_title, m_team_ID, COALESCE(m_start_d, m_created_d) AS evt_d FROM meetingdata WHERE m_ID=? LIMIT 1");
+      $mt->execute([$mid]);
+      $row = $mt->fetch(PDO::FETCH_ASSOC) ?: [];
+      $mTitle = trim((string)($row['m_title'] ?? '會議'));
+      $mTeam  = (int)($row['m_team_ID'] ?? $team_ID);
+      $evtD   = $row['evt_d'] ?? date('Y-m-d H:i:s');
+
+      // 寫入時間軸：確認會議
+      team_timeline_add_event(
+        $pdo,
+        $mTeam,
+        '會議',
+        '確認會議',
+        $mTitle,
+        '確認會議：' . $mTitle,
+        '會議已由指導老師確認並鎖定出席與內容。',
+        'meetingdata',
+        $mid,
+        'meeting',
+        $evtD,
+        (string)$my_uid
+      );
 
       jexit([
         'ok'=>true,

@@ -518,25 +518,38 @@ try {
       $stmt->execute([$g_id, $app['tap_name'], $cohort, $app['tap_url']]);
       $team_ID = $conn->lastInsertId();
 
-      // 決定 teammember 的 user 欄位
+      // 決定 teammember 的 user 欄位 + 是否存在 tm_url 欄位
       $col = $conn->query("SHOW COLUMNS FROM teammember LIKE 'team_u_ID'")->fetch() ? 'team_u_ID' : 'u_ID';
+      $hasTmUrl = $conn->query("SHOW COLUMNS FROM teammember LIKE 'tm_url'")->rowCount() > 0;
 
       // 建立 Team Member：學生 + 申請者 + 老師（若需要）
       $members = json_decode($app['tap_member'] ?? '[]', true) ?: [];
       // 確保提交者在名單內
       if (!in_array($app['tap_u_ID'], $members)) $members[] = $app['tap_u_ID'];
 
-      $stmt = $conn->prepare("INSERT INTO teammember (team_ID, $col, tm_status, tm_updated_d, tm_url) VALUES (?, ?, 1, NOW(), ?)");
-      foreach ($members as $uid) {
-        $stmt->execute([$team_ID, $uid, $app['tap_url']]);
-      }
-
-      // 若要將老師也加入 teammember（系統中老師以同表方式紀錄帶組），則加入老師
-      if (!empty($app['tap_teacher'])) {
-        try {
-          $stmt->execute([$team_ID, $app['tap_teacher'], $app['tap_url']]);
-        } catch (Exception $e) {
-          // 若失敗（重複鍵等），忽略
+      if ($hasTmUrl) {
+        $stmt = $conn->prepare("INSERT INTO teammember (team_ID, $col, tm_status, tm_updated_d, tm_url) VALUES (?, ?, 1, NOW(), ?)");
+        foreach ($members as $uid) {
+          $stmt->execute([$team_ID, $uid, $app['tap_url']]);
+        }
+        // 老師
+        if (!empty($app['tap_teacher'])) {
+          try {
+            $stmt->execute([$team_ID, $app['tap_teacher'], $app['tap_url']]);
+          } catch (Exception $e) {
+            // 若失敗（重複鍵等），忽略
+          }
+        }
+      } else {
+        $stmt = $conn->prepare("INSERT INTO teammember (team_ID, $col, tm_status, tm_updated_d) VALUES (?, ?, 1, NOW())");
+        foreach ($members as $uid) {
+          $stmt->execute([$team_ID, $uid]);
+        }
+        if (!empty($app['tap_teacher'])) {
+          try {
+            $stmt->execute([$team_ID, $app['tap_teacher']]);
+          } catch (Exception $e) {
+          }
         }
       }
 

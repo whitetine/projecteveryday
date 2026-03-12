@@ -698,9 +698,15 @@ try {
 
                     // 3. 建立 Team Member
                     $col = get_col_name('teammember', 'team_u_ID');
+                    $hasTmUrl = $conn->query("SHOW COLUMNS FROM teammember LIKE 'tm_url'")->rowCount() > 0;
                     $members = array_merge(json_decode($app['tap_member'], true) ?: [], [$app['tap_teacher']]);
-                    $stmt = $conn->prepare("INSERT INTO teammember (team_ID, $col, tm_status, tm_updated_d, tm_url) VALUES (?, ?, 1, NOW(), ?)");
-                    foreach ($members as $uid) $stmt->execute([$team_ID, $uid, $app['tap_url']]);
+                    if ($hasTmUrl) {
+                        $stmt = $conn->prepare("INSERT INTO teammember (team_ID, $col, tm_status, tm_updated_d, tm_url) VALUES (?, ?, 1, NOW(), ?)");
+                        foreach ($members as $uid) $stmt->execute([$team_ID, $uid, $app['tap_url']]);
+                    } else {
+                        $stmt = $conn->prepare("INSERT INTO teammember (team_ID, $col, tm_status, tm_updated_d) VALUES (?, ?, 1, NOW())");
+                        foreach ($members as $uid) $stmt->execute([$team_ID, $uid]);
+                    }
 
                     // 4. 更新申請單
                     $conn->prepare("UPDATE teamapply SET tap_status=3, tap_rp_u_ID=?, tap_rp_d=NOW(), tap_remark=?, tap_update_d=NOW() WHERE tap_ID=?")->execute([$reviewer, $remark, $tap_ID]);
