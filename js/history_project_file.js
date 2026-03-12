@@ -212,9 +212,6 @@
                 
                 showMessage(data.message || (allow_download ? '已一併開放' : '已一併不開放'), 'success');
                 
-                // 從伺服器重新載入整屆檔案類型，確保與 DB 一致（避免切頁後狀態跑回開放）
-                setTimeout(() => { loadCohortFileTypes(cohort_ID); }, 400);
-                
                 if (typeof loadProjects === 'function') {
                     loadProjects(true); 
                 }

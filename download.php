@@ -130,18 +130,18 @@ try {
         die('檔案不存在');
     }
 
-    // 🔹 【檢查下載權限】根據用戶要求，必須檢查 allow_download 欄位
-    // 優先使用 allow_download，兼容舊的 allow 欄位，如果都沒有則預設為不開放（0）
+    // 🔹 【檢查下載權限】科辦在歷屆成果管理設為「不開放」的檔案類型（如 Word）不得下載
+    // 與 get_archive_results 一致：只允許 allow_download = 1 的檔案
     $allowDownload = 0;
     if (isset($targetFile['allow_download'])) {
         $allowDownload = (int)$targetFile['allow_download'];
     } elseif (isset($targetFile['allowDownload'])) {
         $allowDownload = (int)$targetFile['allowDownload'];
     } elseif (isset($targetFile['allow'])) {
-        // 兼容舊的 allow 欄位
         $allowDownload = (int)$targetFile['allow'];
+    } elseif (isset($targetFile['public']) && $targetFile['public']) {
+        $allowDownload = 1;
     }
-    // 如果都沒有，預設為 0（不開放）
     
     if ($allowDownload != 1) {
         http_response_code(403);

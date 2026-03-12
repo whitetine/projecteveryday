@@ -95,8 +95,8 @@ try {
             $contentJson = json_decode($sub['content_json'], true);
         }
         
-        // 從 prosub_other 讀取文件列表（只返回允許下載的檔案，allow_download = 1）
-        // 🔹 【統一使用 allow_download 欄位】根據用戶要求，只返回 allow_download = 1 的檔案
+        // 從 prosub_other 讀取文件列表（只返回允許下載的檔案）
+        // 🔹 科辦在歷屆成果管理設為「不開放」的類型（如 Word）不會出現在此列表，歷屆專題瀏覽查看處也不會顯示
         if (is_array($prosubOther)) {
             foreach ($prosubOther as $index => $file) {
                 $filePath = '';
