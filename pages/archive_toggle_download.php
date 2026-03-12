@@ -18,33 +18,33 @@ if (!isset($role_ID) || !in_array($role_ID, [1, 2])) {
     exit;
 }
 
-    // 獲取參數
-    $prosub_ID = isset($_POST['prosub_ID']) ? (int)$_POST['prosub_ID'] : 0;
-    $fid = isset($_POST['fid']) ? trim($_POST['fid']) : '';
-    $public = isset($_POST['public']) ? filter_var($_POST['public'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : null;
-    
-    // 兼容舊的 allowDownload 參數
-    if ($public === null && isset($_POST['allowDownload'])) {
-        $public = filter_var($_POST['allowDownload'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-    }
+// 獲取參數
+$prosub_ID = isset($_POST['prosub_ID']) ? (int) $_POST['prosub_ID'] : 0;
+$fid = isset($_POST['fid']) ? trim($_POST['fid']) : '';
+$public = isset($_POST['public']) ? filter_var($_POST['public'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : null;
 
-    // 驗證參數
-    if (!$prosub_ID || !$fid) {
-        echo json_encode([
-            "success" => false,
-            "message" => "參數錯誤"
-        ]);
-        exit;
-    }
+// 兼容舊的 allowDownload 參數
+if ($public === null && isset($_POST['allowDownload'])) {
+    $public = filter_var($_POST['allowDownload'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+}
 
-    // 驗證值
-    if ($public === null) {
-        echo json_encode([
-            "success" => false,
-            "message" => "無效的值"
-        ]);
-        exit;
-    }
+// 驗證參數
+if (!$prosub_ID || !$fid) {
+    echo json_encode([
+        "success" => false,
+        "message" => "參數錯誤"
+    ]);
+    exit;
+}
+
+// 驗證值
+if ($public === null) {
+    echo json_encode([
+        "success" => false,
+        "message" => "無效的值"
+    ]);
+    exit;
+}
 
 try {
     // 查詢成果資料
@@ -73,12 +73,12 @@ try {
     // 查找並更新對應的檔案（根據 fid 或索引）
     $fileFound = false;
     $fidIndex = null;
-    
+
     // 如果 fid 是 file_0, file_1 格式，提取索引
     if (preg_match('/^file_(\d+)$/', $fid, $matches)) {
-        $fidIndex = (int)$matches[1];
+        $fidIndex = (int) $matches[1];
     }
-    
+
     foreach ($otherFilesJson as $index => &$file) {
         // 檢查是否匹配（通過索引或 fid）
         $matches = false;
@@ -93,7 +93,7 @@ try {
             // 兼容：如果 fid 是路徑（舊版本可能傳入路徑）
             $matches = true;
         }
-        
+
         if ($matches) {
             // 確保是新格式（包含 name, path, type, uploaded_at, public）
             if (is_string($file)) {
@@ -117,14 +117,14 @@ try {
                     $file['uploaded_at'] = $file['upload_time'] ?? '';
                 }
             }
-            
+
             // 更新下載權限：
-            // - public：供舊版與前端顯示使用
-            // - allow_download / allow：供歷屆專題瀏覽與 download.php 檢查
-            $file['public'] = (bool)$public;
+// - public：供舊版與前端顯示使用
+// - allow_download / allow：供歷屆專題瀏覽與 download.php 檢查
+            $file['public'] = (bool) $public;
             $file['allow_download'] = $public ? 1 : 0;
             $file['allow'] = $public ? 1 : 0;
-            
+
             $fileFound = true;
             break;
         }
@@ -145,14 +145,14 @@ try {
             prosub_update_d = NOW()
         WHERE prosub_ID = ?
     ");
-    
+
     $updateStmt->execute([
         json_encode($otherFilesJson, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         $prosub_ID
     ]);
 
     $statusText = $public ? '已開放' : '已關閉';
-    
+
     echo json_encode([
         "success" => true,
         "message" => "學生下載權限 {$statusText}"
