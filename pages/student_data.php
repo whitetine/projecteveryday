@@ -57,11 +57,12 @@ try {
     exit;
   }
 
-  // 取得組別名稱
+  // 取得組別名稱（不再限制 team_status，避免已結案或停用的組別只顯示 Team X）
   $stName = $conn->prepare("
     SELECT COALESCE(team_project_name, CONCAT('Team ', :tid)) as team_name
     FROM teamdata 
-    WHERE team_ID = :tid AND team_status = 1
+    WHERE team_ID = :tid
+    LIMIT 1
   ");
   $stName->execute([':tid' => $teamId]);
   $teamResult = $stName->fetch(PDO::FETCH_ASSOC);
