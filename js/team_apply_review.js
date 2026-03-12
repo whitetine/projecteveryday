@@ -33,6 +33,8 @@
         forms: [],
         formsLoading: false,
         selectedForm: null,
+        cohortOptions: [],
+        filterCohortId: '',
         list: [],
         loading: false,
         filterStatus: 'all',
@@ -69,6 +71,11 @@
       };
     },
     computed: {
+      filteredForms() {
+        if (!this.filterCohortId) return this.forms;
+        const cid = Number(this.filterCohortId);
+        return this.forms.filter(f => Number(f.taf_cohort_ID) === cid);
+      },
       teacherStatsSummary() {
         if (this.teacherStatsLoading) return '載入中…';
         if (!this.teacherStats.length) return '尚無資料';
@@ -201,9 +208,14 @@
       },
       async loadData() {
         if (!this.selectedForm) return;
+        const cohortId = this.selectedForm.taf_cohort_ID || 0;
+        if (!cohortId) {
+          this.list = [];
+          return;
+        }
         this.loading = true;
         try {
-          const url = `${API}?do=get_list&status=${encodeURIComponent(this.filterStatus)}&keyword=${encodeURIComponent(this.keyword)}&cohort_ID=${encodeURIComponent(this.selectedForm.taf_cohort_ID || 0)}`;
+          const url = `${API}?do=get_list&status=${encodeURIComponent(this.filterStatus)}&keyword=${encodeURIComponent(this.keyword)}&cohort_ID=${encodeURIComponent(cohortId)}`;
           const res = await fetch(url);
           const data = await res.json();
           if (!data.ok) throw new Error(data.msg || 'API Error');
@@ -230,6 +242,7 @@
           const data = await res.json();
           if (!data.ok) throw new Error(data.msg || 'API Error');
           this.forms = data.forms || [];
+          await this.loadCohortOptions();
           const tafId = this.getTafIdFromHash();
           if (tafId && this.forms.length) {
             const f = this.forms.find(x => Number(x.taf_ID) === tafId);
@@ -240,6 +253,16 @@
           Toast.fire({ icon: 'error', title: '讀取表單失敗' });
         } finally {
           this.formsLoading = false;
+        }
+      },
+      async loadCohortOptions() {
+        try {
+          const res = await fetch(`${API}?do=get_review_cohort_options`);
+          const data = await res.json();
+          if (data.ok && data.cohorts) this.cohortOptions = data.cohorts;
+          else this.cohortOptions = [];
+        } catch (e) {
+          this.cohortOptions = [];
         }
       },
       async selectForm(form) {

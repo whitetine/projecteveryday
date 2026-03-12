@@ -4,50 +4,33 @@ global $conn;
 $u_ID = $_SESSION['u_ID'] ?? null;
 $role_ID = (int)($_SESSION['role_ID'] ?? 0);
 
-if (!defined('TEAM_CHANGE_SKIP_DISPATCH') && !$u_ID) {
+if (!$u_ID) {
     json_err('請先登入');
 }
 
-// Gmail 發送：與忘記密碼相同作法（Webhook + PHPMailer 備援）
-if (!function_exists('sendTeamChangeMail')) {
-    function sendTeamChangeMail(string $to, string $subject, string $message): array {
-        if (trim($to) === '' || !filter_var(trim($to), FILTER_VALIDATE_EMAIL)) {
-            return ['success' => false, 'error' => '收件人為空或無效'];
-        }
-        $url = 'https://script.google.com/macros/s/AKfycbwtvjxzfFbuZvDNsPtMIyQpGuvK5Eg24lD5x_DDlLVmpaxLgAdP7sSTRslJu5rmsgE2/exec';
-        $payload = ['to' => $to, 'subject' => $subject, 'message' => $message];
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_POST => true,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded'],
-            CURLOPT_POSTFIELDS => http_build_query($payload),
-            CURLOPT_TIMEOUT => 10,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 3,
-        ]);
-        $response = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
-        if ($response !== false) {
-            $json = json_decode($response, true);
-            if (is_array($json) && !empty($json['success'])) return ['success' => true];
-        }
-        $mailPath = file_exists(__DIR__ . '/../includes/mail_sender.php') ? __DIR__ . '/../includes/mail_sender.php' : __DIR__ . '/includes/mail_sender.php';
-        if (file_exists($mailPath)) {
-            require_once $mailPath;
-            if (function_exists('sendGenericEmail')) {
-                $out = sendGenericEmail($to, $subject, $message);
-                return ['success' => $out['success'], 'error' => $out['error'] ?? ''];
-            }
-        }
-        return ['success' => false, 'error' => $err ?: '寄信失敗'];
-    }
-}
+// Gmail 發送（與 forgot_password / suggest_schedule 相同 GAS 端點）
 if (!function_exists('sendMailViaGas')) {
     function sendMailViaGas(string $to, string $subject, string $message): array {
-        $r = sendTeamChangeMail($to, $subject, $message);
-        return ['ok' => $r['success'], 'msg' => $r['error'] ?? ''];
+        if (trim($to) === '') return ['ok' => false, 'msg' => '收件人為空'];
+        $url = "https://script.google.com/macros/s/AKfycbyLLkHxyGhJkllgpztDzcXPcp_IKXL_GS2lnOGDegOAQplqQMVU0EA4LF4ZPDrrkfyb/exec";
+        $data = ['to' => $to, 'subject' => $subject, 'message' => $message];
+        $options = [
+            'http' => [
+                'method'  => 'POST',
+                'header'  => 'Content-type: application/x-www-form-urlencoded',
+                'content' => http_build_query($data),
+                'timeout' => 20,
+            ],
+        ];
+        $ctx = stream_context_create($options);
+        $res = @file_get_contents($url, false, $ctx);
+        if ($res === false) return ['ok' => false, 'msg' => '無法連線到 GAS'];
+        $decoded = json_decode($res, true);
+        if (!is_array($decoded)) return ['ok' => false, 'msg' => 'GAS 回傳非 JSON'];
+        return [
+            'ok'  => !empty($decoded['ok']),
+            'msg' => isset($decoded['msg']) ? (string)$decoded['msg'] : (isset($decoded['message']) ? (string)$decoded['message'] : ''),
+        ];
     }
 }
 
@@ -76,9 +59,11 @@ function team_change_notify_status_result($conn, $changelog, $status, $tmCol, $u
     $msg_url = json_encode($urlData, JSON_UNESCAPED_UNICODE);
 
     $recipients = [];
+    // 該組別所有人（學生 + 指導老師）
     $stmt = $conn->prepare("SELECT tm.{$tmCol} as u_ID FROM teammember tm WHERE tm.team_ID = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1)");
     $stmt->execute([$team_ID]);
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) $recipients[(int)$r['u_ID']] = true;
+    // 班導
     $stmt = $conn->prepare("
         SELECT DISTINCT e2.enroll_u_ID FROM teammember tm
         JOIN enrollmentdata e ON e.enroll_u_ID = tm.{$tmCol} AND e.cohort_ID = ? AND e.enroll_status = 1
@@ -98,6 +83,7 @@ function team_change_notify_status_result($conn, $changelog, $status, $tmCol, $u
         $stmtMsg->execute([$msgTitle, $msgContent, $msg_url, $actor_u_ID]);
         $msg_ID = $conn->lastInsertId();
         if ($msg_ID) $stmtTarget->execute([$msg_ID, $targetUid]);
+
         $userStmt = $conn->prepare("SELECT u_name, u_gmail FROM userdata WHERE u_ID = ? LIMIT 1");
         $userStmt->execute([$targetUid]);
         $user = $userStmt->fetch(PDO::FETCH_ASSOC);
@@ -109,122 +95,9 @@ function team_change_notify_status_result($conn, $changelog, $status, $tmCol, $u
     }
 }
 
-/**
- * 新申請／再次送件：通知系辦、指導老師、班導、組別所有成員（系統通知 + Gmail）
- * 指導老師的 Gmail 含完整申請資料與確認/退件連結
- */
-function team_change_notify_new_application($conn, $changelog, $tmCol, $urCol, $creator_u_ID) {
-    $team_ID = (int)($changelog['tc_team_ID'] ?? 0);
-    $cohort_ID = (int)($changelog['tc_cohort'] ?? 0);
-    $tc_ID = (int)($changelog['tc_ID'] ?? 0);
-    if ($team_ID <= 0 || $tc_ID <= 0) return;
-
-    $typeLabels = ['TEAM_RENAME' => '專題題目變更', 'TEACHER_CHANGE' => '指導老師變更', 'MEMBER_ADD' => '組員新增', 'MEMBER_REMOVE' => '組員退組', 'MEMBER_CHANGE' => '組員異動'];
-    $typeLabel = $typeLabels[trim($changelog['change_type'] ?? '')] ?? '異動';
-    $stmt = $conn->prepare("SELECT team_project_name FROM teamdata WHERE team_ID = ? LIMIT 1");
-    $stmt->execute([$team_ID]);
-    $teamName = $stmt->fetchColumn() ?: "團隊 #{$team_ID}";
-
-    $creatorStmt = $conn->prepare("SELECT u_name FROM userdata WHERE u_ID = ? LIMIT 1");
-    $creatorStmt->execute([$creator_u_ID]);
-    $creatorName = $creatorStmt->fetchColumn() ?: $creator_u_ID;
-
-    $base = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
-    $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? '/'), '/');
-    $teamChangeUrl = $base . $scriptDir . '/main.php#pages/team_change.php';
-    $urlData = [['type' => 'link', 'url' => $teamChangeUrl, 'label' => '查看組別異動紀錄']];
-    $msg_url = json_encode($urlData, JSON_UNESCAPED_UNICODE);
-
-    $recipients = [];
-    $stmt = $conn->prepare("SELECT tm.{$tmCol} as u_ID FROM teammember tm WHERE tm.team_ID = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1)");
-    $stmt->execute([$team_ID]);
-    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) { $uid = (int)$r['u_ID']; $recipients[$uid] = true; }
-    $stmt = $conn->prepare("
-        SELECT DISTINCT e2.enroll_u_ID FROM teammember tm
-        JOIN enrollmentdata e ON e.enroll_u_ID = tm.{$tmCol} AND e.cohort_ID = ? AND e.enroll_status = 1
-        JOIN enrollmentdata e2 ON e2.class_ID = e.class_ID AND e2.role_ID = 3 AND e2.enroll_status = 1
-        WHERE tm.team_ID = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1)
-    ");
-    $stmt->execute([$cohort_ID, $team_ID]);
-    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) { $recipients[(int)$r['enroll_u_ID']] = true; }
-    $stmt = $conn->prepare("SELECT ur.{$urCol} as u_ID FROM userrolesdata ur WHERE ur.role_ID IN (1, 2) AND ur.user_role_status = 1");
-    $stmt->execute();
-    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) { $recipients[(int)$r['u_ID']] = true; }
-
-    $advisor_u_ID = null;
-    $stmt = $conn->prepare("
-        SELECT tm.{$tmCol} as u_ID FROM teammember tm
-        JOIN userrolesdata ur ON ur.{$urCol} = tm.{$tmCol} AND ur.role_ID = 4 AND ur.user_role_status = 1
-        WHERE tm.team_ID = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1) LIMIT 1
-    ");
-    $stmt->execute([$team_ID]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row) $advisor_u_ID = (int)$row['u_ID'];
-
-    $secret = getenv('TEAM_CHANGE_MAIL_SECRET') ?: 'change_this_team_change_secret';
-    $approveToken = $advisor_u_ID ? hash_hmac('sha256', 'approve|' . $tc_ID . '|' . $advisor_u_ID, $secret) : '';
-    $rejectToken = $advisor_u_ID ? hash_hmac('sha256', 'reject|' . $tc_ID . '|' . $advisor_u_ID, $secret) : '';
-    $mailActionBase = $base . $scriptDir . '/team_change_mail_action.php';
-
-    $msgTitle = "組別異動申請：{$typeLabel}（{$teamName}）";
-    $msgContent = "學生 {$creatorName} 已送出「{$typeLabel}」申請，請前往組別異動紀錄頁面審核。";
-
-    $stmtMsg = $conn->prepare("
-        INSERT INTO msgdata (msg_title, msg_content, msg_url, msg_type, msg_a_u_ID, msg_status, msg_start_d, msg_created_d)
-        VALUES (?, ?, ?, 'SYSTEM_NOTICE', ?, 1, NOW(), NOW())
-    ");
-    $stmtTarget = $conn->prepare("INSERT INTO msgtargetdata (msg_ID, msg_target_type, msg_target_ID) VALUES (?, 'USER', ?)");
-
-    foreach (array_keys($recipients) as $targetUid) {
-        if ($targetUid <= 0) continue;
-        $userStmt = $conn->prepare("SELECT u_name, u_gmail FROM userdata WHERE u_ID = ? LIMIT 1");
-        $userStmt->execute([$targetUid]);
-        $user = $userStmt->fetch(PDO::FETCH_ASSOC);
-        if (!$user) continue;
-
-        $stmtMsg->execute([$msgTitle, $msgContent, $msg_url, $creator_u_ID]);
-        $msg_ID = $conn->lastInsertId();
-        if ($msg_ID) $stmtTarget->execute([$msg_ID, $targetUid]);
-
-        $emailTo = trim($user['u_gmail'] ?? '');
-        if ($emailTo === '' || !filter_var($emailTo, FILTER_VALIDATE_EMAIL)) continue;
-
-        $isAdvisor = ($advisor_u_ID && (int)$targetUid === $advisor_u_ID);
-        if ($isAdvisor && $approveToken && $rejectToken) {
-            $body = "{$user['u_name']} 您好，\n\n以下為該組別異動申請之完整資料，請查核。\n\n";
-            $body .= "【申請內容】\n";
-            $body .= "異動類型：{$typeLabel}\n";
-            $body .= "組別／專題名稱：{$teamName}\n";
-            $body .= "申請人：{$creatorName}\n";
-            if (!empty($changelog['tc_team_name_old']) || !empty($changelog['tc_team_name_new'])) {
-                $body .= "原專題題目：" . ($changelog['tc_team_name_old'] ?? '—') . "\n";
-                $body .= "新專題題目：" . ($changelog['tc_team_name_new'] ?? '—') . "\n";
-            }
-            if (!empty($changelog['tc_teacher_old']) || !empty($changelog['tc_teacher_new'])) {
-                $body .= "原指導老師：" . ($changelog['tc_teacher_old'] ?? '—') . "\n";
-                $body .= "新指導老師：" . ($changelog['tc_teacher_new'] ?? '—') . "\n";
-            }
-            if (isset($changelog['tc_member']) && $changelog['tc_member'] !== '' && $changelog['tc_member'] !== null) {
-                $body .= "組員異動：" . ($changelog['tc_member'] ?? '—') . "\n";
-            }
-            $body .= "變更原因：" . ($changelog['tc_reason'] ?? '—') . "\n\n";
-            $body .= "【審核操作】請點選以下連結於 Gmail 中直接查核：\n";
-            $body .= "確認（通過）：{$mailActionBase}?tc_ID={$tc_ID}&action=approve&token=" . urlencode($approveToken) . "\n";
-            $body .= "退件：{$mailActionBase}?tc_ID={$tc_ID}&action=reject&token=" . urlencode($rejectToken) . "\n\n";
-            $body .= "或登入系統審核：{$teamChangeUrl}\n\n---\n專題日總彙系統";
-            sendTeamChangeMail($emailTo, $msgTitle . '（請審核）', $body);
-        } else {
-            $body = "{$user['u_name']} 您好，\n\n{$msgContent}\n\n請登入系統查看：{$teamChangeUrl}\n\n---\n專題日總彙系統";
-            sendTeamChangeMail($emailTo, $msgTitle, $body);
-        }
-        usleep(200000);
-    }
-}
-
 $tmCol = $conn->query("SHOW COLUMNS FROM teammember LIKE 'team_u_ID'")->fetch() ? 'team_u_ID' : 'u_ID';
 $urCol = $conn->query("SHOW COLUMNS FROM userrolesdata LIKE 'ur_u_ID'")->fetch() ? 'ur_u_ID' : 'u_ID';
 $hasTcUReason = (bool)$conn->query("SHOW COLUMNS FROM teamchangelog LIKE 'tc_u_reason'")->fetch();
-if (!defined('TEAM_CHANGE_SKIP_DISPATCH')) {
 $do = $_GET['do'] ?? $_POST['do'] ?? '';
 
 switch ($do) {
@@ -238,7 +111,6 @@ switch ($do) {
             json_err('請提供有效的團隊ID');
         }
 
-        try {
         $stmt = $conn->prepare("SELECT 1 FROM teammember tm JOIN teamdata t ON tm.team_ID = t.team_ID 
             WHERE tm.team_ID = ? AND tm.$tmCol = ? AND t.team_status = 1 AND (tm.tm_status IS NULL OR tm.tm_status = 1) LIMIT 1");
         $stmt->execute([$team_ID, $u_ID]);
@@ -277,9 +149,6 @@ switch ($do) {
         }
 
         json_ok(['changes' => $rows]);
-        } catch (Throwable $e) {
-            json_err('讀取異動紀錄失敗：' . $e->getMessage());
-        }
         break;
 
     // 科辦/主任/老師：取得異動紀錄列表（含篩選）
@@ -529,8 +398,69 @@ switch ($do) {
 
             // 通過時：依 change_type 更新 teamdata / teammember（已成立的組別用 UPDATE）
             if ($status === 3) {
-                require_once __DIR__ . '/team_change_apply.php';
-                team_change_apply_approve($conn, $changelog, $tmCol);
+                $team_ID = (int)($changelog['tc_team_ID'] ?? 0);
+                $change_type = trim($changelog['change_type'] ?? '');
+
+                if ($team_ID > 0) {
+                    if ($change_type === 'TEAM_RENAME' && !empty($changelog['tc_team_name_new'])) {
+                        $stmt = $conn->prepare("UPDATE teamdata SET team_project_name = ?, team_update_d = NOW() WHERE team_ID = ?");
+                        $stmt->execute([trim($changelog['tc_team_name_new']), $team_ID]);
+                    } elseif ($change_type === 'TEACHER_CHANGE') {
+                        // 舊老師：從 teammember 找出對應 u_ID 後 UPDATE tm_status=0
+                        $oldTeacherName = trim($changelog['tc_teacher_old'] ?? '');
+                        if ($oldTeacherName !== '') {
+                            $oldStmt = $conn->prepare("
+                                SELECT tm.$tmCol FROM teammember tm
+                                JOIN userdata u ON u.u_ID = tm.$tmCol
+                                WHERE tm.team_ID = ? AND u.u_name = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1)
+                                LIMIT 1
+                            ");
+                            $oldStmt->execute([$team_ID, $oldTeacherName]);
+                            $oldTeacherId = $oldStmt->fetchColumn();
+                            if ($oldTeacherId) {
+                                $upd = $conn->prepare("UPDATE teammember SET tm_status = 0, tm_updated_d = NOW() WHERE team_ID = ? AND $tmCol = ? AND (tm_status IS NULL OR tm_status = 1)");
+                                $upd->execute([$team_ID, $oldTeacherId]);
+                            }
+                        }
+                        // 新老師：tc_teacher_new 可能為 u_ID 或 u_name，解析後 INSERT
+                        $newVal = trim($changelog['tc_teacher_new'] ?? '');
+                        if ($newVal !== '') {
+                            $newTeacherId = null;
+                            $stmtU = $conn->prepare("SELECT u_ID FROM userdata WHERE u_ID = ? LIMIT 1");
+                            $stmtU->execute([$newVal]);
+                            $newTeacherId = $stmtU->fetchColumn();
+                            if (!$newTeacherId) {
+                                $stmtN = $conn->prepare("SELECT u_ID FROM userdata WHERE u_name = ? LIMIT 1");
+                                $stmtN->execute([$newVal]);
+                                $newTeacherId = $stmtN->fetchColumn();
+                            }
+                            if ($newTeacherId) {
+                                $chk = $conn->prepare("SELECT COUNT(*) FROM teammember WHERE team_ID = ? AND $tmCol = ?");
+                                $chk->execute([$team_ID, $newTeacherId]);
+                                if ($chk->fetchColumn() == 0) {
+                                    $ins = $conn->prepare("INSERT INTO teammember (team_ID, $tmCol, tm_status, tm_updated_d) VALUES (?, ?, 1, NOW())");
+                                    $ins->execute([$team_ID, $newTeacherId]);
+                                }
+                            }
+                        }
+                    } elseif ($change_type === 'MEMBER_ADD' || $change_type === 'MEMBER_CHANGE') {
+                        $memberId = trim($changelog['tc_member'] ?? '');
+                        if ($memberId !== '') {
+                            $chk = $conn->prepare("SELECT COUNT(*) FROM teammember WHERE team_ID = ? AND $tmCol = ?");
+                            $chk->execute([$team_ID, $memberId]);
+                            if ($chk->fetchColumn() == 0) {
+                                $ins = $conn->prepare("INSERT INTO teammember (team_ID, $tmCol, tm_status, tm_updated_d) VALUES (?, ?, 1, NOW())");
+                                $ins->execute([$team_ID, $memberId]);
+                            }
+                        }
+                    } elseif ($change_type === 'MEMBER_REMOVE') {
+                        $memberId = trim($changelog['tc_member'] ?? '');
+                        if ($memberId !== '') {
+                            $upd = $conn->prepare("UPDATE teammember SET tm_status = 0, tm_updated_d = NOW() WHERE team_ID = ? AND $tmCol = ? AND (tm_status IS NULL OR tm_status = 1)");
+                            $upd->execute([$team_ID, $memberId]);
+                        }
+                    }
+                }
             }
 
             $conn->commit();
@@ -733,42 +663,6 @@ switch ($do) {
         json_ok(['cohorts' => $cohorts]);
         break;
 
-    // 系辦/主任：查看開放中的申請單（屆別、名稱、類型、開放期間、狀態）
-    case 'get_office_change_forms':
-        if (!in_array($role_ID, [1, 2])) {
-            json_err('僅科辦、主任可查看');
-        }
-        $hasTeamChangeForm = (bool)$conn->query("SHOW TABLES LIKE 'teamchangeform'")->fetch();
-        if (!$hasTeamChangeForm) {
-            json_ok(['forms' => []]);
-            break;
-        }
-        $cohort_ID = (int)($_GET['cohort_ID'] ?? 0);
-        $typeLabels = ['TEAM_RENAME' => '組名變更', 'TEACHER_CHANGE' => '指導老師變更', 'MEMBER_ADD' => '成員新增', 'MEMBER_REMOVE' => '成員移除', 'MEMBER_CHANGE' => '成員異動'];
-        $sql = "
-            SELECT tcf.tcf_ID, tcf.tcf_name, tcf.tcf_change_type, tcf.tcf_cohort_ID, tcf.tcf_open_d, tcf.tcf_close_d, tcf.tcf_status,
-                   c.cohort_name, c.year_label
-            FROM teamchangeform tcf
-            LEFT JOIN cohortdata c ON c.cohort_ID = tcf.tcf_cohort_ID
-            WHERE tcf.tcf_status = 1
-        ";
-        $params = [];
-        if ($cohort_ID > 0) {
-            $sql .= " AND tcf.tcf_cohort_ID = ?";
-            $params[] = $cohort_ID;
-        }
-        $sql .= " ORDER BY tcf.tcf_cohort_ID DESC, tcf.tcf_change_type, tcf.tcf_ID";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute($params);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($rows as &$r) {
-            $r['type_label'] = $typeLabels[$r['tcf_change_type']] ?? $r['tcf_change_type'];
-            $r['cohort_label'] = $r['cohort_name'] ?: ($r['year_label'] ?? (string)$r['tcf_cohort_ID']);
-        }
-        unset($r);
-        json_ok(['forms' => $rows]);
-        break;
-
     // 系辦：新增申請單（可設定開放填寫時間、截止時間）
     case 'create_team_change_form':
         if ($role_ID !== 2) {
@@ -798,76 +692,21 @@ switch ($do) {
         }
 
         $cols = $conn->query("SHOW COLUMNS FROM teamchangeform")->fetchAll(PDO::FETCH_COLUMN);
-        $hasOpen   = in_array('tcf_open_d', $cols, true);
-        $hasClose  = in_array('tcf_close_d', $cols, true);
-        $hasCreator = in_array('tcf_created_u_ID', $cols, true);
+        $hasOpen = in_array('tcf_open_d', $cols);
+        $hasClose = in_array('tcf_close_d', $cols);
 
-        // 基本欄位：屆別 / 類型 / 名稱 / 狀態
-        $insCols   = 'tcf_cohort_ID, tcf_change_type, tcf_name, tcf_status';
-        $insVals   = '?, ?, ?, 1';
+        $insCols = 'tcf_cohort_ID, tcf_change_type, tcf_name, tcf_status';
+        $insVals = "?, ?, ?, 1";
         $insParams = [$tcf_cohort_ID, $tcf_change_type, mb_substr($tcf_name, 0, 100)];
-
-        // 建立者（若資料表有此欄位，必須帶目前登入者 u_ID，避免 FK 失敗）
-        if ($hasCreator) {
-            $insCols   .= ', tcf_created_u_ID';
-            $insVals   .= ', ?';
-            $insParams[] = $u_ID;
-        }
-
-        if ($hasOpen) {
-            $insCols   .= ', tcf_open_d';
-            $insVals   .= ', ?';
-            $insParams[] = $openVal;
-        }
-        if ($hasClose) {
-            $insCols   .= ', tcf_close_d';
-            $insVals   .= ', ?';
-            $insParams[] = $closeVal;
-        }
+        if ($hasOpen) { $insCols .= ', tcf_open_d'; $insVals .= ', ?'; $insParams[] = $openVal; }
+        if ($hasClose) { $insCols .= ', tcf_close_d'; $insVals .= ', ?'; $insParams[] = $closeVal; }
 
         $stmt = $conn->prepare("INSERT INTO teamchangeform ($insCols) VALUES ($insVals)");
         $stmt->execute($insParams);
         json_ok(['message' => '申請單已建立', 'tcf_ID' => (int)$conn->lastInsertId()]);
         break;
 
-    // 系辦：編輯申請單（名稱、開放/截止時間）
-    case 'update_team_change_form':
-        if ($role_ID !== 2) {
-            json_err('僅系辦可編輯申請單');
-        }
-        $hasTeamChangeForm = (bool)$conn->query("SHOW TABLES LIKE 'teamchangeform'")->fetch();
-        if (!$hasTeamChangeForm) {
-            json_err('teamchangeform 資料表不存在');
-        }
-        $tcf_ID = (int)($_POST['tcf_ID'] ?? 0);
-        if ($tcf_ID <= 0) json_err('缺少申請單 ID');
-        $tcf_name = trim($_POST['tcf_name'] ?? '');
-        $tcf_open_d = trim($_POST['tcf_open_d'] ?? '');
-        $tcf_close_d = trim($_POST['tcf_close_d'] ?? '');
-
-        $openVal = ($tcf_open_d !== '') ? $tcf_open_d : null;
-        $closeVal = ($tcf_close_d !== '') ? $tcf_close_d : null;
-        if ($openVal && $closeVal && strtotime($openVal) > strtotime($closeVal)) {
-            json_err('開放時間不可晚於截止時間');
-        }
-
-        $cols = $conn->query("SHOW COLUMNS FROM teamchangeform")->fetchAll(PDO::FETCH_COLUMN);
-        $hasOpen  = in_array('tcf_open_d', $cols, true);
-        $hasClose = in_array('tcf_close_d', $cols, true);
-
-        $sets = ['tcf_name = ?'];
-        $params = [mb_substr($tcf_name, 0, 100)];
-        if ($hasOpen) { $sets[] = 'tcf_open_d = ?'; $params[] = $openVal; }
-        if ($hasClose) { $sets[] = 'tcf_close_d = ?'; $params[] = $closeVal; }
-        $params[] = $tcf_ID;
-
-        $stmt = $conn->prepare("UPDATE teamchangeform SET " . implode(', ', $sets) . " WHERE tcf_ID = ?");
-        $stmt->execute($params);
-        if ($stmt->rowCount() === 0) json_err('找不到該申請單或無權限');
-        json_ok(['message' => '已儲存']);
-        break;
-
-    // 學生：取得可申請的異動表單
+    // 學生：取得可申請的異動表單（依 teamchangeform：開放/截止、屆別、使用者自訂名稱）
     case 'get_available_change_forms':
         if ($role_ID !== 6) {
             json_err('僅限學生使用');
@@ -1024,140 +863,6 @@ switch ($do) {
         json_ok(['students' => $students]);
         break;
 
-    // 學生：暫存異動申請（狀態 4），不發通知，紀錄會出現在列表中
-    case 'save_change_draft':
-        if ($role_ID !== 6) {
-            json_err('僅限學生使用');
-        }
-        $team_ID = (int)($_POST['team_ID'] ?? 0);
-        $change_type = trim($_POST['change_type'] ?? '');
-        if ($team_ID <= 0 || !in_array($change_type, ['TEAM_RENAME', 'TEACHER_CHANGE', 'MEMBER_ADD', 'MEMBER_REMOVE', 'MEMBER_CHANGE'])) {
-            json_err('參數錯誤');
-        }
-
-        $stmt = $conn->prepare("SELECT t.cohort_ID, t.team_project_name FROM teamdata t WHERE t.team_ID = ? AND t.team_status = 1 LIMIT 1");
-        $stmt->execute([$team_ID]);
-        $team = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$team) {
-            json_err('團隊不存在');
-        }
-
-        $stmt = $conn->prepare("SELECT 1 FROM teammember tm WHERE tm.team_ID = ? AND tm.$tmCol = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1) LIMIT 1");
-        $stmt->execute([$team_ID, $u_ID]);
-        if (!$stmt->fetch()) {
-            json_err('您不屬於此組別');
-        }
-
-        $cohort_ID = (int)($team['cohort_ID'] ?? 0);
-
-        $tc_team_name_old = null;
-        $tc_team_name_new = null;
-        $tc_teacher_old = null;
-        $tc_teacher_new = null;
-        $tc_member = null;
-
-        if ($change_type === 'TEAM_RENAME') {
-            $tc_team_name_old = trim($team['team_project_name'] ?? '');
-            $tc_team_name_new = trim($_POST['tc_team_name_new'] ?? '');
-            if ($tc_team_name_new === '') {
-                json_err('請填寫新專題題目');
-            }
-        } elseif ($change_type === 'TEACHER_CHANGE') {
-            $teacherStmt = $conn->prepare("
-                SELECT u.u_ID, u.u_name FROM teammember tm
-                JOIN userdata u ON u.u_ID = tm.$tmCol
-                JOIN userrolesdata ur ON ur.$urCol = tm.$tmCol AND ur.role_ID = 4 AND ur.user_role_status = 1
-                WHERE tm.team_ID = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1) LIMIT 1
-            ");
-            $teacherStmt->execute([$team_ID]);
-            $oldTeacher = $teacherStmt->fetch(PDO::FETCH_ASSOC);
-            $tc_teacher_old = $oldTeacher['u_name'] ?? '';
-            $newTeacherId = trim($_POST['tc_teacher_new'] ?? '');
-            if ($newTeacherId === '') {
-                json_err('請選擇新指導老師');
-            }
-            $nameStmt = $conn->prepare("SELECT u_name FROM userdata WHERE u_ID = ? LIMIT 1");
-            $nameStmt->execute([$newTeacherId]);
-            $tc_teacher_new = $nameStmt->fetchColumn() ?: $newTeacherId;
-        } elseif ($change_type === 'MEMBER_ADD' || $change_type === 'MEMBER_CHANGE') {
-            $tc_member = trim($_POST['tc_member'] ?? '');
-            if ($tc_member === '') {
-                json_err('請選擇要新增的組員');
-            }
-        } elseif ($change_type === 'MEMBER_REMOVE') {
-            $tc_member = trim($_POST['tc_member'] ?? '');
-            if ($tc_member === '') {
-                json_err('請選擇要退出的組員');
-            }
-            $stmt = $conn->prepare("SELECT 1 FROM teammember tm WHERE tm.team_ID = ? AND tm.$tmCol = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1) LIMIT 1");
-            $stmt->execute([$team_ID, $tc_member]);
-            if (!$stmt->fetch()) {
-                json_err('該成員不屬於此組別');
-            }
-        }
-
-        $tc_reason = mb_substr(trim($_POST['reason'] ?? ''), 0, 500);
-        $tc_attachment = null;
-        if (!empty($_FILES['attachment']['tmp_name']) && is_uploaded_file($_FILES['attachment']['tmp_name'])) {
-            $f = $_FILES['attachment'];
-            $ext = strtolower(pathinfo($f['name'] ?? '', PATHINFO_EXTENSION)) ?: 'jpg';
-            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) $ext = 'jpg';
-            $uploadDir = __DIR__ . '/../uploads/team_change';
-            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-            $safeName = 'tc_' . $u_ID . '_' . time() . '.' . $ext;
-            $fullPath = $uploadDir . '/' . $safeName;
-            if (move_uploaded_file($f['tmp_name'], $fullPath)) {
-                $tc_attachment = 'uploads/team_change/' . $safeName;
-            }
-        }
-        $hasTcAttachment = (bool)$conn->query("SHOW COLUMNS FROM teamchangelog LIKE 'tc_attachment'")->fetch();
-        $cols = $conn->query("SHOW COLUMNS FROM teamchangelog")->fetchAll(PDO::FETCH_COLUMN);
-        $hasTcfId = in_array('tc_tcf_ID', $cols, true);
-        $tcf_ID_val = 0;
-        if ($hasTcfId && (bool)$conn->query("SHOW TABLES LIKE 'teamchangeform'")->fetch()) {
-            $postTcfId = (int)($_POST['tcf_ID'] ?? 0);
-            if ($postTcfId > 0) {
-                // 依前端傳入的主表 ID 驗證：必須存在、啟用、且屆別與異動類型相符
-                $chk = $conn->prepare("SELECT tcf_ID FROM teamchangeform WHERE tcf_ID = ? AND tcf_status = 1 AND tcf_cohort_ID = ? AND tcf_change_type = ? LIMIT 1");
-                $chk->execute([$postTcfId, $cohort_ID, $change_type]);
-                $tcf_ID_val = (int)$chk->fetchColumn();
-                if ($tcf_ID_val === 0) {
-                    json_err('所選申請單與目前組別／異動類型不符，請重新選擇申請單');
-                }
-            }
-            if ($tcf_ID_val === 0 && $cohort_ID > 0) {
-                $tcfStmt = $conn->prepare("SELECT tcf_ID FROM teamchangeform WHERE tcf_status = 1 AND tcf_cohort_ID = ? AND tcf_change_type = ? LIMIT 1");
-                $tcfStmt->execute([$cohort_ID, $change_type]);
-                $tcf_ID_val = (int)$tcfStmt->fetchColumn();
-            }
-            // 若仍無主表 ID：仍嘗試寫入 tc_tcf_ID=0（若欄位允許），避免完全無法暫存
-        }
-        if ($hasTcAttachment && $tc_attachment) {
-            $insCols = 'tc_cohort, tc_team_ID, change_type, tc_team_name_old, tc_team_name_new, tc_teacher_old, tc_teacher_new, tc_member, tc_reason, tc_attachment, tc_created_u_ID, tc_status';
-            $insVals = '?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 4';
-            $insParams = [$cohort_ID, $team_ID, $change_type, $tc_team_name_old, $tc_team_name_new, $tc_teacher_old, $tc_teacher_new, $tc_member, $tc_reason, $tc_attachment, $u_ID];
-            if ($hasTcfId) { $insCols .= ', tc_tcf_ID'; $insVals .= ', ?'; $insParams[] = $tcf_ID_val; }
-            try {
-                $stmt = $conn->prepare("INSERT INTO teamchangelog ($insCols) VALUES ($insVals)");
-                $stmt->execute($insParams);
-            } catch (Throwable $e) {
-                json_err('寫入失敗：' . $e->getMessage());
-            }
-        } else {
-            $insCols = 'tc_cohort, tc_team_ID, change_type, tc_team_name_old, tc_team_name_new, tc_teacher_old, tc_teacher_new, tc_member, tc_reason, tc_created_u_ID, tc_status';
-            $insVals = '?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 4';
-            $insParams = [$cohort_ID, $team_ID, $change_type, $tc_team_name_old, $tc_team_name_new, $tc_teacher_old, $tc_teacher_new, $tc_member, $tc_reason, $u_ID];
-            if ($hasTcfId) { $insCols .= ', tc_tcf_ID'; $insVals .= ', ?'; $insParams[] = $tcf_ID_val; }
-            try {
-                $stmt = $conn->prepare("INSERT INTO teamchangelog ($insCols) VALUES ($insVals)");
-                $stmt->execute($insParams);
-            } catch (Throwable $e) {
-                json_err('寫入失敗：' . $e->getMessage());
-            }
-        }
-        json_ok(['message' => '已暫存，資料已出現在列表中。', 'tc_ID' => (int)$conn->lastInsertId()]);
-        break;
-
     // 學生：提交變更申請
     case 'submit_change_application':
         if ($role_ID !== 6) {
@@ -1274,15 +979,65 @@ switch ($do) {
             ");
             $stmt->execute([$cohort_ID, $team_ID, $change_type, $tc_team_name_old, $tc_team_name_new, $tc_teacher_old, $tc_teacher_new, $tc_member, $tc_reason, $u_ID]);
         }
-        $new_tc_ID = (int)$conn->lastInsertId();
-        $stmt = $conn->prepare("SELECT * FROM teamchangelog WHERE tc_ID = ? LIMIT 1");
-        $stmt->execute([$new_tc_ID]);
-        $newChangelog = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($newChangelog) {
-            team_change_notify_new_application($conn, $newChangelog, $tmCol, $urCol, $u_ID);
+
+        $typeLabels = ['TEAM_RENAME' => '專題題目變更', 'TEACHER_CHANGE' => '指導老師變更', 'MEMBER_ADD' => '組員新增', 'MEMBER_REMOVE' => '組員退組', 'MEMBER_CHANGE' => '組員異動'];
+        $typeLabel = $typeLabels[$change_type] ?? '異動';
+        $creatorStmt = $conn->prepare("SELECT u_name FROM userdata WHERE u_ID = ? LIMIT 1");
+        $creatorStmt->execute([$u_ID]);
+        $creatorName = $creatorStmt->fetchColumn() ?: $u_ID;
+        $teamName = $team['team_project_name'] ?? "團隊 #{$team_ID}";
+
+        $recipients = [];
+        // 該組別所有人（學生 + 指導老師）
+        $stmt = $conn->prepare("SELECT tm.{$tmCol} as u_ID FROM teammember tm WHERE tm.team_ID = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1)");
+        $stmt->execute([$team_ID]);
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) $recipients[(int)$r['u_ID']] = true;
+        // 班導
+        $stmt = $conn->prepare("
+            SELECT DISTINCT e2.enroll_u_ID FROM teammember tm
+            JOIN enrollmentdata e ON e.enroll_u_ID = tm.{$tmCol} AND e.cohort_ID = ? AND e.enroll_status = 1
+            JOIN enrollmentdata e2 ON e2.class_ID = e.class_ID AND e2.role_ID = 3 AND e2.enroll_status = 1
+            WHERE tm.team_ID = ? AND (tm.tm_status IS NULL OR tm.tm_status = 1)
+        ");
+        $stmt->execute([$cohort_ID, $team_ID]);
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) $recipients[(int)$r['enroll_u_ID']] = true;
+        // 科辦、主任
+        $stmt = $conn->prepare("SELECT ur.{$urCol} as u_ID FROM userrolesdata ur WHERE ur.role_ID IN (1, 2) AND ur.user_role_status = 1");
+        $stmt->execute();
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) $recipients[(int)$r['u_ID']] = true;
+
+        $msgTitle = "組別異動申請：{$typeLabel}（{$teamName}）";
+        $msgContent = "學生 {$creatorName} 已送出「{$typeLabel}」申請，請前往組別異動紀錄頁面審核。";
+        $base = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
+        $scriptDir = dirname($_SERVER['SCRIPT_NAME'] ?? '/');
+        $teamChangeUrl = rtrim($base . $scriptDir, '/') . '/main.php#pages/team_change.php';
+        $urlData = [['type' => 'link', 'url' => $teamChangeUrl, 'label' => '查看組別異動紀錄']];
+        $msg_url = json_encode($urlData, JSON_UNESCAPED_UNICODE);
+
+        $stmtMsg = $conn->prepare("
+            INSERT INTO msgdata (msg_title, msg_content, msg_url, msg_type, msg_a_u_ID, msg_status, msg_start_d, msg_created_d)
+            VALUES (?, ?, ?, 'SYSTEM_NOTICE', ?, 1, NOW(), NOW())
+        ");
+        $stmtTarget = $conn->prepare("INSERT INTO msgtargetdata (msg_ID, msg_target_type, msg_target_ID) VALUES (?, 'USER', ?)");
+        foreach (array_keys($recipients) as $targetUid) {
+            if ($targetUid <= 0) continue;
+            $userStmt = $conn->prepare("SELECT u_name, u_gmail FROM userdata WHERE u_ID = ? LIMIT 1");
+            $userStmt->execute([$targetUid]);
+            $user = $userStmt->fetch(PDO::FETCH_ASSOC);
+            if (!$user) continue;
+
+            $stmtMsg->execute([$msgTitle, $msgContent, $msg_url, $u_ID]);
+            $msg_ID = $conn->lastInsertId();
+            if ($msg_ID) $stmtTarget->execute([$msg_ID, $targetUid]);
+
+            if (!empty($user['u_gmail']) && filter_var(trim($user['u_gmail']), FILTER_VALIDATE_EMAIL)) {
+                $emailBody = "{$user['u_name']} 您好，\n\n{$msgContent}\n\n請登入系統查看：{$teamChangeUrl}\n\n---\n專題日總彙系統";
+                sendMailViaGas(trim($user['u_gmail']), $msgTitle, $emailBody);
+                usleep(200000);
+            }
         }
 
-        json_ok(['message' => '申請已送出，系辦、指導老師、班導與組別成員將收到 Gmail 及系統通知。']);
+        json_ok(['message' => '申請已送出，請等待審核。組別成員、科辦、主任、班導與指導老師將收到通知。']);
         break;
 
     // 學生：重新申請（退件後編輯並再次提交，使用 UPDATE）
@@ -1388,17 +1143,9 @@ switch ($do) {
             json_err('操作失敗：' . $e->getMessage());
         }
 
-        $stmt = $conn->prepare("SELECT * FROM teamchangelog WHERE tc_ID = ? LIMIT 1");
-        $stmt->execute([$tc_ID]);
-        $updatedChangelog = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($updatedChangelog) {
-            team_change_notify_new_application($conn, $updatedChangelog, $tmCol, $urCol, $u_ID);
-        }
-
-        json_ok(['message' => '已重新送出申請，系辦、指導老師、班導與組別成員將收到 Gmail 及系統通知。']);
+        json_ok(['message' => '已重新送出申請，請等待審核。']);
         break;
 
     default:
         json_err('Unknown action');
-}
 }

@@ -56,19 +56,16 @@ function enrichTeamsWithDetails($conn, $teams, $cohorts = []) {
       ");
     }
     $stmt->execute([$tid]);
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // 先用 role_ID 判斷老師 / 學生
-    foreach ($rows as $m) {
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $m) {
       $isTeacher = ((int)($m['role_ID'] ?? 0) === 4);
       $name = trim((string)($m['u_name'] ?? ''));
-      if ($name === '') continue;
       if ($isTeacher) {
-        if (!in_array($name, $teachers, true)) {
+        if ($name !== '') {
           $teachers[] = $name;
         }
         continue;
       }
+      if ($name === '') continue;
       $studentId = '';
       if ($hasAccount && !empty($m['u_account'])) {
         $studentId = (string)$m['u_account'];
@@ -78,28 +75,7 @@ function enrichTeamsWithDetails($conn, $teams, $cohorts = []) {
       $display = $studentId !== '' ? "{$name} {$studentId}" : $name;
       $members[] = $display;
     }
-
-    // 防呆：若部分老師沒有在 userrolesdata 標記成 role_ID=4，仍可能出現在 members 中
-    // 這裡再根據老師姓名做一次排除，確保「組員」欄只顯示學生
-    if ($teachers && $members) {
-      $teacherNames = $teachers;
-      $filtered = [];
-      foreach ($members as $mDisplay) {
-        $isTeacherLike = false;
-        foreach ($teacherNames as $tn) {
-          if ($tn !== '' && mb_strpos($mDisplay, $tn) !== false) {
-            $isTeacherLike = true;
-            break;
-          }
-        }
-        if (!$isTeacherLike) {
-          $filtered[] = $mDisplay;
-        }
-      }
-      $members = $filtered;
-    }
-
-    $t['members_display'] = $members ? implode('、', $members) : '—';
+    $t['members_display'] = implode('、', $members) ?: '—';
     $t['teacher_display'] = $teachers ? implode('、', $teachers) : '—';
     $t['cohort_label'] = $cohortMap[(int)($t['cohort_ID'] ?? 0)] ?? '—';
     $t['event_total'] = 0;
@@ -218,7 +194,8 @@ if ($role_ID === 6) {
       } else {
         echo '<p class="text-muted mb-2">請選擇要查看時間線的組別：</p>';
         echo '<div class="table-responsive"><table class="team-timeline-table">';
-        echo '<thead><tr><th>名稱</th><th>組員</th><th>指導老師</th><th>事件統計</th><th>事件總數</th><th></th></tr></thead><tbody>';
+        echo '<thead><tr>';
+        echo '<th>名稱</th><th>組員</th><th>指導老師</th><th>事件統計</th><th>事件總數</th><th></th></tr></thead><tbody>';
         foreach ($teams as $t) {
           $link = 'pages/team_timeline.php?team_ID=' . intval($t['team_ID']);
           echo '<tr>';
@@ -305,9 +282,7 @@ $stmt = $conn->prepare("SELECT team_project_name FROM teamdata WHERE team_ID = ?
 $stmt->execute([$team_ID]);
 $team_name = $stmt->fetchColumn() ?: ('Team #' . $team_ID);
 
-// ---------- 3) 取時間線資料（支援事件類型篩選） ----------
-$filterType = strtoupper(trim($_GET['etype'] ?? '')); // 例如：MEETING / TEAM / ...
-
+// ---------- 3) 取時間線資料 ----------
 $stmt = $conn->prepare("
   SELECT
     timeline_ID, event_type, subject_title, action_type,
@@ -319,15 +294,7 @@ $stmt = $conn->prepare("
   ORDER BY event_datetime DESC, timeline_ID DESC
 ");
 $stmt->execute([$team_ID]);
-$allRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// 實際要顯示的資料列（依篩選條件過濾）
-$rows = [];
-foreach ($allRows as $r) {
-  $t = strtoupper(trim($r['event_type'] ?? ''));
-  if ($filterType && $t !== $filterType) continue;
-  $rows[] = $r;
-}
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // ---------- 4) 連結 mapping（A: 程式內寫死版） ----------
 function buildLink($route_key, $ref_table, $ref_ID) {
@@ -340,21 +307,7 @@ function buildLink($route_key, $ref_table, $ref_ID) {
   return "main.php#view?rk={$rk}&table={$tb}&id={$id}";
 }
 
-// ---------- 5) 事件類型：中文標籤與樣式 ----------
-function eventTypeLabel($event_type) {
-  $t = strtoupper(trim($event_type));
-  return match($t) {
-    'TEAM'      => '組別',
-    'MEETING'   => '會議',
-    'MILESTONE' => '里程碑',
-    'FORM'      => '表單',
-    'REVIEW'    => '審核',
-    'DOC'       => '文件',
-    'STATUS'    => '狀態',
-    default     => $event_type,
-  };
-}
-
+// ---------- 5) 樣式類別 ----------
 function typeBadge($event_type) {
   $t = strtoupper(trim($event_type));
   return match($t) {
@@ -368,9 +321,9 @@ function typeBadge($event_type) {
   };
 }
 
-// 統整各類型次數（統計全部事件，不受篩選影響）
+// 統整各類型次數
 $typeCounts = [];
-foreach ($allRows as $r) {
+foreach ($rows as $r) {
   $t = strtoupper(trim($r['event_type'] ?? ''));
   if ($t) $typeCounts[$t] = ($typeCounts[$t] ?? 0) + 1;
 }
@@ -404,16 +357,26 @@ foreach ($allRows as $r) {
   color: #374151;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s, border-color .15s;
+}
+.timeline-type-summary .type-badge:hover{
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+.timeline-type-summary .type-badge.active{
+  background: #dbeafe;
+  border-color: #2563eb;
+  color: #1d4ed8;
 }
 .timeline-type-summary .type-badge .type-count{
   color: #6b7280;
   font-size: 12px;
   font-weight: 500;
 }
-.timeline-type-summary .type-badge.filter-active{
-  background: #fee2e2;
-  border-color: #ef4444;
-  color: #991b1b;
+.timeline-type-summary .type-badge.active .type-count{
+  color: #2563eb;
 }
 
 .timeline{
@@ -506,35 +469,18 @@ foreach ($allRows as $r) {
       </div>
     </div>
     <div class="text-muted small">
-      共 <?= count($allRows) ?> 筆事件<?= $filterType ? '（目前僅顯示：' . htmlspecialchars(eventTypeLabel($filterType)) . '）' : '' ?>
+      共 <?= count($rows) ?> 筆事件
     </div>
   </div>
 
   <?php if (!empty($typeCounts)): ?>
-  <div class="timeline-type-summary">
-    <?php
-      // 「全部」按鈕
-      $baseHash = 'pages/team_timeline.php?team_ID=' . intval($team_ID);
-      $isAllActive = ($filterType === '');
-      $allClass = 'type-badge ' . ($isAllActive ? 'filter-active' : '');
-    ?>
-    <a href="#<?= htmlspecialchars($baseHash) ?>" class="<?= $allClass ?>" style="text-decoration:none;">
-      全部
-      <span class="type-count"><?= (int)array_sum($typeCounts) ?></span>
-    </a>
+  <div class="timeline-type-summary" id="timelineTypeSummary">
     <?php foreach ($typeCounts as $t => $cnt): ?>
-      <?php
-        $typeKey = strtoupper(trim($t));
-        $label = eventTypeLabel($typeKey);
-        $typeClass = 'type-' . strtolower(preg_replace('/[^a-z0-9]/i', '', $typeKey) ?: 'other');
-        $isActive = ($filterType === $typeKey);
-        $cls = 'type-badge ' . htmlspecialchars($typeClass) . ($isActive ? ' filter-active' : '');
-        $href = $baseHash . '&etype=' . urlencode($typeKey);
-      ?>
-      <a href="#<?= htmlspecialchars($href) ?>" class="<?= $cls ?>" style="text-decoration:none;">
-        <?= htmlspecialchars($label) ?>
+      <?php $typeClass = 'type-' . strtolower(preg_replace('/[^a-z0-9]/i', '', $t) ?: 'other'); ?>
+      <span class="type-badge <?= htmlspecialchars($typeClass) ?>" role="button" tabindex="0" data-filter-type="<?= htmlspecialchars($t) ?>" title="點擊篩選此類型，再點一次取消">
+        <?= htmlspecialchars($t) ?>
         <span class="type-count"><?= (int)$cnt ?></span>
-      </a>
+      </span>
     <?php endforeach; ?>
   </div>
   <?php endif; ?>
@@ -542,20 +488,20 @@ foreach ($allRows as $r) {
   <?php if (!$rows): ?>
     <div class="alert alert-info">這個組別目前沒有任何時間線紀錄</div>
   <?php else: ?>
-    <div class="timeline">
+    <div class="timeline" id="timelineList">
       <?php foreach ($rows as $r): ?>
         <?php
           $link = buildLink($r['route_key'], $r['ref_table'], $r['ref_ID']);
           $badge = typeBadge($r['event_type']);
-          $label = eventTypeLabel($r['event_type']);
           $dt = $r['event_datetime'] ? date('Y-m-d H:i', strtotime($r['event_datetime'])) : '';
+          $eventTypeNorm = strtoupper(trim($r['event_type'] ?? ''));
         ?>
-        <div class="t-item">
+        <div class="t-item" data-event-type="<?= htmlspecialchars($eventTypeNorm) ?>">
           <div class="t-dot"></div>
           <div class="t-card">
             <div class="t-top">
               <div class="d-flex align-items-center gap-2 flex-wrap">
-                <span class="<?= $badge ?>"><?= htmlspecialchars($label) ?></span>
+                <span class="<?= $badge ?>"><?= htmlspecialchars($r['event_type']) ?></span>
                 <a class="t-link" href="<?= htmlspecialchars($link) ?>">
                   <?= htmlspecialchars($r['event_title'] ?: ($r['subject_title'] . ' ' . $r['action_type'])) ?>
                 </a>
@@ -577,3 +523,31 @@ foreach ($allRows as $r) {
     </div>
   <?php endif; ?>
 </div>
+<script>
+(function(){
+  var summary = document.getElementById('timelineTypeSummary');
+  var list = document.getElementById('timelineList');
+  if (!summary || !list) return;
+  var items = list.querySelectorAll('.t-item');
+  var badges = summary.querySelectorAll('.type-badge[data-filter-type]');
+  var currentFilter = '';
+
+  function setFilter(type) {
+    currentFilter = type;
+    badges.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-filter-type') === type); });
+    items.forEach(function(el){
+      var t = (el.getAttribute('data-event-type') || '').toUpperCase();
+      var match = !currentFilter || t === (currentFilter || '').toUpperCase();
+      el.style.display = match ? '' : 'none';
+    });
+  }
+
+  badges.forEach(function(b){
+    b.addEventListener('click', function(){
+      var type = b.getAttribute('data-filter-type') || '';
+      setFilter(type === currentFilter ? '' : type);
+    });
+    b.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.click(); } });
+  });
+})();
+</script>

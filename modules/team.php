@@ -6,6 +6,7 @@ $do = $_GET['do'] ?? '';
 
 // 檢查權限（主任 role_ID = 1 和 科辦 role_ID = 2）
 $role_ID = $_SESSION['role_ID'] ?? null;
+$u_ID = trim((string)($_SESSION['u_ID'] ?? ''));
 if (!isset($role_ID) || !in_array($role_ID, [1, 2])) {
     json_err('無權限訪問');
 }
@@ -25,16 +26,47 @@ function columnExists(PDO $conn, string $table, string $column): bool
 $teamUserField = columnExists($conn, 'teammember', 'team_u_ID') ? 'team_u_ID' : 'u_ID';
 $userRoleUidField = columnExists($conn, 'userrolesdata', 'ur_u_ID') ? 'ur_u_ID' : 'u_ID';
 
-function insert_teamchangelog(PDO $conn, int $tc_cohort, int $tc_team_ID, string $change_type, ?string $tc_team_name_old, ?string $tc_team_name_new, ?string $tc_teacher_old, ?string $tc_teacher_new, ?string $tc_member, string $tc_created_u_ID): void {
-    $stmt = $conn->prepare("
-        INSERT INTO teamchangelog (tc_cohort, tc_team_ID, change_type, tc_team_name_old, tc_team_name_new, tc_teacher_old, tc_teacher_new, tc_member, tc_created_u_ID, tc_status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
-    ");
-    $stmt->execute([
-        $tc_cohort, $tc_team_ID, $change_type,
-        $tc_team_name_old, $tc_team_name_new, $tc_teacher_old, $tc_teacher_new, $tc_member,
-        $tc_created_u_ID
-    ]);
+/**
+ * 寫入組別異動紀錄（系辦/主任直接異動，不經申請單時使用）
+ * 依實際資料表欄位動態組 SQL，支援 tc_tcf_ID、tc_cohort、tc_reason 等欄位變動。
+ * @param string $tc_created_u_ID 建立者 u_ID，不可為 null（建議傳入 $_SESSION['u_ID']）
+ */
+function insert_teamchangelog(PDO $conn, int $tc_cohort, int $tc_team_ID, string $change_type, ?string $tc_team_name_old, ?string $tc_team_name_new, ?string $tc_teacher_old, ?string $tc_teacher_new, ?string $tc_member, string $tc_created_u_ID, string $tc_reason = '系辦/主任直接異動'): void {
+    $tc_created_u_ID = trim((string)$tc_created_u_ID);
+    if ($tc_created_u_ID === '') {
+        $tc_created_u_ID = (string)($_SESSION['u_ID'] ?? '');
+    }
+
+    $hasTcfId = (bool)$conn->query("SHOW COLUMNS FROM teamchangelog LIKE 'tc_tcf_ID'")->fetch();
+    $hasTcCohort = (bool)$conn->query("SHOW COLUMNS FROM teamchangelog LIKE 'tc_cohort'")->fetch();
+    $hasChangeType = (bool)$conn->query("SHOW COLUMNS FROM teamchangelog LIKE 'change_type'")->fetch();
+    $hasTcReason = (bool)$conn->query("SHOW COLUMNS FROM teamchangelog LIKE 'tc_reason'")->fetch();
+
+    $cols = ['tc_team_ID', 'tc_team_name_old', 'tc_team_name_new', 'tc_teacher_old', 'tc_teacher_new', 'tc_member', 'tc_created_u_ID', 'tc_status'];
+    $vals = [$tc_team_ID, $tc_team_name_old, $tc_team_name_new, $tc_teacher_old, $tc_teacher_new, $tc_member, $tc_created_u_ID, 1];
+    if ($hasChangeType) {
+        $idx = array_search('tc_team_ID', $cols, true);
+        array_splice($cols, $idx, 0, ['change_type']);
+        array_splice($vals, $idx, 0, [$change_type]);
+    }
+    if ($hasTcfId) {
+        array_unshift($cols, 'tc_tcf_ID');
+        array_unshift($vals, null); // 系辦/主任直接異動：不經申請單，外鍵允許 NULL 表示「無對應申請單」
+    }
+    if ($hasTcCohort) {
+        $idx = array_search('tc_team_ID', $cols, true);
+        array_splice($cols, $idx, 0, ['tc_cohort']);
+        array_splice($vals, $idx, 0, [$tc_cohort]);
+    }
+    if ($hasTcReason) {
+        $cols[] = 'tc_reason';
+        $vals[] = mb_substr(trim($tc_reason), 0, 500);
+    }
+
+    $placeholders = implode(',', array_fill(0, count($vals), '?'));
+    $sql = "INSERT INTO teamchangelog (" . implode(', ', $cols) . ") VALUES ($placeholders)";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($vals);
 }
 
 switch ($do) {
