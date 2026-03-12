@@ -4,7 +4,7 @@
     loadTeamData();
   };
 
-  // 載入團隊數據
+  // 載入組別數據
   async function loadTeamData() {
     const membersContainer = document.getElementById('members-container');
     
@@ -22,8 +22,8 @@
           membersContainer.innerHTML = `
             <div class="text-center p-5">
               <i class="fas fa-users-slash fa-3x mb-3 text-muted"></i>
-              <h5 class="text-muted">您目前沒有所屬團隊</h5>
-              <p class="text-muted">請聯繫管理員加入團隊</p>
+              <h5 class="text-muted">您目前沒有所屬組別</h5>
+              <p class="text-muted">請聯繫管理員加入組別</p>
             </div>
           `;
         } else {
@@ -40,7 +40,7 @@
       renderMembers(data.members || [], data.teachers || []);
 
     } catch (error) {
-      console.error('載入團隊數據失敗:', error);
+      console.error('載入組別數據失敗:', error);
       if (membersContainer) {
         membersContainer.innerHTML = `
           <div class="alert alert-danger">
@@ -69,7 +69,7 @@
       membersContainer.innerHTML = `
         <div class="text-center p-5">
           <i class="fas fa-user-slash fa-3x mb-3 text-muted"></i>
-          <h5 class="text-muted">目前沒有團隊成員</h5>
+          <h5 class="text-muted">目前沒有組別成員</h5>
         </div>
       `;
       return;

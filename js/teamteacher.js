@@ -1,4 +1,4 @@
-// 載入團隊資料的函數
+// 載入組別資料的函數
 var _teamteacherLoading = false;  // 防止重複並發請求
 
 function loadTeamTeacherData() {
@@ -16,7 +16,7 @@ function loadTeamTeacherData() {
         return;
     }
 
-    console.log('正在載入團隊資料，API 路徑：', apiPath);
+    console.log('正在載入組別資料，API 路徑：', apiPath);
 
     fetch(apiPath)
         .then(res => {
@@ -42,18 +42,18 @@ function loadTeamTeacherData() {
                 return;
             }
             if (data.groups.length === 0) {
-                console.info('沒有找到任何團隊');
+                console.info('沒有找到任何組別');
                 container.innerHTML = `
                     <div class="col-12">
                         <div class="alert alert-info">
                             <i class="fa-solid fa-info-circle me-2"></i>
-                            目前沒有指導任何團隊
+                            目前沒有指導任何組別
                         </div>
                     </div>
                 `;
                 return;
             }
-            console.log('找到 ' + data.groups.length + ' 個團隊');
+            console.log('找到 ' + data.groups.length + ' 個組別');
             renderGroups(data.groups);
         })
         .catch(error => {
@@ -118,6 +118,14 @@ if (document.readyState !== 'loading') {
     }
 }
 
+// 透過 hash 載入時，app.js 會延遲 200ms 觸發 page:loaded；若此時才載入本腳本，用此事件補觸發一次
+document.addEventListener('page:loaded', function (e) {
+    var path = (e && e.detail && e.detail.path) ? e.detail.path : '';
+    if (path.indexOf('teamteacher.php') !== -1 && document.getElementById('groupCards')) {
+        loadTeamTeacherData();
+    }
+});
+
 // -------------------- 渲染小組卡片 --------------------
 function renderGroups(groups) {
     const container = document.getElementById("groupCards");
@@ -128,7 +136,7 @@ function renderGroups(groups) {
             <div class="col-12">
                 <div class="alert alert-info">
                     <i class="fa-solid fa-info-circle me-2"></i>
-                    目前沒有指導任何團隊
+                    目前沒有指導任何組別
                 </div>
             </div>
         `;
