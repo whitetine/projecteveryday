@@ -7,6 +7,8 @@
   // 載入組別數據
   async function loadTeamData() {
     const membersContainer = document.getElementById('members-container');
+    const teamNameEl = document.getElementById('student-team-name');
+    const teamTitleEl = document.getElementById('student-team-title');
     
     if (!membersContainer) {
       console.warn('找不到 members-container 元素');
@@ -34,6 +36,13 @@
           `;
         }
         return;
+      }
+
+      // 更新組別名稱（若有）
+      if (data.teamName) {
+        const nameText = String(data.teamName);
+        if (teamNameEl) teamNameEl.textContent = nameText;
+        if (teamTitleEl) teamTitleEl.textContent = nameText;
       }
 
       // 顯示成員列表（包括指導老師）
