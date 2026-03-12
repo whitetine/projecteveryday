@@ -127,7 +127,7 @@ if ($viewID) {
         exit;
     }
 } else {
-    // 學生模式：獲取學生所屬的團隊
+    // 學生模式：取得學生所屬的團隊
     $team_ID = null;
     $team_name = '';
 
