@@ -1924,6 +1924,9 @@ try {
 
         case 'get_cohort_file_types':
             // ====== 整屆下載設定：取得該屆所有出現的檔案類型及開放數量 ======
+            header('Cache-Control: no-cache, no-store, must-revalidate');
+            header('Pragma: no-cache');
+            header('Expires: 0');
             $cohort_ID = isset($_GET['cohort_ID']) ? (int)$_GET['cohort_ID'] : 0;
             if ($cohort_ID <= 0) {
                 echo json_encode(['success' => false, 'message' => '請選擇學年度', 'data' => []]);
@@ -1945,8 +1948,16 @@ try {
                 if (!is_array($other)) continue;
                 foreach ($other as $f) {
                     $ft = '';
-                    if (is_array($f) && isset($f['file_type']) && trim((string)$f['file_type']) !== '') {
-                        $ft = trim((string)$f['file_type']);
+                    if (is_array($f)) {
+                        if (isset($f['file_type']) && trim((string)$f['file_type']) !== '') {
+                            $ft = trim((string)$f['file_type']);
+                        }
+                        if ($ft === '' && isset($f['path'])) {
+                            $ext = strtolower(pathinfo($f['path'], PATHINFO_EXTENSION));
+                            if ($ext === 'pdf') $ft = 'report';
+                            elseif (in_array($ext, ['pptx', 'ppt'], true)) $ft = 'ppt';
+                            elseif (in_array($ext, ['docx', 'doc'], true)) $ft = 'word';
+                        }
                     }
                     if ($ft === '') continue;
                     if (!isset($agg[$ft])) {
@@ -2005,6 +2016,12 @@ try {
                 foreach ($other as $idx => $f) {
                     if (!is_array($f)) continue;
                     $ft = isset($f['file_type']) ? trim((string)$f['file_type']) : '';
+                    if ($ft === '' && isset($f['path'])) {
+                        $ext = strtolower(pathinfo($f['path'], PATHINFO_EXTENSION));
+                        if ($ext === 'pdf') $ft = 'report';
+                        elseif (in_array($ext, ['pptx', 'ppt'], true)) $ft = 'ppt';
+                        elseif (in_array($ext, ['docx', 'doc'], true)) $ft = 'word';
+                    }
                     if ($ft !== $file_type) continue;
                     $cur = isset($f['allow_download']) ? (int)$f['allow_download'] : (isset($f['allow']) ? (int)$f['allow'] : 0);
                     if ($cur === $allow_download) continue;
@@ -2012,12 +2029,22 @@ try {
                     $other[$idx]['allow_download'] = $allow_download;
                     $other[$idx]['allow'] = $allow_download;
                     $other[$idx]['public'] = (bool)$allow_download;
+                    if (!isset($other[$idx]['file_type']) || $other[$idx]['file_type'] === '') $other[$idx]['file_type'] = $ft;
                     $changed = true;
                 }
                 if ($changed) {
+                    $json = json_encode($other, JSON_UNESCAPED_UNICODE);
+                    if ($json === false) {
+                        error_log('[batch_set_download] json_encode failed for prosub_ID=' . $row['prosub_ID']);
+                        continue;
+                    }
                     $upd = $conn->prepare("UPDATE prosubdata SET prosub_other = ?, prosub_update_d = NOW() WHERE prosub_ID = ?");
-                    $upd->execute([json_encode($other, JSON_UNESCAPED_UNICODE), $row['prosub_ID']]);
-                    $updated++;
+                    $ok = $upd->execute([$json, (int)$row['prosub_ID']]);
+                    if ($ok && $upd->rowCount() > 0) {
+                        $updated++;
+                    } else {
+                        error_log('[batch_set_download] UPDATE failed or 0 rows for prosub_ID=' . $row['prosub_ID']);
+                    }
                 }
             }
             echo json_encode([

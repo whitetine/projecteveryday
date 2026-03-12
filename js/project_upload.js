@@ -4299,8 +4299,12 @@
         }
         formData.append('project_intro', introText.trim());
 
-        if (currentFile) {
-            formData.append('poster', currentFile);
+        // 🔹 暫存時也確保海報有選就送出（與提交邏輯一致，從表單 input 或 currentFile 取）
+        const posterInput = form.querySelector('input[name="poster"]');
+        const posterFile = currentFile || (posterInput && posterInput.files && posterInput.files[0]);
+        if (posterFile) {
+            if (formData.has('poster')) formData.delete('poster');
+            formData.append('poster', posterFile);
         }
         
         // 🔹 檢查是否為編輯模式
@@ -4674,8 +4678,8 @@
         
         console.log('[handleFormSubmit] 找到表單:', form.id);
         
-        // 統一從 DOM 元素讀取簡介值（唯一來源）
-        const projectIntroElement = getIntroEl();
+        // 🔹 從「當前表單」內讀取專題簡介，避免 AJAX 動態載入時取到其他區塊的空欄位
+        const projectIntroElement = form.querySelector('textarea[name="project_intro"]') || getIntroEl();
         if (!projectIntroElement) {
             await showAlertDialog('找不到專題簡介欄位', 'error');
             resetSubmitState();
@@ -4763,9 +4767,12 @@
             return;
         }
 
-        // 只有選擇了新檔案才添加到 FormData
-        if (currentFile) {
-            formData.append('poster', currentFile);
+        // 🔹 海報：以「表單內檔案 input」或全域 currentFile 為準，確保有選檔時一定會送出
+        const posterInput = form.querySelector('input[name="poster"]');
+        const posterFile = currentFile || (posterInput && posterInput.files && posterInput.files[0]);
+        if (posterFile) {
+            if (formData.has('poster')) formData.delete('poster');
+            formData.append('poster', posterFile);
         }
         
         // 🔹 檢查是否為編輯模式（urlParams 已在函數開頭聲明，這裡直接使用）

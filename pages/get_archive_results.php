@@ -95,8 +95,8 @@ try {
             $contentJson = json_decode($sub['content_json'], true);
         }
         
-        // 從 prosub_other 讀取文件列表（只返回允許下載的檔案，allow_download = 1）
-        // 🔹 【統一使用 allow_download 欄位】根據用戶要求，只返回 allow_download = 1 的檔案
+        // 從 prosub_other 讀取文件列表（只返回允許下載的檔案）
+        // 🔹 科辦在歷屆成果管理設為「不開放」的類型（如 Word）不會出現在此列表，歷屆專題瀏覽查看處也不會顯示
         if (is_array($prosubOther)) {
             foreach ($prosubOther as $index => $file) {
                 $filePath = '';
@@ -152,6 +152,16 @@ try {
                     $fileSize = isset($file['size']) ? (int)$file['size'] : 0;
                     $fileType = $file['type'] ?? $file['mime'] ?? '';
                 }
+                // 檔案類型：依存檔類型（副檔名）.pdf→成果書、.pptx/.ppt→PPT、.docx/.doc→Word
+                $fileTypeKey = isset($file['file_type']) ? trim((string)$file['file_type']) : '';
+                if ($fileTypeKey === '' && $filePath) {
+                    $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                    if ($ext === 'pdf') $fileTypeKey = 'report';
+                    elseif (in_array($ext, ['pptx', 'ppt'], true)) $fileTypeKey = 'ppt';
+                    elseif (in_array($ext, ['docx', 'doc'], true)) $fileTypeKey = 'word';
+                }
+                $fileTypeLabels = ['report' => '成果書', 'ppt' => 'PPT', 'word' => 'Word'];
+                $fileTypeLabel = isset($fileTypeLabels[$fileTypeKey]) ? $fileTypeLabels[$fileTypeKey] : $fileTypeKey;
                 
                 // 只返回有有效路徑且允許下載的檔案（allow_download = 1）
                 if ($filePath && $allow_download == 1) {
@@ -161,7 +171,9 @@ try {
                         'path' => $filePath,
                         'type' => $fileType,
                         'size' => $fileSize,
-                        'uploaded_at' => $uploadTime
+                        'uploaded_at' => $uploadTime,
+                        'file_type' => $fileTypeKey,
+                        'file_type_label' => $fileTypeLabel
                     ];
                 }
             }
@@ -179,13 +191,24 @@ try {
                     
                     // 只返回允許下載的檔案（allow=1）
                     if ($allow == 1) {
+                        $ftKey = isset($file['file_type']) ? trim((string)$file['file_type']) : '';
+                        if ($ftKey === '' && isset($file['path'])) {
+                            $ext = strtolower(pathinfo($file['path'], PATHINFO_EXTENSION));
+                            if ($ext === 'pdf') $ftKey = 'report';
+                            elseif (in_array($ext, ['pptx', 'ppt'], true)) $ftKey = 'ppt';
+                            elseif (in_array($ext, ['docx', 'doc'], true)) $ftKey = 'word';
+                        }
+                        $ftLabels = ['report' => '成果書', 'ppt' => 'PPT', 'word' => 'Word'];
+                        $ftLabel = isset($ftLabels[$ftKey]) ? $ftLabels[$ftKey] : $ftKey;
                         $downloadableFiles[] = [
                             'fid' => 'file_' . $fileIndex,
                             'name' => $file['name'] ?? basename($file['path']),
                             'path' => $file['path'],
                             'type' => $file['type'] ?? $file['mime'] ?? '',
                             'size' => isset($file['size']) ? (int)$file['size'] : 0,
-                            'uploaded_at' => $file['uploaded_at'] ?? ''
+                            'uploaded_at' => $file['uploaded_at'] ?? '',
+                            'file_type' => $ftKey,
+                            'file_type_label' => $ftLabel
                         ];
                         $fileIndex++;
                     }

@@ -16,7 +16,7 @@ session_start();
 require '../includes/pdo.php';
 require '../config/path.php'; // 引入 BASE_PATH 常量
 
-// 清除輸出緩衝區中的任何內容（包括可能的警告）
+// 清除輸出緩衝區中的任何內容
 ob_clean();
 
 // 輔助函數：清除緩衝區並輸出 JSON（強制只回傳 JSON）
@@ -48,6 +48,21 @@ function json_response($data) {
     echo json_encode($response, JSON_UNESCAPED_UNICODE);
     exit;
 }
+
+/**
+ * prosubdata 欄位儲存格式（應依此寫入）：
+ *
+ * 1. content_json（備用 JSON 欄位）：存「簡介」等
+ *    例：{"intro":"專題簡介文字...", "poster_original_name":"原始檔名", "history_status":1, "history":[...]}
+ *
+ * 2. prosub_img（海報）：存海報路徑字串，相對路徑、無前綴
+ *    例：uploads/project_posters/poster_24_1769132755_6972d2d355c48.jpg
+ *
+ * 3. prosub_other（多個檔案）：存多檔的 JSON 陣列，file_type 依存檔副檔名：.pdf→成果書(report)、.pptx/.ppt→PPT(ppt)、.docx/.doc→Word(word)
+ *    例：[{"path":"...", "name":"檔名", "file_type":"report", ...}, ...]
+ *
+ * 若資料表有 prosub_intro 欄位，簡介會優先寫入該欄，否則寫入 content_json['intro']
+ */
 
 // 檢查權限（只有學生 role_ID = 6 可以訪問）
 $role_ID = $_SESSION['role_ID'] ?? null;
@@ -567,6 +582,19 @@ try {
         }
     }
 
+    /**
+     * 依副檔名取得檔案類型（存檔類型）：.pdf→成果書(report)、.pptx/.ppt→PPT(ppt)、.docx/.doc→Word(word)
+     * @param string $filenameOrPath 檔名或路徑
+     * @return string 'report'|'ppt'|'word'|''
+     */
+    function fileTypeFromExtension($filenameOrPath) {
+        $ext = strtolower(trim(pathinfo($filenameOrPath, PATHINFO_EXTENSION)));
+        if ($ext === 'pdf') return 'report';
+        if (in_array($ext, ['pptx', 'ppt'], true)) return 'ppt';
+        if (in_array($ext, ['docx', 'doc'], true)) return 'word';
+        return '';
+    }
+
     switch ($do) {
         case 'save_draft':
             // ====== 暫存功能 ======
@@ -708,8 +736,6 @@ try {
                     $fileCount = count($_FILES['new_files']['error']);
                     for ($i = 0; $i < $fileCount; $i++) {
                         if ($_FILES['new_files']['error'][$i] === UPLOAD_ERR_OK) {
-                            $file_type_i = isset($newFileTypes[$i]) ? trim((string)$newFileTypes[$i]) : '';
-                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $file = [
                                 'name' => $_FILES['new_files']['name'][$i],
                                 'type' => $_FILES['new_files']['type'][$i],
@@ -732,6 +758,9 @@ try {
                             }
                             
                             $relPath = 'uploads/project_other_files/' . $filename;
+                            $file_type_i = isset($newFileTypes[$i]) ? trim((string)$newFileTypes[$i]) : '';
+                            if ($file_type_i === '') $file_type_i = fileTypeFromExtension($file['name']);
+                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $otherFiles[] = [
                                 'original_name' => $file['name'],
                                 'name' => $file['name'],
@@ -870,8 +899,6 @@ try {
                     $fileCount = count($_FILES['other_files']['error']);
                     for ($i = 0; $i < $fileCount; $i++) {
                         if ($_FILES['other_files']['error'][$i] === UPLOAD_ERR_OK) {
-                            $file_type_i = isset($fileTypesPost[$i]) ? trim((string)$fileTypesPost[$i]) : '';
-                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $file = [
                                 'name' => $_FILES['other_files']['name'][$i],
                                 'type' => $_FILES['other_files']['type'][$i],
@@ -894,6 +921,9 @@ try {
                             }
                             
                             $relPath = 'uploads/project_other_files/' . $filename;
+                            $file_type_i = isset($fileTypesPost[$i]) ? trim((string)$fileTypesPost[$i]) : '';
+                            if ($file_type_i === '') $file_type_i = fileTypeFromExtension($file['name']);
+                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $otherFiles[] = [
                                 'original_name' => $file['name'],
                                 'name' => $file['name'],
@@ -1357,7 +1387,9 @@ try {
             $hasOtherFiles = false;
             
             // 1. 檢查是否有新上傳的檔案（multi_files[]）
-            if (isset($_FILES['multi_files']) && is_array($_FILES['multi_files']['error']) && !empty($_FILES['multi_files']['name'][0])) {
+            $hasMultiFiles = (isset($_FILES['multi_files']) && is_array($_FILES['multi_files']['error']) && !empty($_FILES['multi_files']['name'][0]))
+                || (isset($_FILES['multi_files[]']) && is_array($_FILES['multi_files[]']['error']) && !empty($_FILES['multi_files[]']['name'][0]));
+            if ($hasMultiFiles) {
                 $hasOtherFiles = true;
             }
             // 2. 檢查是否有已暫存的檔案（kept_files_json）- 非編輯模式
@@ -1559,15 +1591,14 @@ try {
             // 🔹 【關鍵修復】處理多個檔案上傳（優先使用 multi_files[]，向後兼容 other_files[]）
             $otherFiles = [];
             
-            // 優先處理新格式：multi_files[]
-            $filesKey = 'multi_files';
-            if (!isset($_FILES['multi_files']) || !is_array($_FILES['multi_files']['error'])) {
-                // 向後兼容：檢查舊格式 other_files[]
-                if (isset($_FILES['other_files']) && is_array($_FILES['other_files']['error'])) {
-                    $filesKey = 'other_files';
-                } else {
-                    $filesKey = null;
-                }
+            // 優先處理新格式：multi_files 或 multi_files[]（FormData 可能送 multi_files[]）
+            $filesKey = null;
+            if (isset($_FILES['multi_files']) && is_array($_FILES['multi_files']['error'])) {
+                $filesKey = 'multi_files';
+            } elseif (isset($_FILES['multi_files[]']) && is_array($_FILES['multi_files[]']['error'])) {
+                $filesKey = 'multi_files[]';
+            } elseif (isset($_FILES['other_files']) && is_array($_FILES['other_files']['error'])) {
+                $filesKey = 'other_files';
             }
             
                 $allAllowedTypes = getUnionOfAllowedFileTypes($conn, $cohort_ID, $class_ID);
@@ -1594,8 +1625,6 @@ try {
                     $fileCount = count($_FILES[$filesKey]['error']);
                     for ($i = 0; $i < $fileCount; $i++) {
                         if ($_FILES[$filesKey]['error'][$i] === UPLOAD_ERR_OK) {
-                            $file_type_i = isset($submitFileTypes[$i]) ? trim((string)$submitFileTypes[$i]) : '';
-                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                         $file = [
                             'name' => $_FILES[$filesKey]['name'][$i],
                             'type' => $_FILES[$filesKey]['type'][$i],
@@ -1618,6 +1647,9 @@ try {
                         }
                         
                         $relPath = 'uploads/project_other_files/' . $filename;
+                        $file_type_i = isset($submitFileTypes[$i]) ? trim((string)$submitFileTypes[$i]) : '';
+                        if ($file_type_i === '') $file_type_i = fileTypeFromExtension($file['name']);
+                        validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                         $otherFiles[] = [
                             'original_name' => $file['name'],
                             'name' => $file['name'],
@@ -1672,8 +1704,6 @@ try {
                     $fileCount = count($_FILES['new_files']['error']);
                     for ($i = 0; $i < $fileCount; $i++) {
                         if ($_FILES['new_files']['error'][$i] === UPLOAD_ERR_OK) {
-                            $file_type_i = isset($submitNewFileTypes[$i]) ? trim((string)$submitNewFileTypes[$i]) : '';
-                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $file = [
                                 'name' => $_FILES['new_files']['name'][$i],
                                 'type' => $_FILES['new_files']['type'][$i],
@@ -1696,6 +1726,9 @@ try {
                             }
                             
                             $relPath = 'uploads/project_other_files/' . $filename;
+                            $file_type_i = isset($submitNewFileTypes[$i]) ? trim((string)$submitNewFileTypes[$i]) : '';
+                            if ($file_type_i === '') $file_type_i = fileTypeFromExtension($file['name']);
+                            validateFileTypeOrFail($conn, $allAllowedTypes, $file_type_i);
                             $otherFiles[] = [
                                 'original_name' => $file['name'],
                                 'name' => $file['name'],
@@ -1954,7 +1987,9 @@ try {
                 // 新增模式且沒有簡介，設為空字串
                 $contentJson['intro'] = $project_intro ?? '';
             }
-            
+            // 提交時 content_json 寫入 history_status: 1（與預期儲存格式一致）
+            $contentJson['history_status'] = 1;
+
             // 檢查是否是從退件狀態修改提交（狀態 0）
             $isResubmit = false;
             if ($isEditMode && $originalData && $originalData['prosub_status'] == 0) {

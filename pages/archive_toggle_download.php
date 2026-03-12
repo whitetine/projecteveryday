@@ -118,12 +118,12 @@ try {
                 }
             }
             
-            // 更新 public（兼容 allow_download）
+            // 更新下載權限：
+            // - public：供舊版與前端顯示使用
+            // - allow_download / allow：供歷屆專題瀏覽與 download.php 檢查
             $file['public'] = (bool)$public;
-            // 移除舊的 allow_download 欄位（如果存在）
-            if (isset($file['allow_download'])) {
-                unset($file['allow_download']);
-            }
+            $file['allow_download'] = $public ? 1 : 0;
+            $file['allow'] = $public ? 1 : 0;
             
             $fileFound = true;
             break;

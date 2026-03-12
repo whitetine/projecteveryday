@@ -680,12 +680,25 @@ try {
                                         'path' => $file,
                                         'type' => '',
                                         'uploaded_at' => '',
-                                        'public' => true
+                                        'public' => true,
+                                        'file_type' => '',
+                                        'file_type_label' => ''
                                     ];
                                 } elseif (is_array($file)) {
+                                    $fileTypeLabels = ['report' => '成果書', 'ppt' => 'PPT', 'word' => 'Word'];
+                                    $ftKey = isset($file['file_type']) ? trim((string)$file['file_type']) : '';
+                                    if ($ftKey === '' && isset($file['path'])) {
+                                        $ext = strtolower(pathinfo($file['path'], PATHINFO_EXTENSION));
+                                        if ($ext === 'pdf') $ftKey = 'report';
+                                        elseif (in_array($ext, ['pptx', 'ppt'], true)) $ftKey = 'ppt';
+                                        elseif (in_array($ext, ['docx', 'doc'], true)) $ftKey = 'word';
+                                    }
+                                    $ftLabel = isset($fileTypeLabels[$ftKey]) ? $fileTypeLabels[$ftKey] : $ftKey;
                                     // 檢查是否為新格式（包含 name, path, type, uploaded_at, public）
                                     if (isset($file['name']) && isset($file['path']) && isset($file['type']) && isset($file['uploaded_at']) && isset($file['public'])) {
-                                        // 新格式：直接使用
+                                        // 新格式：補上 file_type_label 供科辦分辨（成果書/PPT/Word）
+                                        $file['file_type'] = $ftKey;
+                                        $file['file_type_label'] = $ftLabel;
                                         $otherFiles[] = $file;
                                     } elseif (isset($file['path'])) {
                                         // 舊格式：轉換為新格式
@@ -698,7 +711,9 @@ try {
                                             'path' => $file['path'],
                                             'type' => $file['type'] ?? '',
                                             'uploaded_at' => $uploadTime,
-                                            'public' => $isPublic
+                                            'public' => $isPublic,
+                                            'file_type' => $ftKey,
+                                            'file_type_label' => $ftLabel
                                         ];
                                     }
                                 }
@@ -717,19 +732,31 @@ try {
                                                 'path' => $file,
                                                 'type' => '',
                                                 'uploaded_at' => '',
-                                                'public' => true
+                                                'public' => true,
+                                                'file_type' => '',
+                                                'file_type_label' => ''
                                             ];
                                         } elseif (is_array($file) && isset($file['path'])) {
                                             $fileNameItem = $file['original_name'] ?? $file['name'] ?? basename($file['path']);
                                             $uploadTime = $file['uploaded_at'] ?? $file['upload_time'] ?? '';
                                             $isPublic = isset($file['public']) ? (bool)$file['public'] : (isset($file['allow_download']) ? (bool)$file['allow_download'] : true);
-                                            
+                                            $ftLabels = ['report' => '成果書', 'ppt' => 'PPT', 'word' => 'Word'];
+                                            $ftKey = isset($file['file_type']) ? trim((string)$file['file_type']) : '';
+                                            if ($ftKey === '' && isset($file['path'])) {
+                                                $ext = strtolower(pathinfo($file['path'], PATHINFO_EXTENSION));
+                                                if ($ext === 'pdf') $ftKey = 'report';
+                                                elseif (in_array($ext, ['pptx', 'ppt'], true)) $ftKey = 'ppt';
+                                                elseif (in_array($ext, ['docx', 'doc'], true)) $ftKey = 'word';
+                                            }
+                                            $ftLabel = isset($ftLabels[$ftKey]) ? $ftLabels[$ftKey] : $ftKey;
                                             $otherFiles[] = [
                                                 'name' => $fileNameItem,
                                                 'path' => $file['path'],
                                                 'type' => $file['type'] ?? '',
                                                 'uploaded_at' => $uploadTime,
-                                                'public' => $isPublic
+                                                'public' => $isPublic,
+                                                'file_type' => $ftKey,
+                                                'file_type_label' => $ftLabel
                                             ];
                                         }
                                     }
@@ -743,7 +770,9 @@ try {
                                         'path' => $filePath,
                                         'type' => '',
                                         'uploaded_at' => '',
-                                        'public' => true
+                                        'public' => true,
+                                        'file_type' => '',
+                                        'file_type_label' => ''
                                     ];
                                 }
                             }
@@ -815,6 +844,7 @@ try {
                             ?>
                             <div class="submission-info-item">
                                 <span class="submission-info-label">其他檔案 (<?= count($otherFiles) ?>)：</span>
+                                <span class="text-muted small ms-1">（類型 成果書/PPT/Word 與歷屆成果管理之整屆下載設定一致，可至 <a href="#pages/history_project_file.php" class="ajax-link">歷屆成果管理</a> 依學年度開放下載）</span>
                                 <div class="submission-files-list" style="margin-top: 8px;">
                                     <?php foreach ($otherFiles as $index => $file): 
                                         $filePath = $file['path'] ?? '';
@@ -839,8 +869,14 @@ try {
                                             $fileIcon = 'fa-file-archive';
                                         }
                                     ?>
+                                    <?php
+                                        $fileTypeLabel = $file['file_type_label'] ?? $file['file_type'] ?? '';
+                                    ?>
                                     <div class="submission-file-item" style="display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f0f0f0;">
                                         <i class="fa-solid <?= $fileIcon ?> me-2" style="color: #667eea; font-size: 14px;"></i>
+                                        <?php if ($fileTypeLabel): ?>
+                                        <span class="badge bg-primary" style="flex-shrink: 0; font-size: 11px;"><?= htmlspecialchars($fileTypeLabel, ENT_QUOTES, 'UTF-8') ?></span>
+                                        <?php endif; ?>
                                         <span class="submission-file-name" style="flex: 1; font-size: 13px; color: #495057; word-break: break-word;"><?= htmlspecialchars($fileName, ENT_QUOTES, 'UTF-8') ?></span>
                                         <?php if ($fileExists): 
                                             $isImageFile = in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']);
@@ -1572,6 +1608,12 @@ try {
                                                     const fileName = file.name || file.original_name || (filePath ? filePath.split('/').pop() : '');
                                                     const fileUrl = filePath ? '../' + filePath : '';
                                                     const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
+                                                    let typeLabel = file.file_type_label || file.file_type || '';
+                                                    if (!typeLabel && fileExtension) {
+                                                        if (fileExtension === 'pdf') typeLabel = '成果書';
+                                                        else if (['pptx', 'ppt'].includes(fileExtension)) typeLabel = 'PPT';
+                                                        else if (['docx', 'doc'].includes(fileExtension)) typeLabel = 'Word';
+                                                    }
                                                     let fileIcon = 'fa-file';
                                                     
                                                     // 根據檔案類型選擇圖標
@@ -1598,6 +1640,7 @@ try {
                                                         <div class="list-group-item" style="display: flex; align-items: center; justify-content: space-between; padding: 12px;">
                                                             <div class="d-flex align-items-center flex-grow-1">
                                                                 <i class="fa-solid ${fileIcon} me-2" style="color: #667eea; font-size: 16px;"></i>
+                                                                ${typeLabel ? `<span class="badge bg-primary me-2" style="font-size: 11px;">${escapeHtml(typeLabel)}</span>` : ''}
                                                                 <span style="word-break: break-word; color: #495057;">${escapeHtml(fileName)}</span>
                                                             </div>
                                                             <div class="d-flex gap-2" style="flex-shrink: 0;">
