@@ -92,14 +92,42 @@ function fetch_user_cohort_label(PDO $conn, string $u_ID): array {
 try {
 
   // ------------------------------------------------------------
-  // 0) 表單列表：給審核頁第一層選擇用
+  // 0) 屆別選項：供審核頁篩選用（啟用中的屆別）
+  // ------------------------------------------------------------
+  if ($do === 'get_review_cohort_options') {
+    $sql = "SELECT cohort_ID, cohort_name, year_label FROM cohortdata WHERE cohort_status = 1 ORDER BY cohort_ID DESC";
+    $rows = $conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    $cohorts = [];
+    foreach ($rows as $r) {
+      $cohorts[] = [
+        'cohort_ID' => (int)$r['cohort_ID'],
+        'cohort_label' => trim($r['cohort_name'] ?? '') !== '' ? trim($r['cohort_name']) : (trim($r['year_label'] ?? '') !== '' ? trim($r['year_label']) : ('屆別 ' . $r['cohort_ID']))
+      ];
+    }
+    json_resp(true, 'success', ['cohorts' => $cohorts]);
+  }
+
+  // ------------------------------------------------------------
+  // 0a) 表單列表：給審核頁第一層選擇用（可依 cohort_ID 篩選）
   // ------------------------------------------------------------
   if ($do === 'get_forms') {
+    $cohortFilter = (int)($_GET['cohort_ID'] ?? 0);
     $sql = "SELECT taf_ID, taf_title, taf_cohort_ID, taf_status, taf_updated_d
             FROM teamapplyform
-            WHERE taf_status IN (1, 0)
-            ORDER BY taf_cohort_ID DESC, taf_ID DESC";
-    $rows = $conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+            WHERE taf_status IN (1, 0)";
+    $params = [];
+    if ($cohortFilter > 0) {
+      $sql .= " AND taf_cohort_ID = ?";
+      $params[] = $cohortFilter;
+    }
+    $sql .= " ORDER BY taf_cohort_ID DESC, taf_ID DESC";
+    if ($cohortFilter > 0) {
+      $stmt = $conn->prepare($sql);
+      $stmt->execute($params);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+      $rows = $conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
 
     foreach ($rows as &$r) {
       $stmt = $conn->prepare("SELECT cohort_name FROM cohortdata WHERE cohort_ID = ? LIMIT 1");
@@ -197,6 +225,11 @@ try {
     $keyword = trim($_GET['keyword'] ?? '');
     $status  = $_GET['status'] ?? 'all';
     $cohortFilter = (int)($_GET['cohort_ID'] ?? 0);
+
+    // 屆別判斷：未指定屆別時不回傳申請單，避免混用不同屆別資料
+    if ($cohortFilter <= 0) {
+      json_resp(true, 'success', ['list' => []]);
+    }
 
     $sql = "SELECT
               t.tap_ID,

@@ -62,6 +62,20 @@ const app = createApp({
         },
         fieldShow(key) { return this.fieldCtrl?.[key]?.show !== false; },
         fieldRequire(key) { return this.fieldCtrl?.[key]?.require === true; },
+        /** 從 tap_des 取出「說明文字」：若為 JSON 只取 comment，絕不顯示整段 JSON */
+        extractCommentFromTapDes(tapDes) {
+            if (tapDes == null) return '';
+            const s = String(tapDes).trim();
+            if (s === '') return '';
+            if (s.charAt(0) === '{') {
+                try {
+                    const j = JSON.parse(s);
+                    if (j && typeof j === 'object' && Object.prototype.hasOwnProperty.call(j, 'comment')) return String(j.comment || '');
+                    return '';
+                } catch (e) { return ''; }
+            }
+            return s;
+        },
         async checkExistingApplication() {
             try {
                 const res = await fetch(`${this.config.apiPath}?do=get_my_application`);
@@ -73,55 +87,17 @@ const app = createApp({
                     // 回填資料
                     this.form.project_name = app.tap_name;
 
-                    // tap_des 可能是純文字，也可能是 JSON（例如：{ group_id, comment }）
-                    let rawDes = app.tap_des;
-                    let parsed = null;
-                    if (rawDes && typeof rawDes === 'string' && rawDes.trim().startsWith('{')) {
+                    // 備註說明：一律只顯示「說明文字」，絕不以 JSON 呈現
+                    this.form.comment = this.extractCommentFromTapDes(app.tap_des);
+                    // 類組：優先 tap_group / group（API 已用 tap_group 關聯 groupdata），僅舊資料才從 tap_des 解析
+                    let rawGroup = app.tap_group ?? app.group?.group_ID;
+                    if (!rawGroup && app.tap_des && String(app.tap_des).trim().startsWith('{')) {
                         try {
-                            parsed = JSON.parse(rawDes);
-                        } catch (e) {
-                            parsed = null;
-                        }
+                            const j = JSON.parse(app.tap_des);
+                            if (j && j.group_id != null && j.group_id !== '') rawGroup = String(j.group_id);
+                        } catch (e) {}
                     }
-                    if (parsed && typeof parsed === 'object') {
-                        // JSON 版本：group_id 優先填到下拉選單，comment 填到備註文字
-                        if (parsed.group_id !== undefined && parsed.group_id !== null && parsed.group_id !== '') {
-                            this.form.group_id = String(parsed.group_id);
-                        }
-                        if (Object.prototype.hasOwnProperty.call(parsed, 'comment')) {
-                            this.form.comment = parsed.comment || '';
-                        } else {
-                            this.form.comment = '';
-                        }
-                    } else {
-                        // 舊版：直接把 tap_des 當成備註文字
-                        this.form.comment = rawDes || '';
-                    }
-
-                    // 若後端另外有回傳 group/tap_group，作為備援來源（但不覆蓋上面 JSON 已設定的值）
-                    if (!this.form.group_id) {
-                        this.form.group_id = String(app.group?.group_ID ?? app.tap_group ?? '');
-                    }
-
-                    // 最後一層保險：如果備註欄本身仍是 JSON，把其中的 group_id/comment 拆回對應欄位
-                    if (this.form.comment && typeof this.form.comment === 'string') {
-                        const trimmed = this.form.comment.trim();
-                        if (trimmed.startsWith('{') && trimmed.includes('group_id')) {
-                            try {
-                                const j2 = JSON.parse(trimmed);
-                                if (j2 && typeof j2 === 'object') {
-                                    if (!this.form.group_id && j2.group_id !== undefined && j2.group_id !== null && j2.group_id !== '') {
-                                        this.form.group_id = String(j2.group_id);
-                                    }
-                                    if (Object.prototype.hasOwnProperty.call(j2, 'comment')) {
-                                        this.form.comment = j2.comment || '';
-                                    }
-                                }
-                            } catch (e) {
-                                // ignore parse error, 保留原始文字
-                            }
-                        }
-                    }
+                    if (rawGroup) this.form.group_id = String(rawGroup);
                     if (app.teacher) this.form.teacher_id = app.teacher.u_ID;
                     this.form.teacher_id_2 = app.teacher_2_id || (app.teacher_2?.u_ID) || '';
                     this.form.teacher_id_3 = app.teacher_3_id || (app.teacher_3?.u_ID) || '';

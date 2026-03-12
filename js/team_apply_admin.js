@@ -203,6 +203,9 @@
           const c = (this.tableColumns || []).find(x => x.COLUMN_NAME === colName);
           return c ? (c.COLUMN_COMMENT || '') : '';
         },
+        previewTeacherSlots(){
+          return Math.min(3, Math.max(1, Number(this.formEdit.taf_teacher_slots ?? 1)));
+        },
 
         previewFieldShow(key){
           const c = (this.controls || []).find(x => String(x.tpc_name) === String(key));
@@ -229,6 +232,7 @@
             ...f,
             taf_cohort_ID: Number(f.taf_cohort_ID),
             taf_status: Number(f.taf_status ?? 1),
+            taf_teacher_slots: Math.min(3, Math.max(1, Number(f.taf_teacher_slots ?? 1))),
             min_count: Number(f.min_count ?? 1),
             max_count: Number(f.max_count ?? 4)
           };
@@ -288,6 +292,7 @@
           fd.append('taf_title', String(f.taf_title).trim());
           fd.append('taf_cohort_ID', f.taf_cohort_ID);
           fd.append('taf_ttl', f.taf_ttl ?? '');
+          fd.append('taf_teacher_slots', Math.min(3, Math.max(1, Number(f.taf_teacher_slots ?? 1))));
           fd.append('taf_status', f.taf_status ?? 1);
           fd.append('taf_note', f.taf_note ?? '');
 
