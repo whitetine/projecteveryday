@@ -482,24 +482,37 @@ try {
             $teacher_max = (int)$tafCfg['taf_ttl'];
             if ($teacher_max > 0 && $led_count >= $teacher_max) json_err('該指導老師已達帶組上限，請選擇其他老師');
 
-            // --- 3. 檢查是否已有「審核中(1)」或「已通過(3)」的申請
-            $stmt = $conn->prepare("SELECT tap_ID, tap_status FROM teamapply WHERE tap_u_ID = ? AND tap_status IN (1, 3, 4) ORDER BY tap_status = 4 DESC, tap_update_d DESC LIMIT 1");
+            // --- 3. 檢查是否已有申請紀錄（包含退件/封存）
+            // 狀態約定：
+            // 0：封存（歷史紀錄）
+            // 1：審核中
+            // 2：退件
+            // 3：已通過
+            // 4：暫存
+            // 這裡取出「最新一筆」做後續判斷，讓退件(2/0) 可以用 UPDATE 方式重新送出
+            $stmt = $conn->prepare("SELECT tap_ID, tap_status, tap_url FROM teamapply WHERE tap_u_ID = ? ORDER BY tap_update_d DESC, tap_ID DESC LIMIT 1");
             $stmt->execute([$u_ID]);
             $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($existing) {
-                if ($existing['tap_status'] == 1) json_err('您已有「審核中」的申請，請耐心等候結果，勿重複提交。');
-                if ($existing['tap_status'] == 3) json_err('您的專題申請「已通過」，無法再次提交。');
+                $existStatus = (int)$existing['tap_status'];
+                if ($existStatus === 1) {
+                    // 審核中禁止再次送出
+                    json_err('您已有「審核中」的申請，請耐心等候結果，勿重複提交。');
+                }
+                if ($existStatus === 3) {
+                    // 已通過禁止再次送出
+                    json_err('您的專題申請「已通過」，無法再次提交。');
+                }
             }
-
-            // --- 4. 若之前有退件 (status=2)，將其歸檔為 0
-            $stmt = $conn->prepare("UPDATE teamapply SET tap_status = 0, tap_update_d = NOW() WHERE tap_u_ID = ? AND tap_status = 2");
-            $stmt->execute([$u_ID]);
-
-            $isDraftSubmit = $existing && $existing['tap_status'] == 4;
+            // 允許可被覆寫再送出的狀態：暫存(4)、退件(2)、封存(0)
+            $isDraftSubmit = $existing && in_array((int)$existing['tap_status'], [0, 2, 4], true);
             $draftTapId = $isDraftSubmit ? (int)$existing['tap_ID'] : 0;
 
             // --- 5. 圖片上傳 ---
+            // 規則：
+            // - 若本次有上傳新檔，覆蓋原有 tap_url
+            // - 若本次未上傳，但舊資料已有 tap_url，沿用舊值（避免退件後被迫重傳）
             $imgUrl = '';
             if (!empty($_FILES['apply_image']['name'])) {
                 $f = $_FILES['apply_image'];
@@ -510,6 +523,9 @@ try {
                 $path = 'uploads/team_apply/apply_' . preg_replace('/\W/', '', $u_ID) . '_' . time() . '.' . $ext;
                 if (!is_dir(dirname(__DIR__ . '/../' . $path))) mkdir(dirname(__DIR__ . '/../' . $path), 0775, true);
                 if (move_uploaded_file($f['tmp_name'], __DIR__ . '/../' . $path)) $imgUrl = $path;
+            } elseif ($isDraftSubmit && !empty($existing['tap_url'])) {
+                // 沒有重新上傳，但舊紀錄已有檔案 → 沿用
+                $imgUrl = $existing['tap_url'];
             }
             if ($fieldMap['tap_url']['show'] && $fieldMap['tap_url']['require'] && !$imgUrl) {
                 json_err('請上傳申請表照片');
@@ -533,6 +549,7 @@ try {
             $conn->beginTransaction();
             try {
                 if ($isDraftSubmit && $draftTapId > 0) {
+                    // 重新送出暫存 / 退件 / 封存的申請，統一用 UPDATE 寫回同一筆 tap_ID
                     $sets = ["tap_name=?", "tap_member=?", "tap_teacher=?", "tap_url=?", "tap_des=?", "tap_status=1", "tap_update_d=NOW()"];
                     $params = [$p_name, $memJson, $t_id, $imgUrl, $desJson, $draftTapId];
                     if ($hasTapGroup) { array_splice($sets, 3, 0, ["tap_group=?"]); array_splice($params, 3, 0, [$g_id]); }

@@ -72,13 +72,27 @@ if (session_status() === PHP_SESSION_NONE) session_start();
     </template>
 
     <template v-else-if="!selectedForm">
-      <div class="tar-muted" style="margin-bottom:10px;font-size:1.15rem">請先選擇要查看的申請單</div>
+      <div class="d-flex align-items-center flex-wrap gap-3 mb-3">
+        <span class="tar-muted" style="font-size:1.15rem">請先選擇要查看的申請單</span>
+        <template v-if="cohortOptions.length">
+          <label class="d-flex align-items-center gap-2 mb-0">
+            <span class="tar-muted">屆別：</span>
+            <select class="form-select form-select-sm" style="width:auto;min-width:140px" v-model="filterCohortId" aria-label="篩選屆別">
+              <option value="">全部屆別</option>
+              <option v-for="c in cohortOptions" :key="c.cohort_ID" :value="c.cohort_ID">{{ c.cohort_label }}</option>
+            </select>
+          </label>
+        </template>
+      </div>
       <template v-if="formsLoading">
         <div class="tar-loading"><div class="spinner-border"></div></div>
       </template>
       <template v-else-if="forms.length === 0">
         <div class="tar-empty">目前沒有可用表單</div>
-      </template> 
+      </template>
+      <template v-else-if="filteredForms.length === 0">
+        <div class="tar-empty">此屆別沒有可用表單，請改選其他屆別或「全部屆別」</div>
+      </template>
       <template v-else>
         <table class="tar-table">
           <thead>
@@ -91,7 +105,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
             </tr>
           </thead>
           <tbody>
-            <tr v-for="f in forms" :key="f.taf_ID">
+            <tr v-for="f in filteredForms" :key="f.taf_ID">
               <td>{{ f.cohort_label }}</td>
               <td><b>{{ f.taf_title }}</b></td>
               <td class="tar-status-cell">
